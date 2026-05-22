@@ -1,0 +1,741 @@
+{
+  "users": [
+    {
+      "id": "8f6b1a1e-7d1d-4b2c-9c6c-1c5f3c9c1a11",
+      "firstName": "Иван",
+      "lastName": "Петров",
+      "email": "ivan@example.com",
+      "password": "123456",
+      "phone": "+79991234567",
+      "language": "ru",
+      "notifyByEmail": false,
+      "createdAt": "2026-03-01T10:00:00Z"
+    },
+    {
+      "id": "1a0d9c3c-6b6f-4c6a-9e7a-5b7c2a8e4d22",
+      "firstName": "Анна",
+      "lastName": "Смирнова",
+      "email": "anna@example.com",
+      "password": "123456",
+      "phone": "+79998887766",
+      "language": "ru",
+      "notifyByEmail": false,
+      "createdAt": "2026-03-02T10:00:00Z"
+    }
+  ],
+  "products": [
+    {
+      "id": "3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01",
+      "name": "Председатель",
+      "description": "Густые прямые усы с характерным направлением вниз. Подходят для уверенных решений и серьёзных заявлений.",
+      "price": 5590,
+      "images": [
+        "/mustashes/chairman/0.png",
+        "/mustashes/chairman/1.png",
+        "/mustashes/chairman/2.png",
+        "/mustashes/chairman/3.png"
+      ],
+      "characteristics": {
+        "категория": "Классические",
+        "подкатегория": "Деловые",
+        "стиль": "Военный",
+        "форма": "Короткий прямоугольник",
+        "густота": "Средняя",
+        "закрученность": "Низкая",
+        "харизма": "5"
+      },
+      "inStock": true,
+      "rating": 4.5,
+      "ratingCount": 2,
+      "createdAt": "2026-03-01T09:00:00Z"
+    },
+    {
+      "id": "6a1c2d3e-4f50-4a61-8b72-9c83ad94be02",
+      "name": "Джентльмен",
+      "description": "Аккуратные симметричные усы средней густоты. Подходят для деловых встреч и неспешных прогулок.",
+      "price": 1790,
+      "images": [
+        "/mustashes/gentelmen/0.png",
+        "/mustashes/gentelmen/1.png",
+        "/mustashes/gentelmen/2.png",
+        "/mustashes/gentelmen/3.png",
+        "/mustashes/gentelmen/4.png"
+      ],
+      "characteristics": {
+        "категория": "Классические",
+        "подкатегория": "Деловые",
+        "стиль": "Классический",
+        "форма": "Аккуратная симметрия",
+        "густота": "Средняя",
+        "закрученность": "Низкая",
+        "харизма": "4"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-01T10:00:00Z"
+    },
+    {
+      "id": "7b2d3e4f-5061-4b72-9c83-ad94be05cf03",
+      "name": "Детектив",
+      "description": "Тонкие аккуратные усы, идеально подходящие для внимательных наблюдений и серьёзных разговоров.",
+      "price": 1590,
+      "images": [
+        "/mustashes/detective/0.png",
+        "/mustashes/detective/1.png",
+        "/mustashes/detective/2.png",
+        "/mustashes/detective/3.png"
+      ],
+      "characteristics": {
+        "категория": "Классические",
+        "подкатегория": "Деловые",
+        "стиль": "Винтаж",
+        "форма": "Узкая линия",
+        "густота": "Низкая",
+        "закрученность": "Низкая",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-01T11:00:00Z"
+    },
+    {
+      "id": "8c3e4f50-6172-4c83-ad94-be05cf16d804",
+      "name": "Инженер",
+      "description": "Строгие усы с чёткой геометрией. Любят точность и хорошо сочетаются с техническим мышлением.",
+      "price": 2650,
+      "images": [
+        "/mustashes/enginere/0.png",
+        "/mustashes/enginere/1.png",
+        "/mustashes/enginere/2.png",
+        "/mustashes/enginere/3.png",
+        "/mustashes/enginere/4.png"
+      ],
+      "characteristics": {
+        "категория": "Классические",
+        "подкатегория": "Деловые",
+        "стиль": "Минимализм",
+        "форма": "Строгая горизонтальная линия",
+        "густота": "Средняя",
+        "закрученность": "Низкая",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-01T12:00:00Z"
+    },
+    {
+      "id": "9d4f5061-7283-4d94-be05-cf16d827e905",
+      "name": "Библиотекарь",
+      "description": "Небольшие аккуратные усы, почти незаметные, но придающие образу спокойный авторитет.",
+      "price": 890,
+      "images": [
+        "/mustashes/librarian/0.png",
+        "/mustashes/librarian/1.png",
+        "/mustashes/librarian/2.png",
+        "/mustashes/librarian/3.png"
+      ],
+      "characteristics": {
+        "категория": "Классические",
+        "подкатегория": "Повседневные",
+        "стиль": "Минимализм",
+        "форма": "Маленькая аккуратная",
+        "густота": "Низкая",
+        "закрученность": "Низкая",
+        "харизма": "2"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-01T13:00:00Z"
+    },
+    {
+      "id": "a05f6172-8394-4e05-8f16-d827e938fa06",
+      "name": "Щёточка",
+      "description": "Компактные прямоугольные усы с плотной текстурой. Минималистичная форма для тех, кто ценит строгую геометрию.",
+      "price": 590,
+      "images": [
+        "/mustashes/brush/0.png",
+        "/mustashes/brush/1.png",
+        "/mustashes/brush/2.png",
+        "/mustashes/brush/3.png"
+      ],
+      "characteristics": {
+        "категория": "Классические",
+        "подкатегория": "Минимализм",
+        "стиль": "Военный",
+        "форма": "Короткий прямоугольник",
+        "густота": "Средняя",
+        "закрученность": "Низкая",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-01T14:00:00Z"
+    },
+    {
+      "id": "b16d7283-94a5-4f16-9d27-e938fa49ab07",
+      "name": "Пионер авиации",
+      "description": "Тонкие винтажные усы эпохи первых самолётов.",
+      "price": 3490,
+      "images": [
+        "/mustashes/aviator/0.png",
+        "/mustashes/aviator/1.png",
+        "/mustashes/aviator/2.png",
+        "/mustashes/aviator/3.png"
+      ],
+      "characteristics": {
+        "категория": "Исторические",
+        "подкатегория": "Ранний XX век",
+        "стиль": "Винтаж",
+        "форма": "Тонкая линия",
+        "густота": "Низкая",
+        "закрученность": "Низкая",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 5,
+      "ratingCount": 1,
+      "createdAt": "2026-03-02T09:00:00Z"
+    },
+    {
+      "id": "c27e8394-a5b6-4a17-8b3f-a49ab50b1c08",
+      "name": "Император",
+      "description": "Длинные торжественные усы с плавным изгибом. Подчёркивают статус и уверенность.",
+      "price": 3490,
+      "images": [
+        "/mustashes/emperor/0.png",
+        "/mustashes/emperor/1.png",
+        "/mustashes/emperor/2.png",
+        "/mustashes/emperor/3.png"
+      ],
+      "characteristics": {
+        "категория": "Исторические",
+        "подкатегория": "XIX век",
+        "стиль": "Винтаж",
+        "форма": "Длинная",
+        "густота": "Высокая",
+        "закрученность": "Средняя",
+        "харизма": "5"
+      },
+      "inStock": true,
+      "rating": 4.5,
+      "ratingCount": 2,
+      "createdAt": "2026-03-02T10:00:00Z"
+    },
+    {
+      "id": "d38fa49a-b50b-4c28-9d7e-b61c2d3e4f09",
+      "name": "Злодей",
+      "description": "Очень тонкие усы с драматически закрученными концами.",
+      "price": 1490,
+      "images": [
+        "/mustashes/villian/0.png",
+        "/mustashes/villian/1.png",
+        "/mustashes/villian/2.png",
+        "/mustashes/villian/3.png"
+      ],
+      "characteristics": {
+        "категория": "Театральные",
+        "подкатегория": "Сценические",
+        "стиль": "Театральный",
+        "форма": "Тонкая и длинная",
+        "густота": "Низкая",
+        "закрученность": "Высокая",
+        "харизма": "5"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-02T11:00:00Z"
+    },
+    {
+      "id": "e49ab50b-1c2d-4d39-8a7b-c72d3e4f506a",
+      "name": "Фокусник",
+      "description": "Элегантные усы с плавными изгибами.",
+      "price": 1190,
+      "images": [
+        "/mustashes/focus/0.png",
+        "/mustashes/focus/1.png",
+        "/mustashes/focus/3.png",
+        "/mustashes/focus/4.png"
+      ],
+      "characteristics": {
+        "категория": "Театральные",
+        "подкатегория": "Сценические",
+        "стиль": "Театральный",
+        "форма": "Плавные изгибы",
+        "густота": "Средняя",
+        "закрученность": "Высокая",
+        "харизма": "4"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-02T12:00:00Z"
+    },
+    {
+      "id": "f50b1c2d-3e4f-4e4a-9b8c-d83e4f50617b",
+      "name": "Оперный маэстро",
+      "description": "Пышные усы с выразительной текстурой.",
+      "price": 1490,
+      "images": [
+        "/mustashes/maestro/0.png",
+        "/mustashes/maestro/1.png",
+        "/mustashes/maestro/2.png",
+        "/mustashes/maestro/3.png"
+      ],
+      "characteristics": {
+        "категория": "Театральные",
+        "подкатегория": "Сценические",
+        "стиль": "Театральный",
+        "форма": "Широкая и пышная",
+        "густота": "Высокая",
+        "закрученность": "Средняя",
+        "харизма": "4"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-02T13:00:00Z"
+    },
+    {
+      "id": "0c1d2e3f-4051-4f5a-8c9d-e94f5061728c",
+      "name": "Театральный критик",
+      "description": "Узкие усы с острыми кончиками.",
+      "price": 990,
+      "images": [
+        "/mustashes/critic/0.png",
+        "/mustashes/critic/1.png",
+        "/mustashes/critic/2.png",
+        "/mustashes/critic/3.png"
+      ],
+      "characteristics": {
+        "категория": "Театральные",
+        "подкатегория": "Сценические",
+        "стиль": "Театральный",
+        "форма": "Острая",
+        "густота": "Низкая",
+        "закрученность": "Средняя",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-02T14:00:00Z"
+    },
+    {
+      "id": "1d2e3f40-5161-4a6b-9d0e-fa61728394ad",
+      "name": "Геометрические",
+      "description": "Усы с аккуратными спиральными завитками на концах.",
+      "price": 1190,
+      "images": [
+        "/mustashes/geometry/0.png",
+        "/mustashes/geometry/1.png",
+        "/mustashes/geometry/2.png",
+        "/mustashes/geometry/3.png"
+      ],
+      "characteristics": {
+        "категория": "Экспериментальные",
+        "подкатегория": "Геометрические",
+        "стиль": "Экспериментальный",
+        "форма": "Концы спираль",
+        "густота": "Средняя",
+        "закрученность": "Высокая",
+        "харизма": "4"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-03T09:00:00Z"
+    },
+    {
+      "id": "2e3f4051-6172-4b7c-8e1f-0b8394a5b6ce",
+      "name": "Архитектор",
+      "description": "Структурированные усы с чётким силуэтом.",
+      "price": 1190,
+      "images": [
+        "/mustashes/architect/0.png",
+        "/mustashes/architect/1.png",
+        "/mustashes/architect/2.png",
+        "/mustashes/architect/3.png"
+      ],
+      "characteristics": {
+        "категория": "Экспериментальные",
+        "подкатегория": "Геометрические",
+        "стиль": "Экспериментальный",
+        "форма": "Структурированные",
+        "густота": "Средняя",
+        "закрученность": "Низкая",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-03T10:00:00Z"
+    },
+    {
+      "id": "3f405161-7283-4c8d-9f20-1ca5b6c7d8ef",
+      "name": "Полярник",
+      "description": "Очень густые усы, словно созданные для холодного климата.",
+      "price": 1190,
+      "images": [
+        "/mustashes/polar/0.png",
+        "/mustashes/polar/1.png",
+        "/mustashes/polar/2.png",
+        "/mustashes/polar/3.png"
+      ],
+      "characteristics": {
+        "категория": "Экзотические",
+        "подкатегория": "Северные",
+        "стиль": "Экзотический",
+        "форма": "Густая массивная",
+        "густота": "Высокая",
+        "закрученность": "Низкая",
+        "харизма": "4"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-03T11:00:00Z"
+    },
+    {
+      "id": "40516172-8394-4d9e-8a31-2db6c7d8ef10",
+      "name": "Пустынник",
+      "description": "Лёгкие выгоревшие усы с естественной текстурой.",
+      "price": 1090,
+      "images": [
+        "/mustashes/hermit/0.png",
+        "/mustashes/hermit/1.png",
+        "/mustashes/hermit/2.png",
+        "/mustashes/hermit/3.png"
+      ],
+      "characteristics": {
+        "категория": "Экзотические",
+        "подкатегория": "Пустынные",
+        "стиль": "Экзотический",
+        "форма": "Лёгкая и сухая",
+        "густота": "Низкая",
+        "закрученность": "Низкая",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-03T12:00:00Z"
+    },
+    {
+      "id": "51617283-94a5-4eaf-9b42-3ec7d8ef1021",
+      "name": "Мореплаватель",
+      "description": "Широкие усы, словно растрёпанные морским ветром.",
+      "price": 1590,
+      "images": [
+        "/mustashes/navigator/0.png",
+        "/mustashes/navigator/1.png",
+        "/mustashes/navigator/2.png",
+        "/mustashes/navigator/3.png"
+      ],
+      "characteristics": {
+        "категория": "Экзотические",
+        "подкатегория": "Морские",
+        "стиль": "Экзотический",
+        "форма": "Широкая растрёпанная",
+        "густота": "Высокая",
+        "закрученность": "Низкая",
+        "харизма": "4"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-03T13:00:00Z"
+    },
+    {
+      "id": "61728394-a5b6-4fb0-8c53-4fd8ef102132",
+      "name": "Пустынные",
+      "description": "Длинные свободные усы с мягким изгибом вниз.",
+      "price": 1690,
+      "images": [
+        "/mustashes/sand/0.png",
+        "/mustashes/sand/1.png",
+        "/mustashes/sand/2.png",
+        "/mustashes/sand/3.png"
+      ],
+      "characteristics": {
+        "категория": "Экзотические",
+        "подкатегория": "Морские",
+        "стиль": "Экзотический",
+        "форма": "Длинная свободная",
+        "густота": "Средняя",
+        "закрученность": "Низкая",
+        "харизма": "3"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-03T14:00:00Z"
+    },
+    {
+      "id": "728394a5-b6c7-40c1-9d64-50e9f1021323",
+      "name": "Горец",
+      "description": "Массивные густые усы с сильным характером.",
+      "price": 1490,
+      "images": [
+        "/mustashes/highlander/0.png",
+        "/mustashes/highlander/1.png",
+        "/mustashes/highlander/2.png",
+        "/mustashes/highlander/3.png"
+      ],
+      "characteristics": {
+        "категория": "Экзотические",
+        "подкатегория": "Северные",
+        "стиль": "Экзотический",
+        "форма": "Массивная",
+        "густота": "Высокая",
+        "закрученность": "Низкая",
+        "харизма": "4"
+      },
+      "inStock": true,
+      "rating": 0,
+      "ratingCount": 0,
+      "createdAt": "2026-03-04T09:00:00Z"
+    },
+    {
+      "id": "8394a5b6-c7d8-41d2-8e75-61fa02132434",
+      "name": "Урбан",
+      "description": "Очень тонкие аккуратные усы с лаконичной формой.",
+      "price": 590,
+      "images": [
+        "/mustashes/urban/0.png",
+        "/mustashes/urban/1.png",
+        "/mustashes/urban/2.png",
+        "/mustashes/urban/3.png"
+      ],
+      "characteristics": {
+        "категория": "Современные",
+        "подкатегория": "Северные",
+        "стиль": "Минимализм",
+        "форма": "Очень тонкая",
+        "густота": "Низкая",
+        "закрученность": "Низкая",
+        "харизма": "2"
+      },
+      "inStock": true,
+      "rating": 3,
+      "ratingCount": 1,
+      "createdAt": "2026-03-04T10:00:00Z"
+    }
+  ],
+  "cart": [],
+  "orders": [
+    {
+      "id": "9a0b1c2d-3e4f-4a50-8b6c-7d8e9f001122",
+      "number": "ЗАКАЗ-1709800000001",
+      "userId": "8f6b1a1e-7d1d-4b2c-9c6c-1c5f3c9c1a11",
+      "status": "delivered",
+      "items": [
+        {
+          "productId": "3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01",
+          "name": "Председатель",
+          "image": "/mustashes/chairman/0.png",
+          "price": 5590,
+          "quantity": 1
+        },
+        {
+          "productId": "b16d7283-94a5-4f16-9d27-e938fa49ab07",
+          "name": "Пионер авиации",
+          "image": "/mustashes/aviator/0.png",
+          "price": 3490,
+          "quantity": 1
+        }
+      ],
+      "totalPrice": 9080,
+      "paymentMethod": "card_online",
+      "deliveryMethod": "courier",
+      "deliveryAddress": {
+        "country": "Россия",
+        "city": "Москва",
+        "street": "Тверская",
+        "house": "7",
+        "apartment": "15",
+        "postalCode": "125009"
+      },
+      "customer": {
+        "firstName": "Иван",
+        "lastName": "Петров",
+        "email": "ivan@example.com",
+        "phone": "+79991234567"
+      },
+      "createdAt": "2026-03-05T10:10:00Z"
+    },
+    {
+      "id": "0b1c2d3e-4f50-4b61-9c7d-8e9f00112233",
+      "number": "ЗАКАЗ-1709800000002",
+      "userId": "8f6b1a1e-7d1d-4b2c-9c6c-1c5f3c9c1a11",
+      "status": "processing",
+      "items": [
+        {
+          "productId": "c27e8394-a5b6-4a17-8b3f-a49ab50b1c08",
+          "name": "Император",
+          "image": "/mustashes/emperor/0.png",
+          "price": 3490,
+          "quantity": 1
+        },
+        {
+          "productId": "a05f6172-8394-4e05-8f16-d827e938fa06",
+          "name": "Щёточка",
+          "image": "/mustashes/brush/0.png",
+          "price": 590,
+          "quantity": 2
+        }
+      ],
+      "totalPrice": 4670,
+      "paymentMethod": "card_online",
+      "deliveryMethod": "pickup_point",
+      "pickupPointId": "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a9c8001",
+      "customer": {
+        "firstName": "Иван",
+        "lastName": "Петров",
+        "email": "ivan@example.com",
+        "phone": "+79991234567"
+      },
+      "createdAt": "2026-03-08T18:30:00Z"
+    },
+    {
+      "id": "1c2d3e4f-5061-4c72-8d8e-9f0011223344",
+      "number": "ЗАКАЗ-1709800000003",
+      "userId": "1a0d9c3c-6b6f-4c6a-9e7a-5b7c2a8e4d22",
+      "status": "delivered",
+      "items": [
+        {
+          "productId": "3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01",
+          "name": "Председатель",
+          "image": "/mustashes/chairman/0.png",
+          "price": 5590,
+          "quantity": 1
+        },
+        {
+          "productId": "c27e8394-a5b6-4a17-8b3f-a49ab50b1c08",
+          "name": "Император",
+          "image": "/mustashes/emperor/0.png",
+          "price": 3490,
+          "quantity": 1
+        }
+      ],
+      "totalPrice": 9080,
+      "paymentMethod": "cash",
+      "deliveryMethod": "courier",
+      "deliveryAddress": {
+        "country": "Россия",
+        "city": "Москва",
+        "street": "Покровка",
+        "house": "12",
+        "apartment": "42",
+        "postalCode": "101000"
+      },
+      "customer": {
+        "firstName": "Анна",
+        "lastName": "Смирнова",
+        "email": "anna@example.com",
+        "phone": "+79998887766"
+      },
+      "createdAt": "2026-03-06T09:45:00Z"
+    },
+    {
+      "id": "2d3e4f50-6172-4d83-9e9f-001122334455",
+      "number": "ЗАКАЗ-1709800000004",
+      "userId": "1a0d9c3c-6b6f-4c6a-9e7a-5b7c2a8e4d22",
+      "status": "paid",
+      "items": [
+        {
+          "productId": "8394a5b6-c7d8-41d2-8e75-61fa02132434",
+          "name": "Урбан",
+          "image": "/mustashes/urban/0.png",
+          "price": 590,
+          "quantity": 1
+        },
+        {
+          "productId": "d38fa49a-b50b-4c28-9d7e-b61c2d3e4f09",
+          "name": "Злодей",
+          "image": "/mustashes/villian/0.png",
+          "price": 1490,
+          "quantity": 1
+        }
+      ],
+      "totalPrice": 2080,
+      "paymentMethod": "card_on_delivery",
+      "deliveryMethod": "pickup_point",
+      "pickupPointId": "6b7c8d9e-0f1a-4b2c-8d3e-4f5a6b0d8002",
+      "customer": {
+        "firstName": "Анна",
+        "lastName": "Смирнова",
+        "email": "anna@example.com",
+        "phone": "+79998887766"
+      },
+      "createdAt": "2026-03-09T14:20:00Z"
+    }
+  ],
+  "ratings": [
+    {
+      "id": "a3e2c1b0-9f8e-4d7c-8b6a-5c4d3e2f1a00",
+      "productId": "3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01",
+      "userId": "8f6b1a1e-7d1d-4b2c-9c6c-1c5f3c9c1a11",
+      "userName": "Иван П.",
+      "rating": 5,
+      "createdAt": "2026-03-05T12:00:00Z"
+    },
+    {
+      "id": "b4f3d2c1-a09f-4e8d-9c7b-6d5e4f3a2b11",
+      "productId": "3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01",
+      "userId": "1a0d9c3c-6b6f-4c6a-9e7a-5b7c2a8e4d22",
+      "userName": "Анна С.",
+      "rating": 4,
+      "createdAt": "2026-03-06T12:30:00Z"
+    },
+    {
+      "id": "c5a4e3d2-b10a-4f9e-8d8c-7e6f5a4b3c22",
+      "productId": "b16d7283-94a5-4f16-9d27-e938fa49ab07",
+      "userId": "8f6b1a1e-7d1d-4b2c-9c6c-1c5f3c9c1a11",
+      "userName": "Иван П.",
+      "rating": 5,
+      "createdAt": "2026-03-05T12:05:00Z"
+    },
+    {
+      "id": "d6b5f4e3-c21b-40af-9e9d-8f7a6b5c4d33",
+      "productId": "c27e8394-a5b6-4a17-8b3f-a49ab50b1c08",
+      "userId": "1a0d9c3c-6b6f-4c6a-9e7a-5b7c2a8e4d22",
+      "userName": "Анна С.",
+      "rating": 5,
+      "createdAt": "2026-03-06T12:35:00Z"
+    },
+    {
+      "id": "e7c6a5f4-d32c-41b0-8f0e-9a8b7c6d5e44",
+      "productId": "c27e8394-a5b6-4a17-8b3f-a49ab50b1c08",
+      "userId": "8f6b1a1e-7d1d-4b2c-9c6c-1c5f3c9c1a11",
+      "userName": "Иван П.",
+      "rating": 4,
+      "createdAt": "2026-03-08T19:10:00Z"
+    },
+    {
+      "id": "f8d7b6a5-e43d-42c1-9a1f-0b9c8d7e6f55",
+      "productId": "8394a5b6-c7d8-41d2-8e75-61fa02132434",
+      "userId": "1a0d9c3c-6b6f-4c6a-9e7a-5b7c2a8e4d22",
+      "userName": "Анна С.",
+      "rating": 3,
+      "createdAt": "2026-03-09T16:00:00Z"
+    }
+  ],
+  "pickupPoints": [
+    {
+      "id": "5a6b7c8d-9e0f-4a1b-8c2d-3e4f5a9c8001",
+      "name": "Пункт выдачи №1",
+      "address": "Москва, Арбат 12"
+    },
+    {
+      "id": "6b7c8d9e-0f1a-4b2c-8d3e-4f5a6b0d8002",
+      "name": "Пункт выдачи №2",
+      "address": "Москва, улица Ленина 45"
+    }
+  ]
+}
