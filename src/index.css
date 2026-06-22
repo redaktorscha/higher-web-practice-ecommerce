@@ -1,4 +1,68 @@
-/* Minimal neutral base styles for the student template. */
+@config "../tailwind.config.ts";
+@import "tailwindcss";
+@import "tw-animate-css";
+
+:root {
+  --accent-primary: #1e40af;
+  --accent-secondary: #2563eb;
+  --accent-success: #10b981;
+  --accent-danger: #ef4444;
+  --neutral-primary: #1f2937;
+  --neutral-secondary: #6b7280;
+  --neutral-disable: #9ca3af;
+  --bg-primary: #f9fafb;
+  --bg-secondary: #ffffff;
+  --bg-disable: #f3f4f6;
+  --bg-shadows: #e5e7eb;
+
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--neutral-primary);
+  --color-card: var(--bg-secondary);
+  --color-card-foreground: var(--neutral-primary);
+  --color-primary: var(--accent-primary);
+  --color-primary-hover: var(--accent-secondary);
+  --color-primary-foreground: var(--bg-secondary);
+  --color-secondary: var(--bg-secondary);
+  --color-secondary-foreground: var(--accent-primary);
+  --color-muted: var(--bg-disable);
+  --color-muted-foreground: var(--neutral-secondary);
+  --color-border: var(--bg-shadows);
+  --color-input: var(--bg-shadows);
+  --color-ring: var(--accent-secondary);
+  --color-success: var(--accent-success);
+  --color-danger: var(--accent-danger);
+
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --shadow-card: 0 4px 8px var(--bg-shadows);
+  --shadow-modal: 0 8px 16px var(--bg-shadows);
+}
+
+@theme inline {
+  --color-background: var(--color-background);
+  --color-foreground: var(--color-foreground);
+  --color-card: var(--color-card);
+  --color-card-foreground: var(--color-card-foreground);
+  --color-primary: var(--color-primary);
+  --color-primary-foreground: var(--color-primary-foreground);
+  --color-secondary: var(--color-secondary);
+  --color-secondary-foreground: var(--color-secondary-foreground);
+  --color-muted: var(--color-muted);
+  --color-muted-foreground: var(--color-muted-foreground);
+  --color-border: var(--color-border);
+  --color-input: var(--color-input);
+  --color-ring: var(--color-ring);
+  --color-success: var(--color-success);
+  --color-danger: var(--color-danger);
+  --font-sans: Inter, system-ui, sans-serif;
+  --font-heading: Roboto, Inter, system-ui, sans-serif;
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --shadow-card: var(--shadow-card);
+  --shadow-modal: var(--shadow-modal);
+}
 
 *,
 *::before,
@@ -7,25 +71,60 @@
 }
 
 html,
-body {
-  height: 100%;
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  font-size: 16px;
   line-height: 1.5;
-  color: #111827;
-  background: #ffffff;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
 }
 
 a {
   color: inherit;
+  text-decoration: none;
 }
 
-main h1 {
-  margin: 0 0 12px;
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+h1 {
+  font-size: 30px;
+  line-height: 36px;
+}
+
+h2 {
   font-size: 24px;
-  line-height: 1.2;
+  line-height: 32px;
 }
 
+h3 {
+  font-size: 20px;
+  line-height: 20px;
+}
+
+@media (max-width: 767px) {
+  h3 {
+    font-size: 16px;
+    line-height: 24px;
+  }
+}
