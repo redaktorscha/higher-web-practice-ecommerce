@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { MainLayout } from '@/components/layout';
 import { ProtectedRoute } from '@/components/routing';
-import { NotFoundPage, ProfileLayout, StubPage } from '@/pages';
+import { NotFoundPage, ProductPage, ProfileLayout, StubPage } from '@/pages';
 
 const router = createBrowserRouter([
   {
@@ -26,12 +26,12 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: 'products/:id',
+        element: <ProductPage />,
+      },
+      {
         element: <ProtectedRoute isAuthenticated />,
         children: [
-          {
-            path: 'products/:slug',
-            element: <StubPage title="Карточка товара" />,
-          },
           {
             path: 'profile',
             element: <ProfileLayout />,
