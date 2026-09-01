@@ -1,5 +1,13 @@
+export { CartPage } from './CartPage';
+export { CheckoutPage } from './CheckoutPage';
 export { HomePage } from './HomePage';
+export { LoginPage } from './LoginPage';
 export { NotFoundPage } from './NotFoundPage';
+export { OrderHistoryPage } from './OrderHistoryPage';
 export { ProductPage } from './ProductPage';
+export { ProfileEditPage } from './ProfileEditPage';
 export { ProfileLayout } from './ProfileLayout';
+export { ProfilePage } from './ProfilePage';
+export { RegisterPage } from './RegisterPage';
 export { StubPage } from './StubPage';
+export { SuccessPage } from './SuccessPage';

@@ -1,7 +1,19 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { MainLayout } from '@/components/layout';
-import { ProtectedRoute } from '@/components/routing';
-import { HomePage, NotFoundPage, ProductPage, ProfileLayout, StubPage } from '@/pages';
+import {
+  CartPage,
+  CheckoutPage,
+  HomePage,
+  LoginPage,
+  NotFoundPage,
+  OrderHistoryPage,
+  ProductPage,
+  ProfileEditPage,
+  ProfileLayout,
+  ProfilePage,
+  RegisterPage,
+  SuccessPage,
+} from '@/pages';
 
 const router = createBrowserRouter([
   {
@@ -17,56 +29,50 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        element: <ProtectedRoute isAuthenticated={false} />,
-        children: [
-          {
-            path: 'login',
-            element: <StubPage title="Авторизация" />,
-          },
-          {
-            path: 'register',
-            element: <StubPage title="Регистрация" />,
-          },
-        ],
+        path: 'catalog/filters',
+        element: <HomePage />,
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'register',
+        element: <RegisterPage />,
       },
       {
         path: 'products/:id',
         element: <ProductPage />,
       },
       {
-        element: <ProtectedRoute isAuthenticated />,
+        path: 'profile',
+        element: <ProfileLayout />,
         children: [
           {
-            path: 'profile',
-            element: <ProfileLayout />,
-            children: [
-              {
-                index: true,
-                element: <StubPage title="Личный кабинет" />,
-              },
-              {
-                path: 'edit',
-                element: <StubPage title="Редактирование профиля" />,
-              },
-              {
-                path: 'orders',
-                element: <StubPage title="История заказов" />,
-              },
-              {
-                path: 'cart',
-                element: <StubPage title="Корзина покупок" />,
-              },
-            ],
+            index: true,
+            element: <ProfilePage />,
           },
           {
-            path: 'checkout',
-            element: <StubPage title="Оформление заказа" />,
+            path: 'edit',
+            element: <ProfileEditPage />,
           },
           {
-            path: 'success',
-            element: <StubPage title="Заказ подтвержден" />,
+            path: 'orders',
+            element: <OrderHistoryPage />,
+          },
+          {
+            path: 'cart',
+            element: <CartPage />,
           },
         ],
+      },
+      {
+        path: 'checkout',
+        element: <CheckoutPage />,
+      },
+      {
+        path: 'success',
+        element: <SuccessPage />,
       },
       {
         path: '*',

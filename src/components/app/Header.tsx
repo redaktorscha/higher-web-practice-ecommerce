@@ -27,7 +27,7 @@ function Header({ isAuthenticated = true, profileName = 'Имя профиля',
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
               <HeaderAction icon="user" label={profileName} to="/profile" />
-              <HeaderAction icon="shoppingBag" label="Корзина" to="/cart" />
+              <HeaderAction icon="shoppingBag" label="Корзина" to="/profile/cart" />
             </div>
           ) : (
             <div className="flex items-center gap-3">

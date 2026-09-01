@@ -1,120 +1,174 @@
-import { useEffect } from 'react';
-import { Link, Navigate, useParams } from 'react-router-dom';
-import { Button, Icon } from '@/components/ui';
-import { useGetProductByIdQuery } from '@/store/api';
-import type { Product } from '@/types';
+import { ChevronLeft, ChevronRight, ShoppingBag, Star } from 'lucide-react';
 
-const currency = new Intl.NumberFormat('ru-RU', {
-  style: 'currency',
-  currency: 'RUB',
-  maximumFractionDigits: 0,
-});
+const product = {
+  name: 'Председатель',
+  price: '5 590 ₽',
+  rating: '5.0',
+  ratingCount: '125 оценок',
+  description:
+    'Густые прямые усы с характерным направлением вниз. Подходят для уверенных решений и серьёзных заявлений.',
+  images: [
+    '/mustashes/chairman/0.png',
+    '/mustashes/chairman/1.png',
+    '/mustashes/chairman/2.png',
+    '/mustashes/chairman/3.png',
+  ],
+};
 
-function formatPrice(price: number) {
-  return currency.format(price).replace(/\u00a0/g, ' ');
-}
-
-function getProductTitle(product: Product) {
-  return `Купить усы ${product.name} за ${formatPrice(product.price)} в магазине Quant`;
-}
+const characteristics = [
+  ['Категория', 'Классические'],
+  ['Подкатегория', 'Деловые'],
+  ['Стиль', 'Военный'],
+  ['Форма', 'Короткий прямоугольник'],
+  ['Густота', 'Средняя'],
+  ['Закрученность', 'Низкая'],
+  ['Харизма', '5'],
+];
 
 export function ProductPage() {
-  const { id } = useParams();
-  const {
-    data: product,
-    isError,
-    isLoading,
-  } = useGetProductByIdQuery(id ?? '', {
-    skip: !id,
-  });
-
-  useEffect(() => {
-    if (!product) {
-      return;
-    }
-
-    document.title = getProductTitle(product);
-  }, [product]);
-
-  if (!id || isError) {
-    return <Navigate replace to="/404" />;
-  }
-
-  if (isLoading || !product) {
-    return <p className="text-sm text-muted-foreground">Загрузка товара...</p>;
-  }
-
-  const mainImage = product.images[0];
-
   return (
-    <section className="grid gap-6">
-      <Button asChild variant="text" className="w-fit">
-        <Link to="/">Назад к каталогу</Link>
-      </Button>
+    <section className="pb-[92px] md:mx-auto md:w-[984px] md:pb-0 md:pt-0">
+      <nav className="mb-5 hidden text-base leading-6 text-muted-foreground md:block">
+        Товарная группа / Категория / Подкатегория
+      </nav>
 
-      <article className="grid gap-8 md:grid-cols-[minmax(320px,520px)_1fr]">
-        <div className="grid gap-4">
-          <div className="overflow-hidden rounded-lg bg-card shadow-card">
-            <img
-              src={mainImage}
-              alt={product.name}
-              className="aspect-square w-full object-cover"
-            />
-          </div>
+      <article className="grid gap-6 rounded-none bg-transparent md:grid-cols-[456px_456px] md:gap-5 md:rounded-xl md:bg-card md:p-6 md:shadow-card">
+        <ProductGallery />
 
-          {product.images.length > 1 ? (
-            <div className="grid grid-cols-4 gap-3">
-              {product.images.slice(0, 4).map((image) => (
-                <img
-                  key={image}
-                  src={image}
-                  alt=""
-                  className="aspect-square rounded-md bg-card object-cover shadow-card"
-                />
-              ))}
+        <div className="grid content-start gap-6 md:gap-4">
+          <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2">
+            <h1 className="text-[30px] leading-9 md:text-[30px] md:leading-9">{product.name}</h1>
+            <div className="row-span-2 grid justify-items-end md:row-span-1">
+              <div className="flex items-center gap-2">
+                <Star className="size-8 fill-primary-hover text-primary-hover" />
+                <span className="font-heading text-[30px] leading-9 font-bold">{product.rating}</span>
+              </div>
+              <span className="text-sm leading-5 text-muted-foreground">{product.ratingCount}</span>
             </div>
-          ) : null}
-        </div>
-
-        <div className="grid content-start gap-6">
-          <div className="grid gap-3">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Icon name="star" size={16} className="fill-success text-success" />
-              <span>{product.rating.toFixed(1)}</span>
-              <span>({product.ratingCount})</span>
-            </div>
-            <h1>{product.name}</h1>
-            <p className="max-w-2xl text-muted-foreground">{product.description}</p>
+            <p className="text-[30px] leading-9 font-bold text-success md:text-[30px] md:leading-9">{product.price}</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-4">
-            <span className="text-3xl font-bold leading-9">{formatPrice(product.price)}</span>
-            <span className={product.inStock ? 'text-success' : 'text-muted-foreground'}>
-              {product.inStock ? 'В наличии' : 'Нет в наличии'}
-            </span>
+          <div className="hidden items-end justify-between md:flex">
+            <button className="grid h-10 w-[180px] place-items-center rounded-md bg-primary text-white" type="button" aria-label="Добавить в корзину">
+              <ShoppingBag className="size-6" />
+            </button>
+            <span className="text-base leading-6 text-muted-foreground">Есть в наличии</span>
           </div>
 
-          <Button className="w-full md:w-fit" disabled={!product.inStock}>
-            <Icon name="shoppingBag" />
-            Добавить в корзину
-          </Button>
+          <section className="grid gap-1">
+            <h2 className="text-base leading-6">Описание</h2>
+            <p className="text-sm leading-5 text-muted-foreground">{product.description}</p>
+          </section>
 
-          <section className="grid gap-3">
-            <h2>Характеристики</h2>
-            <dl className="grid gap-2">
-              {Object.entries(product.characteristics).map(([name, value]) => (
-                <div
-                  key={name}
-                  className="grid gap-1 border-b border-border py-2 text-sm sm:grid-cols-[200px_1fr]"
-                >
-                  <dt className="text-muted-foreground">{name}</dt>
-                  <dd>{value}</dd>
+          <section className="grid gap-2">
+            <h2 className="text-base leading-6">О товаре</h2>
+            <dl>
+              {characteristics.map(([name, value]) => (
+                <div className="grid grid-cols-[1fr_auto] border-b border-border py-2" key={name}>
+                  <dt className="text-xs leading-4 text-muted-foreground">{name}</dt>
+                  <dd className="text-right text-base leading-6">{value}</dd>
                 </div>
               ))}
             </dl>
           </section>
         </div>
       </article>
+
+      <ProductRating />
+
+      <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">
+        <button className="grid h-9 w-full place-items-center rounded-md bg-primary text-white" type="button" aria-label="Добавить в корзину">
+          <ShoppingBag className="size-4" />
+        </button>
+      </div>
     </section>
+  );
+}
+
+function ProductGallery() {
+  return (
+    <div className="relative">
+      <button className="absolute top-[205px] left-[-8px] z-10 text-primary-hover md:hidden" type="button" aria-label="Предыдущее фото">
+        <ChevronLeft className="size-10" />
+      </button>
+      <button className="absolute top-[205px] right-[-8px] z-10 text-primary-hover md:hidden" type="button" aria-label="Следующее фото">
+        <ChevronRight className="size-10" />
+      </button>
+
+      <div className="mx-auto h-[453px] w-[335px] overflow-hidden rounded-md bg-card md:h-[460px] md:w-[456px]">
+        <img alt="" className="h-full w-full object-contain" src={product.images[0]} />
+      </div>
+
+      <div className="mt-3 hidden h-[106px] grid-cols-[14px_repeat(4,97px)_14px] items-center gap-2 md:grid">
+        <ChevronLeft className="size-4 text-muted-foreground" />
+        {product.images.map((image) => (
+          <img alt="" className="h-24 w-[97px] object-contain" key={image} src={image} />
+        ))}
+        <ChevronRight className="size-4 text-muted-foreground" />
+      </div>
+    </div>
+  );
+}
+
+function ProductRating() {
+  return (
+    <section className="mt-8 rounded-xl bg-card p-6 shadow-card md:mt-5">
+      <div className="grid gap-4 md:gap-4">
+        <div className="grid gap-4 md:gap-3">
+          <p className="hidden text-base leading-6 md:block">Оцените усы</p>
+          <div className="flex justify-between md:w-[194px] md:justify-start md:gap-2">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Star className="size-10 text-primary-hover md:size-8" key={index} />
+            ))}
+          </div>
+          <button className="h-10 rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:hidden" type="button">
+            Оценить
+          </button>
+        </div>
+
+        <div className="border-t border-[#9ca3af] md:border-border" />
+
+        <div className="grid gap-0">
+          <RatingRow name="Виктор П." date="20 января 2021" filled={5} />
+          <RatingRow name="Дмитрий С." date="20 января 2021" filled={4} />
+          <RatingRow name="Андрей Л." date="20 января 2021" filled={4} last />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function RatingRow({
+  name,
+  date,
+  filled,
+  last,
+}: {
+  name: string;
+  date: string;
+  filled: number;
+  last?: boolean;
+}) {
+  return (
+    <div className={last ? 'py-5' : 'border-b border-[#9ca3af] py-5 md:border-border'}>
+      <div className="grid gap-2 md:grid-cols-[1fr_auto] md:items-center">
+        <div className="flex items-center gap-2">
+          <span className="text-sm leading-5 font-bold">5.0</span>
+          <div className="flex gap-1">
+            {Array.from({ length: 5 }).map((_, index) => (
+              <Star
+                className={index < filled ? 'size-6 fill-primary text-primary' : 'size-6 text-primary'}
+                key={index}
+              />
+            ))}
+          </div>
+        </div>
+        <span className="hidden text-sm leading-5 text-muted-foreground md:block">{date}</span>
+        <div className="flex items-center justify-between md:contents">
+          <span className="text-base leading-6">{name}</span>
+          <span className="text-sm leading-5 text-muted-foreground md:hidden">{date}</span>
+        </div>
+      </div>
+    </div>
   );
 }
