@@ -47,7 +47,12 @@
       "inStock": true,
       "rating": 4.5,
       "ratingCount": 2,
-      "createdAt": "2026-03-01T09:00:00Z"
+      "createdAt": "2026-03-01T09:00:00Z",
+      "category": "Классические",
+      "style": "Военный",
+      "density": "Средняя",
+      "requiresWax": false,
+      "boostsCharisma": true
     },
     {
       "id": "6a1c2d3e-4f50-4a61-8b72-9c83ad94be02",
@@ -73,7 +78,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-01T10:00:00Z"
+      "createdAt": "2026-03-01T10:00:00Z",
+      "category": "Классические",
+      "style": "Классический",
+      "density": "Средняя",
+      "requiresWax": false,
+      "boostsCharisma": true
     },
     {
       "id": "7b2d3e4f-5061-4b72-9c83-ad94be05cf03",
@@ -98,7 +108,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-01T11:00:00Z"
+      "createdAt": "2026-03-01T11:00:00Z",
+      "category": "Классические",
+      "style": "Винтаж",
+      "density": "Низкая",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "8c3e4f50-6172-4c83-ad94-be05cf16d804",
@@ -124,7 +139,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-01T12:00:00Z"
+      "createdAt": "2026-03-01T12:00:00Z",
+      "category": "Классические",
+      "style": "Минимализм",
+      "density": "Средняя",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "9d4f5061-7283-4d94-be05-cf16d827e905",
@@ -149,7 +169,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-01T13:00:00Z"
+      "createdAt": "2026-03-01T13:00:00Z",
+      "category": "Классические",
+      "style": "Минимализм",
+      "density": "Низкая",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "a05f6172-8394-4e05-8f16-d827e938fa06",
@@ -174,7 +199,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-01T14:00:00Z"
+      "createdAt": "2026-03-01T14:00:00Z",
+      "category": "Классические",
+      "style": "Военный",
+      "density": "Средняя",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "b16d7283-94a5-4f16-9d27-e938fa49ab07",
@@ -199,7 +229,12 @@
       "inStock": true,
       "rating": 5,
       "ratingCount": 1,
-      "createdAt": "2026-03-02T09:00:00Z"
+      "createdAt": "2026-03-02T09:00:00Z",
+      "category": "Исторические",
+      "style": "Винтаж",
+      "density": "Низкая",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "c27e8394-a5b6-4a17-8b3f-a49ab50b1c08",
@@ -224,7 +259,12 @@
       "inStock": true,
       "rating": 4.5,
       "ratingCount": 2,
-      "createdAt": "2026-03-02T10:00:00Z"
+      "createdAt": "2026-03-02T10:00:00Z",
+      "category": "Исторические",
+      "style": "Винтаж",
+      "density": "Высокая",
+      "requiresWax": true,
+      "boostsCharisma": true
     },
     {
       "id": "d38fa49a-b50b-4c28-9d7e-b61c2d3e4f09",
@@ -249,7 +289,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-02T11:00:00Z"
+      "createdAt": "2026-03-02T11:00:00Z",
+      "category": "Театральные",
+      "style": "Театральный",
+      "density": "Низкая",
+      "requiresWax": true,
+      "boostsCharisma": true
     },
     {
       "id": "e49ab50b-1c2d-4d39-8a7b-c72d3e4f506a",
@@ -274,7 +319,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-02T12:00:00Z"
+      "createdAt": "2026-03-02T12:00:00Z",
+      "category": "Театральные",
+      "style": "Театральный",
+      "density": "Средняя",
+      "requiresWax": true,
+      "boostsCharisma": true
     },
     {
       "id": "f50b1c2d-3e4f-4e4a-9b8c-d83e4f50617b",
@@ -299,7 +349,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-02T13:00:00Z"
+      "createdAt": "2026-03-02T13:00:00Z",
+      "category": "Театральные",
+      "style": "Театральный",
+      "density": "Высокая",
+      "requiresWax": true,
+      "boostsCharisma": true
     },
     {
       "id": "0c1d2e3f-4051-4f5a-8c9d-e94f5061728c",
@@ -324,7 +379,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-02T14:00:00Z"
+      "createdAt": "2026-03-02T14:00:00Z",
+      "category": "Театральные",
+      "style": "Театральный",
+      "density": "Низкая",
+      "requiresWax": true,
+      "boostsCharisma": false
     },
     {
       "id": "1d2e3f40-5161-4a6b-9d0e-fa61728394ad",
@@ -349,7 +409,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-03T09:00:00Z"
+      "createdAt": "2026-03-03T09:00:00Z",
+      "category": "Экспериментальные",
+      "style": "Экспериментальный",
+      "density": "Средняя",
+      "requiresWax": true,
+      "boostsCharisma": true
     },
     {
       "id": "2e3f4051-6172-4b7c-8e1f-0b8394a5b6ce",
@@ -374,7 +439,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-03T10:00:00Z"
+      "createdAt": "2026-03-03T10:00:00Z",
+      "category": "Экспериментальные",
+      "style": "Экспериментальный",
+      "density": "Средняя",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "3f405161-7283-4c8d-9f20-1ca5b6c7d8ef",
@@ -399,7 +469,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-03T11:00:00Z"
+      "createdAt": "2026-03-03T11:00:00Z",
+      "category": "Экзотические",
+      "style": "Экзотический",
+      "density": "Высокая",
+      "requiresWax": false,
+      "boostsCharisma": true
     },
     {
       "id": "40516172-8394-4d9e-8a31-2db6c7d8ef10",
@@ -424,7 +499,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-03T12:00:00Z"
+      "createdAt": "2026-03-03T12:00:00Z",
+      "category": "Экзотические",
+      "style": "Экзотический",
+      "density": "Низкая",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "51617283-94a5-4eaf-9b42-3ec7d8ef1021",
@@ -449,7 +529,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-03T13:00:00Z"
+      "createdAt": "2026-03-03T13:00:00Z",
+      "category": "Экзотические",
+      "style": "Экзотический",
+      "density": "Высокая",
+      "requiresWax": false,
+      "boostsCharisma": true
     },
     {
       "id": "61728394-a5b6-4fb0-8c53-4fd8ef102132",
@@ -474,7 +559,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-03T14:00:00Z"
+      "createdAt": "2026-03-03T14:00:00Z",
+      "category": "Экзотические",
+      "style": "Экзотический",
+      "density": "Средняя",
+      "requiresWax": false,
+      "boostsCharisma": false
     },
     {
       "id": "728394a5-b6c7-40c1-9d64-50e9f1021323",
@@ -499,7 +589,12 @@
       "inStock": true,
       "rating": 0,
       "ratingCount": 0,
-      "createdAt": "2026-03-04T09:00:00Z"
+      "createdAt": "2026-03-04T09:00:00Z",
+      "category": "Экзотические",
+      "style": "Экзотический",
+      "density": "Высокая",
+      "requiresWax": false,
+      "boostsCharisma": true
     },
     {
       "id": "8394a5b6-c7d8-41d2-8e75-61fa02132434",
@@ -524,7 +619,12 @@
       "inStock": true,
       "rating": 3,
       "ratingCount": 1,
-      "createdAt": "2026-03-04T10:00:00Z"
+      "createdAt": "2026-03-04T10:00:00Z",
+      "category": "Современные",
+      "style": "Минимализм",
+      "density": "Низкая",
+      "requiresWax": false,
+      "boostsCharisma": false
     }
   ],
   "cart": [],

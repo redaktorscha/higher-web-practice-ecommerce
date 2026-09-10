@@ -5,6 +5,11 @@ export type Product = {
   price: number;
   images: string[];
   characteristics: Record<string, string>;
+  category: string;
+  style: string;
+  density: string;
+  requiresWax: boolean;
+  boostsCharisma: boolean;
   inStock: boolean;
   rating: number; // 1–5
   ratingCount: number;

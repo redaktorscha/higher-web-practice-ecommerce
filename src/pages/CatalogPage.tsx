@@ -1,13 +1,43 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button, Icon } from '@/components/ui';
 import { cn } from '@/lib/utils';
 import { useGetProductsQuery } from '@/store/api';
+import type { FilterState } from '@/store/api';
 import type { Product } from '@/types';
 
 const LIMIT = 12;
+const FILTER_DEBOUNCE_MS = 350;
+const categories = ['Классические', 'Исторические', 'Театральные', 'Экспериментальные', 'Экзотические', 'Современные'];
+const styles = ['Классический', 'Винтаж', 'Театральный', 'Экспериментальный', 'Военный', 'Минимализм', 'Экзотический'];
+const densities = ['Низкая', 'Средняя', 'Высокая'];
+const initialFilters: FilterState = {
+  page: 1,
+  limit: LIMIT,
+  category: null,
+  styles: [],
+  density: null,
+  requiresWax: null,
+  boostsCharisma: null,
+  minPrice: '',
+  maxPrice: '',
+  sortBy: null,
+  order: null,
+};
+const sortOptions = [
+  { value: 'popular', label: 'Сортировка', sortBy: null, order: null },
+  { value: 'price_asc', label: 'Сначала дешевле', sortBy: 'price', order: 'asc' },
+  { value: 'price_desc', label: 'Сначала дороже', sortBy: 'price', order: 'desc' },
+  { value: 'newest', label: 'Новинки', sortBy: 'createdAt', order: 'desc' },
+  { value: 'rating', label: 'По рейтингу', sortBy: 'rating', order: 'desc' },
+] satisfies Array<{
+  value: string;
+  label: string;
+  sortBy: string | null;
+  order: 'asc' | 'desc' | null;
+}>;
 
 const currency = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -34,29 +64,104 @@ function getPaginationItems(currentPage: number, totalPages: number): PageItem[]
 }
 
 export function CatalogPage() {
-  const [page, setPage] = useState(1);
+  const [filters, setFilters] = useState<FilterState>(initialFilters);
+  const [queryFilters, setQueryFilters] = useState<FilterState>(initialFilters);
   const [targetPage, setTargetPage] = useState('1');
-  const { data, isLoading, isFetching, isError, refetch } = useGetProductsQuery({
-    page,
-    limit: LIMIT,
-  });
+  const filterDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { data, isLoading, isFetching, isError, refetch } = useGetProductsQuery(queryFilters);
 
   const products = data?.items ?? [];
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / LIMIT);
+  const page = queryFilters.page;
+  const selectedSort = sortOptions.find((option) => option.sortBy === filters.sortBy && option.order === filters.order)?.value ?? 'popular';
   const paginationItems = useMemo(
     () => getPaginationItems(page, totalPages),
     [page, totalPages],
   );
+
+  const scheduleQueryFiltersUpdate = useCallback((nextFilters: FilterState) => {
+    if (filterDebounceRef.current) {
+      clearTimeout(filterDebounceRef.current);
+    }
+
+    filterDebounceRef.current = setTimeout(() => {
+      setQueryFilters(nextFilters);
+      filterDebounceRef.current = null;
+    }, FILTER_DEBOUNCE_MS);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (filterDebounceRef.current) {
+        clearTimeout(filterDebounceRef.current);
+      }
+    };
+  }, []);
 
   const changePage = (nextPage: number) => {
     if (isFetching || nextPage === page || nextPage < 1 || nextPage > totalPages) {
       return;
     }
 
-    setPage(nextPage);
+    if (filterDebounceRef.current) {
+      clearTimeout(filterDebounceRef.current);
+      filterDebounceRef.current = null;
+    }
+
+    const nextFilters = { ...filters, page: nextPage };
+
+    setFilters(nextFilters);
+    setQueryFilters(nextFilters);
     setTargetPage(String(nextPage));
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const updateFilters = (nextFilters: Partial<FilterState>) => {
+    const updatedFilters = {
+      ...filters,
+      ...nextFilters,
+      page: 1,
+    };
+
+    setFilters(updatedFilters);
+    setTargetPage('1');
+    scheduleQueryFiltersUpdate(updatedFilters);
+  };
+
+  const toggleCategory = (category: string) => {
+    updateFilters({
+      category: filters.category === category ? null : category,
+    });
+  };
+
+  const toggleStyle = (style: string) => {
+    updateFilters({
+      styles: filters.styles.includes(style)
+        ? filters.styles.filter((item) => item !== style)
+        : [...filters.styles, style],
+    });
+  };
+
+  const toggleBooleanFilter = (name: 'requiresWax' | 'boostsCharisma') => {
+    updateFilters({
+      [name]: filters[name] === true ? null : true,
+    });
+  };
+
+  const changeSort = (value: string) => {
+    const sortOption = sortOptions.find((option) => option.value === value) ?? sortOptions[0];
+
+    updateFilters({
+      sortBy: sortOption.sortBy,
+      order: sortOption.order,
+    });
+  };
+
+  const clearFilters = () => {
+    setFilters(initialFilters);
+    scheduleQueryFiltersUpdate(initialFilters);
+    setTargetPage('1');
   };
 
   const submitTargetPage = (event: FormEvent<HTMLFormElement>) => {
@@ -77,11 +182,20 @@ export function CatalogPage() {
       <div className="hidden gap-5 md:grid">
         <div className="flex items-center justify-between">
           <h1 className="text-[32px] leading-10 font-bold">УСЫ</h1>
-          <CatalogControls />
+          <CatalogControls onSortChange={changeSort} selectedSort={selectedSort} />
         </div>
 
         <div className="grid grid-cols-[280px_minmax(0,1fr)] gap-5">
-          <DesktopFilters />
+          <DesktopFilters
+            filters={filters}
+            onCategoryToggle={toggleCategory}
+            onClear={clearFilters}
+            onDensityChange={(density) => updateFilters({ density })}
+            onMaxPriceChange={(maxPrice) => updateFilters({ maxPrice })}
+            onMinPriceChange={(minPrice) => updateFilters({ minPrice })}
+            onStyleToggle={toggleStyle}
+            onToggleBoolean={toggleBooleanFilter}
+          />
 
           <section className="grid content-start gap-2">
             {isError ? (
@@ -118,13 +232,19 @@ export function CatalogPage() {
           <ErrorPanel onRetry={() => refetch()} />
         ) : (
           <>
-            <div className={cn('grid grid-cols-2 gap-x-1 gap-y-2', isFetching && !isLoading && 'opacity-60')}>
-              {isLoading
-                ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
-                : products.map((product) => (
-                    <CatalogProductCard key={product.id} product={product} compact imageClassName="h-[172px]" />
-                  ))}
-            </div>
+            {isLoading || products.length > 0 ? (
+              <div className={cn('grid grid-cols-2 gap-x-1 gap-y-2', isFetching && !isLoading && 'opacity-60')}>
+                {isLoading
+                  ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
+                  : products.map((product) => (
+                      <CatalogProductCard key={product.id} product={product} compact imageClassName="h-[172px]" />
+                    ))}
+              </div>
+            ) : (
+              <div className="grid min-h-[240px] place-items-center rounded-lg bg-card p-5 text-center text-muted-foreground shadow-card">
+                По выбранным фильтрам ничего не найдено
+              </div>
+            )}
 
             {totalPages > 1 ? (
               <CatalogPagination
@@ -146,47 +266,114 @@ export function CatalogPage() {
   );
 }
 
-function CatalogControls() {
+function CatalogControls({ onSortChange, selectedSort }: { onSortChange: (value: string) => void; selectedSort: string }) {
   return (
     <div className="flex gap-2">
-      {['Сортировка', 'Отображение'].map((label) => (
-        <button key={label} className="flex h-8 min-w-[140px] items-center justify-between rounded border border-muted-foreground bg-background px-3 text-base leading-6">
-          {label}
-          <span className="text-2xl leading-none text-muted-foreground">⌄</span>
-        </button>
-      ))}
+      <select
+        className="h-8 min-w-[140px] rounded border border-muted-foreground bg-background px-3 text-base leading-6"
+        onChange={(event) => onSortChange(event.target.value)}
+        value={selectedSort}
+      >
+        {sortOptions.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <button className="flex h-8 min-w-[140px] items-center justify-between rounded border border-muted-foreground bg-background px-3 text-base leading-6" type="button">
+        Отображение
+        <span className="text-2xl leading-none text-muted-foreground">⌄</span>
+      </button>
     </div>
   );
 }
 
-function DesktopFilters() {
+function DesktopFilters({
+  filters,
+  onCategoryToggle,
+  onClear,
+  onDensityChange,
+  onMaxPriceChange,
+  onMinPriceChange,
+  onStyleToggle,
+  onToggleBoolean,
+}: {
+  filters: FilterState;
+  onCategoryToggle: (category: string) => void;
+  onClear: () => void;
+  onDensityChange: (density: string | null) => void;
+  onMaxPriceChange: (price: string) => void;
+  onMinPriceChange: (price: string) => void;
+  onStyleToggle: (style: string) => void;
+  onToggleBoolean: (name: 'requiresWax' | 'boostsCharisma') => void;
+}) {
   return (
     <aside className="grid content-start gap-6 rounded-lg bg-card px-6 py-7 shadow-card">
       <section className="grid gap-1 text-base leading-6">
         <h2 className="mb-1 text-sm leading-5 font-bold">Категория</h2>
-        {['Классические', 'Исторические', 'Театральные', 'Экспериментальные', 'Экзотические', 'Современные'].map((item) => (
-          <button key={item} className="h-7 text-left text-sm leading-5">
+        {categories.map((item) => (
+          <button
+            key={item}
+            className={cn(
+              'h-7 rounded px-2 text-left text-sm leading-5 transition-colors hover:bg-muted hover:text-primary',
+              filters.category === item && 'bg-muted font-bold text-primary',
+            )}
+            onClick={() => onCategoryToggle(item)}
+            type="button"
+          >
             {item}
           </button>
         ))}
       </section>
 
-      <DesktopCheckboxGroup title="Стиль" items={['Деловой', 'Винтаж', 'Театральный', 'Экспериментальный', 'Военный']} />
-      <DesktopRadioGroup title="Густота" items={['Низкая', 'Средняя', 'Высокая']} />
+      <DesktopCheckboxGroup
+        checked={filters.styles}
+        items={styles}
+        onToggle={onStyleToggle}
+        title="Стиль"
+      />
+      <DesktopRadioGroup
+        checked={filters.density}
+        items={densities}
+        onChange={onDensityChange}
+        title="Густота"
+      />
 
       <section className="grid gap-3">
         <h2 className="text-sm leading-5 font-bold">Фильтр</h2>
-        <SwitchRow label="требует укладки воском" />
-        <SwitchRow label="повышает харизму" />
+        <SwitchRow
+          checked={filters.requiresWax === true}
+          label="требует укладки воском"
+          onToggle={() => onToggleBoolean('requiresWax')}
+        />
+        <SwitchRow
+          checked={filters.boostsCharisma === true}
+          label="повышает харизму"
+          onToggle={() => onToggleBoolean('boostsCharisma')}
+        />
       </section>
 
       <section className="grid gap-3">
         <h2 className="text-sm leading-5 font-bold">Цена</h2>
         <div className="grid grid-cols-2 gap-2">
-          <input className="h-10 rounded border border-muted-foreground bg-background px-3" defaultValue="10" />
-          <input className="h-10 rounded border border-muted-foreground bg-background px-3" defaultValue="1000" />
+          <input
+            aria-label="Минимальная цена"
+            className="h-10 rounded border border-muted-foreground bg-background px-3"
+            inputMode="numeric"
+            onChange={(event) => onMinPriceChange(event.target.value)}
+            placeholder="10"
+            value={filters.minPrice}
+          />
+          <input
+            aria-label="Максимальная цена"
+            className="h-10 rounded border border-muted-foreground bg-background px-3"
+            inputMode="numeric"
+            onChange={(event) => onMaxPriceChange(event.target.value)}
+            placeholder="1000"
+            value={filters.maxPrice}
+          />
         </div>
-        <Button variant="secondary" className="h-10 w-full">
+        <Button onClick={onClear} type="button" variant="secondary" className="h-10 w-full">
           Очистить фильтры
         </Button>
       </section>
@@ -197,13 +384,19 @@ function DesktopFilters() {
 function ProductPanel({ isLoading, isFetching, products }: { isLoading: boolean; isFetching: boolean; products: Product[] }) {
   return (
     <div className={cn('rounded-lg bg-card p-6 shadow-card', isFetching && !isLoading && 'opacity-60')}>
-      <div className="grid gap-x-4 gap-y-10 md:grid-cols-4">
-        {isLoading
-          ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
-          : products.map((product) => (
-              <CatalogProductCard key={product.id} product={product} imageClassName="h-[160px]" />
-            ))}
-      </div>
+      {isLoading || products.length > 0 ? (
+        <div className="grid gap-x-4 gap-y-10 md:grid-cols-4">
+          {isLoading
+            ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
+            : products.map((product) => (
+                <CatalogProductCard key={product.id} product={product} imageClassName="h-[160px]" />
+              ))}
+        </div>
+      ) : (
+        <div className="grid min-h-[280px] place-items-center text-center text-muted-foreground">
+          По выбранным фильтрам ничего не найдено
+        </div>
+      )}
     </div>
   );
 }
@@ -331,14 +524,29 @@ function CatalogProductSkeleton() {
   );
 }
 
-function DesktopCheckboxGroup({ title, items }: { title: string; items: string[] }) {
+function DesktopCheckboxGroup({
+  checked,
+  items,
+  onToggle,
+  title,
+}: {
+  checked: string[];
+  items: string[];
+  onToggle: (item: string) => void;
+  title: string;
+}) {
   return (
     <section className="grid gap-3">
       <h2 className="text-sm leading-5 font-bold">{title}</h2>
       <div className="grid gap-3">
         {items.map((item) => (
           <label key={item} className="flex items-center gap-2 text-sm leading-5">
-            <span className="size-4 rounded-sm border border-muted-foreground bg-background" />
+            <input
+              checked={checked.includes(item)}
+              className="size-4 shrink-0 appearance-none rounded-sm border border-muted-foreground bg-background checked:border-primary checked:bg-primary"
+              onChange={() => onToggle(item)}
+              type="checkbox"
+            />
             {item}
           </label>
         ))}
@@ -347,14 +555,30 @@ function DesktopCheckboxGroup({ title, items }: { title: string; items: string[]
   );
 }
 
-function DesktopRadioGroup({ title, items }: { title: string; items: string[] }) {
+function DesktopRadioGroup({
+  checked,
+  items,
+  onChange,
+  title,
+}: {
+  checked: string | null;
+  items: string[];
+  onChange: (item: string | null) => void;
+  title: string;
+}) {
   return (
     <section className="grid gap-3">
       <h2 className="text-sm leading-5 font-bold">{title}</h2>
       <div className="grid gap-3">
         {items.map((item) => (
           <label key={item} className="flex items-center gap-2 text-sm leading-5">
-            <span className="size-4 rounded-full border border-muted-foreground bg-background" />
+            <input
+              checked={checked === item}
+              className="size-4 shrink-0 appearance-none rounded-full border border-muted-foreground bg-background checked:border-[5px] checked:border-primary"
+              name="density"
+              onChange={() => onChange(item)}
+              type="radio"
+            />
             {item}
           </label>
         ))}
@@ -363,13 +587,18 @@ function DesktopRadioGroup({ title, items }: { title: string; items: string[] })
   );
 }
 
-function SwitchRow({ label }: { label: ReactNode }) {
+function SwitchRow({ checked, label, onToggle }: { checked: boolean; label: ReactNode; onToggle: () => void }) {
   return (
-    <label className="flex items-center gap-2 text-sm leading-5">
-      <span className="h-5 w-10 rounded-full bg-muted-foreground/60 p-0.5">
-        <span className="block size-4 rounded-full bg-card" />
+    <button
+      className="flex items-center gap-2 text-left text-xs leading-4"
+      onClick={onToggle}
+      type="button"
+      aria-pressed={checked}
+    >
+      <span className={cn('h-5 w-10 rounded-full p-0.5 transition-colors', checked ? 'bg-primary' : 'bg-muted-foreground/60')}>
+        <span className={cn('block size-4 rounded-full bg-card transition-transform', checked && 'translate-x-5')} />
       </span>
       {label}
-    </label>
+    </button>
   );
 }

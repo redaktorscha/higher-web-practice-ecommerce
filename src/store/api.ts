@@ -26,10 +26,21 @@ type LoginResponse = {
   user: User;
 };
 
-export type GetProductsParams = {
+export interface FilterState {
   page: number;
   limit: number;
-};
+  category: string | null;
+  styles: string[];
+  density: string | null;
+  requiresWax: boolean | null;
+  boostsCharisma: boolean | null;
+  minPrice: number | string;
+  maxPrice: number | string;
+  sortBy: string | null;
+  order: 'asc' | 'desc' | null;
+}
+
+export type GetProductsParams = FilterState;
 
 type CreateOrderRequest = CreateOrderPayload & {
   userId: string;
@@ -109,6 +120,61 @@ function normalizeCart(records: CartRecord[]): Cart {
     totalPrice: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
   };
+}
+
+function normalizePriceFilter(value: number | string) {
+  if (value === '') {
+    return null;
+  }
+
+  const numberValue = Number(value);
+
+  return Number.isFinite(numberValue) ? numberValue : null;
+}
+
+function buildProductsQuery(params: GetProductsParams) {
+  const searchParams = new URLSearchParams({
+    _page: String(params.page),
+    _limit: String(params.limit),
+  });
+
+  if (params.category) {
+    searchParams.set('category', params.category);
+  }
+
+  params.styles.forEach((style) => {
+    searchParams.append('style', style);
+  });
+
+  if (params.density) {
+    searchParams.set('density', params.density);
+  }
+
+  if (params.requiresWax !== null) {
+    searchParams.set('requiresWax', String(params.requiresWax));
+  }
+
+  if (params.boostsCharisma !== null) {
+    searchParams.set('boostsCharisma', String(params.boostsCharisma));
+  }
+
+  const minPrice = normalizePriceFilter(params.minPrice);
+  const maxPrice = normalizePriceFilter(params.maxPrice);
+
+  if (minPrice !== null) {
+    searchParams.set('price_gte', String(minPrice));
+  }
+
+  if (maxPrice !== null) {
+    searchParams.set('price_lte', String(maxPrice));
+  }
+
+  if (params.sortBy && params.order) {
+    searchParams.set('_sort', params.sortBy);
+    searchParams.set('_order', params.order);
+  }
+
+  return searchParams.toString();
 }
 
 export const api = createApi({
@@ -241,7 +307,7 @@ export const api = createApi({
     }),
 
     getProducts: builder.query<PaginatedProductsResponse, GetProductsParams>({
-      query: ({ page, limit }) => `/products?_page=${page}&_limit=${limit}`,
+      query: (params) => `/products?${buildProductsQuery(params)}`,
       transformResponse: (response: Product[], meta) => {
         const totalCountHeader = meta?.response?.headers.get('x-total-count');
 
