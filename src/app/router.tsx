@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { MainLayout } from '@/components/layout';
 import {
   CartPage,
+  CatalogPage,
   CheckoutPage,
   HomePage,
   LoginPage,
@@ -26,7 +27,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'catalog',
-        element: <HomePage />,
+        element: <CatalogPage />,
       },
       {
         path: 'catalog/filters',

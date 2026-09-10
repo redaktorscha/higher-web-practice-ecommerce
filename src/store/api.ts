@@ -8,11 +8,10 @@ import type {
   Order,
   OrderCustomerInfo,
   OrderItem,
+  PaginatedProductsResponse,
   PickupPoint,
   Product,
-  ProductListResponse,
   ProductRating,
-  ProductSort,
   RegisterPayload,
   UpdateProfilePayload,
   User,
@@ -27,16 +26,9 @@ type LoginResponse = {
   user: User;
 };
 
-type ProductFilterValue = string | string[];
-
 export type GetProductsParams = {
-  page?: number;
-  pageSize?: number;
-  search?: string;
-  sort?: ProductSort;
-  inStock?: boolean;
-  minRating?: number;
-  characteristics?: Record<string, ProductFilterValue>;
+  page: number;
+  limit: number;
 };
 
 type CreateOrderRequest = CreateOrderPayload & {
@@ -50,8 +42,6 @@ type CartRecord = CartItem & {
   id: string;
 };
 
-const DEFAULT_PAGE = 1;
-const DEFAULT_PAGE_SIZE = 12;
 const TOKEN_STORAGE_KEY = 'token';
 
 const generateFakeToken = (userId: string) =>
@@ -119,62 +109,6 @@ function normalizeCart(records: CartRecord[]): Cart {
     totalPrice: items.reduce((sum, item) => sum + item.price * item.quantity, 0),
     totalItems: items.reduce((sum, item) => sum + item.quantity, 0),
   };
-}
-
-function applyProductFilters(products: Product[], params?: GetProductsParams) {
-  const search = params?.search?.trim().toLowerCase();
-
-  return products.filter((product) => {
-    if (search) {
-      const searchableText = `${product.name} ${product.description}`.toLowerCase();
-
-      if (!searchableText.includes(search)) {
-        return false;
-      }
-    }
-
-    if (typeof params?.inStock === 'boolean' && product.inStock !== params.inStock) {
-      return false;
-    }
-
-    if (typeof params?.minRating === 'number' && product.rating < params.minRating) {
-      return false;
-    }
-
-    if (params?.characteristics) {
-      return Object.entries(params.characteristics).every(([key, expected]) => {
-        const actual = product.characteristics[key];
-
-        if (Array.isArray(expected)) {
-          return expected.length === 0 || expected.includes(actual);
-        }
-
-        return expected === actual;
-      });
-    }
-
-    return true;
-  });
-}
-
-function sortProducts(products: Product[], sort?: ProductSort) {
-  const sortedProducts = [...products];
-
-  switch (sort) {
-    case 'price_asc':
-      return sortedProducts.sort((first, second) => first.price - second.price);
-    case 'price_desc':
-      return sortedProducts.sort((first, second) => second.price - first.price);
-    case 'newest':
-      return sortedProducts.sort(
-        (first, second) =>
-          new Date(second.createdAt).getTime() - new Date(first.createdAt).getTime(),
-      );
-    case 'rating':
-      return sortedProducts.sort((first, second) => second.rating - first.rating);
-    default:
-      return sortedProducts;
-  }
 }
 
 export const api = createApi({
@@ -306,27 +240,14 @@ export const api = createApi({
       invalidatesTags: ['User'],
     }),
 
-    getProducts: builder.query<ProductListResponse, GetProductsParams | void>({
-      async queryFn(params, _queryApi, _extraOptions, fetchWithBQ) {
-        const result = await fetchWithBQ('/products');
-
-        if (result.error) {
-          return { error: result.error };
-        }
-
-        const page = Math.max(params?.page ?? DEFAULT_PAGE, 1);
-        const pageSize = Math.max(params?.pageSize ?? DEFAULT_PAGE_SIZE, 1);
-        const filteredProducts = applyProductFilters(result.data as Product[], params ?? undefined);
-        const sortedProducts = sortProducts(filteredProducts, params?.sort);
-        const startIndex = (page - 1) * pageSize;
+    getProducts: builder.query<PaginatedProductsResponse, GetProductsParams>({
+      query: ({ page, limit }) => `/products?_page=${page}&_limit=${limit}`,
+      transformResponse: (response: Product[], meta) => {
+        const totalCountHeader = meta?.response?.headers.get('x-total-count');
 
         return {
-          data: {
-            items: sortedProducts.slice(startIndex, startIndex + pageSize),
-            total: sortedProducts.length,
-            page,
-            pageSize,
-          },
+          items: response,
+          totalCount: totalCountHeader ? parseInt(totalCountHeader, 10) : 0,
         };
       },
       providesTags: (result) =>

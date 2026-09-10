@@ -11,11 +11,9 @@ export type Product = {
   createdAt: string;
 };
 
-export type ProductListResponse = {
+export type PaginatedProductsResponse = {
   items: Product[];
-  total: number;
-  page: number;
-  pageSize: number;
+  totalCount: number;
 };
 
 export type ProductSort = 'price_asc' | 'price_desc' | 'newest' | 'rating';

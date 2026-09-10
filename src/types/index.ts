@@ -8,7 +8,7 @@ export type {
 
 export type {
   Product,
-  ProductListResponse,
+  PaginatedProductsResponse,
   ProductSort,
   ProductRating,
 } from './product';
