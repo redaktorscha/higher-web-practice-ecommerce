@@ -53,7 +53,7 @@ type CartRecord = CartItem & {
   id: string;
 };
 
-const TOKEN_STORAGE_KEY = 'token';
+export const TOKEN_STORAGE_KEY = 'token';
 
 const generateFakeToken = (userId: string) =>
   btoa(JSON.stringify({ id: userId, exp: Date.now() + 86_400_000 }));

@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { MainLayout } from '@/components/layout';
+import { ProtectedRoute } from '@/components/routing';
 import {
   CartPage,
   CatalogPage,
@@ -34,46 +35,56 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: 'login',
-        element: <LoginPage />,
-      },
-      {
-        path: 'register',
-        element: <RegisterPage />,
+        element: <ProtectedRoute isAuthenticated={false} />,
+        children: [
+          {
+            path: 'login',
+            element: <LoginPage />,
+          },
+          {
+            path: 'register',
+            element: <RegisterPage />,
+          },
+        ],
       },
       {
         path: 'products/:id',
         element: <ProductPage />,
       },
       {
-        path: 'profile',
-        element: <ProfileLayout />,
+        element: <ProtectedRoute isAuthenticated />,
         children: [
           {
-            index: true,
-            element: <ProfilePage />,
+            path: 'profile',
+            element: <ProfileLayout />,
+            children: [
+              {
+                index: true,
+                element: <ProfilePage />,
+              },
+              {
+                path: 'edit',
+                element: <ProfileEditPage />,
+              },
+              {
+                path: 'orders',
+                element: <OrderHistoryPage />,
+              },
+              {
+                path: 'cart',
+                element: <CartPage />,
+              },
+            ],
           },
           {
-            path: 'edit',
-            element: <ProfileEditPage />,
+            path: 'checkout',
+            element: <CheckoutPage />,
           },
           {
-            path: 'orders',
-            element: <OrderHistoryPage />,
-          },
-          {
-            path: 'cart',
-            element: <CartPage />,
+            path: 'success',
+            element: <SuccessPage />,
           },
         ],
-      },
-      {
-        path: 'checkout',
-        element: <CheckoutPage />,
-      },
-      {
-        path: 'success',
-        element: <SuccessPage />,
       },
       {
         path: '*',

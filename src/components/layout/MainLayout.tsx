@@ -1,25 +1,26 @@
 import { Outlet, useLocation } from 'react-router-dom';
 import { Header, MobileNavigation } from '@/components/app';
 import { cn } from '@/lib/utils';
-
-function getAuthenticationStatus() {
-  return typeof window !== 'undefined' && localStorage.getItem('isAuthenticated') === 'true';
-}
+import { useGetProfileQuery } from '@/store/api';
+import { selectCurrentUser, selectIsAuthenticated, selectToken } from '@/store/authSlice';
+import { useSelector } from 'react-redux';
 
 export function MainLayout() {
   const location = useLocation();
-  const isAuthenticated = getAuthenticationStatus();
+  const isAuthenticated = useSelector(selectIsAuthenticated);
+  const token = useSelector(selectToken);
+  const user = useSelector(selectCurrentUser);
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-  const isMainCatalogPage = location.pathname === '/' || location.pathname.startsWith('/catalog');
   const isCatalogFiltersPage = location.pathname === '/catalog/filters';
-  const isProfilePage = location.pathname.startsWith('/profile');
-  const isProductPage = location.pathname.startsWith('/products/');
-  const isOrderFlowPage = location.pathname === '/checkout' || location.pathname === '/success';
-  const showAuthenticatedNavigation = isAuthPage || isMainCatalogPage || isProfilePage || isProductPage || isOrderFlowPage || isAuthenticated;
+  const profileName = user ? `${user.firstName} ${user.lastName}` : undefined;
+
+  useGetProfileQuery(undefined, {
+    skip: !token,
+  });
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header isAuthenticated={showAuthenticatedNavigation} />
+      <Header isAuthenticated={isAuthenticated} profileName={profileName} />
       <main
         className={cn(
           'mx-auto w-full max-w-[1440px]',
@@ -28,7 +29,7 @@ export function MainLayout() {
       >
         <Outlet />
       </main>
-      {isAuthPage || isCatalogFiltersPage ? null : <MobileNavigation isAuthenticated={showAuthenticatedNavigation} />}
+      {isAuthPage || isCatalogFiltersPage ? null : <MobileNavigation isAuthenticated={isAuthenticated} />}
     </div>
   );
 }

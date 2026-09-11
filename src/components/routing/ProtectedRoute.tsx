@@ -1,15 +1,13 @@
 import { Navigate, Outlet } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated } from '@/store/authSlice';
 
 type ProtectedRouteProps = {
   isAuthenticated: boolean;
 };
 
-function getAuthenticationStatus() {
-  return localStorage.getItem('isAuthenticated') === 'true';
-}
-
 export function ProtectedRoute({ isAuthenticated }: ProtectedRouteProps) {
-  const currentAuthenticationStatus = getAuthenticationStatus();
+  const currentAuthenticationStatus = useSelector(selectIsAuthenticated);
 
   if (currentAuthenticationStatus !== isAuthenticated) {
     return (

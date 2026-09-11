@@ -1,9 +1,15 @@
 import { ChevronDown } from 'lucide-react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import avatarImage from '@/assets/avatar.png';
 import meditationImage from '@/assets/meditation.png';
+import { selectCurrentUser } from '@/store/authSlice';
 
 export function ProfilePage() {
+  const user = useSelector(selectCurrentUser);
+  const fullName = user ? `${user.firstName} ${user.lastName}` : 'Имя Фамилия';
+  const email = user?.email ?? 'Email@yanex.ru';
+
   return (
     <section className="min-h-[676px] md:relative">
       <h1 className="mb-4 text-2xl leading-8 md:hidden">Мой профиль</h1>
@@ -14,12 +20,10 @@ export function ProfilePage() {
             <img alt="" className="size-20 rounded-full object-cover" src={avatarImage} />
             <div className="grid gap-2 text-base leading-6">
               <p>
-                <span className="md:hidden">Имя Фамилия</span>
-                <span className="hidden md:inline">Ярополк Иванов</span>
+                {fullName}
               </p>
               <p>
-                <span className="md:hidden">Email@yanex.ru</span>
-                <span className="hidden md:inline">ivanov@yandex.ru</span>
+                {email}
               </p>
             </div>
           </div>
