@@ -1,10 +1,14 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { Link, useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { getFieldErrors, loginSchema, type LoginFormValues } from '@/lib/validation';
 import { useLoginMutation } from '@/store/api';
 import { AuthLayout } from './AuthLayout';
 
 const inputClassName =
   'w-full rounded-sm border border-[#9ca3af] bg-card px-3 text-foreground outline-none placeholder:text-[#9ca3af] focus:border-primary focus:ring-2 focus:ring-ring/20';
+const errorInputClassName = 'border-danger focus:border-danger focus:ring-danger/20';
 
 function getAuthErrorMessage(error: unknown) {
   if (typeof error === 'object' && error !== null && 'data' in error) {
@@ -21,16 +25,41 @@ function getAuthErrorMessage(error: unknown) {
 export function LoginPage() {
   const navigate = useNavigate();
   const [login, { isLoading }] = useLoginMutation();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const {
+    clearErrors,
+    formState: { errors },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<LoginFormValues>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const submitForm: SubmitHandler<LoginFormValues> = async (values) => {
     setErrorMessage('');
 
+    const validationResult = loginSchema.safeParse(values);
+
+    if (!validationResult.success) {
+      const validationErrors = getFieldErrors(validationResult.error);
+
+      if (validationErrors.email) {
+        setError('email', { message: validationErrors.email });
+      }
+
+      if (validationErrors.password) {
+        setError('password', { message: validationErrors.password });
+      }
+
+      return;
+    }
+
     try {
-      await login({ email, password }).unwrap();
+      await login(validationResult.data).unwrap();
       navigate('/profile', { replace: true });
     } catch (error) {
       setErrorMessage(getAuthErrorMessage(error));
@@ -46,49 +75,35 @@ export function LoginPage() {
       mobileFormClassName="absolute top-[305px] left-5 w-[335px] md:static md:mt-7 md:w-[332px]"
       title="Вход в аккаунт"
     >
-      <form className="grid gap-4 md:gap-[18px]" onSubmit={handleSubmit}>
-        <label className="hidden gap-1 text-xs leading-4 text-muted-foreground md:grid">
-          Ваш email или логин
+      <form className="grid gap-4 md:gap-[18px]" noValidate onSubmit={handleSubmit(submitForm)}>
+        <label className="grid gap-1 text-xs leading-4 text-muted-foreground">
+          <span className="hidden md:inline">Ваш email или логин *</span>
           <input
-            className={`${inputClassName} h-10 text-base leading-6`}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="ivan@example.com"
-            required
+            className={cn(inputClassName, 'h-9 text-sm leading-5 md:h-10 md:text-base md:leading-6', errors.email && errorInputClassName)}
+            aria-invalid={Boolean(errors.email)}
+            placeholder="Ваш email или логин *"
             type="email"
-            value={email}
+            {...register('email', {
+              onChange: () => clearErrors('email'),
+            })}
           />
+          {errors.email?.message ? <span className="text-xs leading-4 text-danger">{errors.email.message}</span> : null}
         </label>
 
-        <input
-          className={`${inputClassName} h-9 text-sm leading-5 md:hidden`}
-          onChange={(event) => setEmail(event.target.value)}
-          placeholder="Ваш email или логин"
-          required
-          type="email"
-          value={email}
-        />
-
         <div className="grid gap-1">
-          <label className="hidden gap-1 text-xs leading-4 text-muted-foreground md:grid">
-            Пароль
+          <label className="grid gap-1 text-xs leading-4 text-muted-foreground">
+            <span className="hidden md:inline">Пароль *</span>
             <input
-              className={`${inputClassName} h-10 text-base leading-6`}
-              onChange={(event) => setPassword(event.target.value)}
-              placeholder="*******"
-              required
+              className={cn(inputClassName, 'h-9 text-sm leading-5 md:h-10 md:text-base md:leading-6', errors.password && errorInputClassName)}
+              aria-invalid={Boolean(errors.password)}
+              placeholder="Пароль *"
               type="password"
-              value={password}
+              {...register('password', {
+                onChange: () => clearErrors('password'),
+              })}
             />
+            {errors.password?.message ? <span className="text-xs leading-4 text-danger">{errors.password.message}</span> : null}
           </label>
-
-          <input
-            className={`${inputClassName} h-9 text-sm leading-5 md:hidden`}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Пароль"
-            required
-            type="password"
-            value={password}
-          />
 
           <div className="flex justify-end">
             <Link to="/login" className="text-xs leading-4 text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-base md:leading-6">

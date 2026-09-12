@@ -61,6 +61,15 @@ const authSlice = createSlice({
       },
     );
 
+    builder.addMatcher(
+      api.endpoints.updateProfile.matchFulfilled,
+      (state, action: PayloadAction<User>) => {
+        state.user = action.payload;
+        state.token = getInitialToken();
+        state.isAuthenticated = true;
+      },
+    );
+
     builder.addMatcher(api.endpoints.getProfile.matchRejected, (state) => {
       if (typeof window !== 'undefined') {
         localStorage.removeItem(TOKEN_STORAGE_KEY);

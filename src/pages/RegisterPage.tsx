@@ -1,10 +1,14 @@
-import { useState, type FormEvent } from 'react';
+import { useState } from 'react';
+import { useForm, type SubmitHandler } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { getFieldErrors, registerSchema, type RegisterFormValues } from '@/lib/validation';
 import { useLoginMutation, useRegisterMutation } from '@/store/api';
 import { AuthLayout } from './AuthLayout';
 
 const inputClassName =
   'h-9 w-full rounded-sm border border-[#9ca3af] bg-card px-3 text-sm leading-5 text-foreground outline-none placeholder:text-[#9ca3af] focus:border-primary focus:ring-2 focus:ring-ring/20 md:h-10 md:text-base md:leading-6';
+const errorInputClassName = 'border-danger focus:border-danger focus:ring-danger/20';
 
 function getRegisterErrorMessage(error: unknown) {
   if (typeof error === 'object' && error !== null && 'data' in error) {
@@ -20,29 +24,68 @@ function getRegisterErrorMessage(error: unknown) {
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const [register, { isLoading: isRegistering }] = useRegisterMutation();
+  const [registerUser, { isLoading: isRegistering }] = useRegisterMutation();
   const [login, { isLoading: isLoggingIn }] = useLoginMutation();
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const isLoading = isRegistering || isLoggingIn;
+  const {
+    clearErrors,
+    formState: { errors },
+    handleSubmit,
+    register,
+    setError,
+  } = useForm<RegisterFormValues>({
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+    },
+  });
 
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const clearFieldError = (field: keyof RegisterFormValues) => {
+    clearErrors(field);
+    setErrorMessage('');
+  };
+
+  const submitForm: SubmitHandler<RegisterFormValues> = async (values) => {
     setErrorMessage('');
 
+    const validationResult = registerSchema.safeParse(values);
+
+    if (!validationResult.success) {
+      const validationErrors = getFieldErrors(validationResult.error);
+
+      if (validationErrors.firstName) {
+        setError('firstName', { message: validationErrors.firstName });
+      }
+
+      if (validationErrors.lastName) {
+        setError('lastName', { message: validationErrors.lastName });
+      }
+
+      if (validationErrors.email) {
+        setError('email', { message: validationErrors.email });
+      }
+
+      if (validationErrors.password) {
+        setError('password', { message: validationErrors.password });
+      }
+
+      if (validationErrors.confirmPassword) {
+        setError('confirmPassword', { message: validationErrors.confirmPassword });
+      }
+
+      return;
+    }
+
     try {
-      await register({
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
+      await registerUser(validationResult.data).unwrap();
+      await login({
+        email: validationResult.data.email,
+        password: validationResult.data.password,
       }).unwrap();
-      await login({ email, password }).unwrap();
       navigate('/profile', { replace: true });
     } catch (error) {
       setErrorMessage(getRegisterErrorMessage(error));
@@ -58,65 +101,73 @@ export function RegisterPage() {
       mobileFormClassName="absolute top-[191px] left-5 w-[335px] md:static md:mt-6 md:w-[332px]"
       title="Регистрация"
     >
-      <form className="grid gap-4 md:gap-4" onSubmit={handleSubmit}>
+      <form className="grid gap-4 md:gap-4" noValidate onSubmit={handleSubmit(submitForm)}>
         <label className="grid gap-1 text-xs leading-4 text-muted-foreground">
-          <span className="hidden md:inline">Имя</span>
+          <span className="hidden md:inline">Имя *</span>
           <input
-            className={inputClassName}
-            onChange={(event) => setFirstName(event.target.value)}
-            placeholder="Имя"
-            required
-            value={firstName}
+            aria-invalid={Boolean(errors.firstName)}
+            className={cn(inputClassName, errors.firstName && errorInputClassName)}
+            placeholder="Имя *"
+            {...register('firstName', {
+              onChange: () => clearFieldError('firstName'),
+            })}
           />
+          {errors.firstName?.message ? <span className="text-xs leading-4 text-danger">{errors.firstName.message}</span> : null}
         </label>
 
         <label className="grid gap-1 text-xs leading-4 text-muted-foreground">
-          <span className="hidden md:inline">Фамилия</span>
+          <span className="hidden md:inline">Фамилия *</span>
           <input
-            className={inputClassName}
-            onChange={(event) => setLastName(event.target.value)}
-            placeholder="Фамилия"
-            required
-            value={lastName}
+            aria-invalid={Boolean(errors.lastName)}
+            className={cn(inputClassName, errors.lastName && errorInputClassName)}
+            placeholder="Фамилия *"
+            {...register('lastName', {
+              onChange: () => clearFieldError('lastName'),
+            })}
           />
+          {errors.lastName?.message ? <span className="text-xs leading-4 text-danger">{errors.lastName.message}</span> : null}
         </label>
 
         <label className="grid gap-1 text-xs leading-4 text-muted-foreground">
-          <span className="hidden md:inline">Email</span>
+          <span className="hidden md:inline">Email *</span>
           <input
-            className={inputClassName}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Email"
-            required
+            aria-invalid={Boolean(errors.email)}
+            className={cn(inputClassName, errors.email && errorInputClassName)}
+            placeholder="Email *"
             type="email"
-            value={email}
+            {...register('email', {
+              onChange: () => clearFieldError('email'),
+            })}
           />
+          {errors.email?.message ? <span className="text-xs leading-4 text-danger">{errors.email.message}</span> : null}
         </label>
 
         <label className="grid gap-1 text-xs leading-4 text-muted-foreground">
-          <span className="hidden md:inline">Придумайте пароль</span>
+          <span className="hidden md:inline">Придумайте пароль *</span>
           <input
-            className={inputClassName}
-            minLength={6}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="Придумайте пароль"
-            required
+            aria-invalid={Boolean(errors.password)}
+            className={cn(inputClassName, errors.password && errorInputClassName)}
+            placeholder="Придумайте пароль *"
             type="password"
-            value={password}
+            {...register('password', {
+              onChange: () => clearFieldError('password'),
+            })}
           />
+          {errors.password?.message ? <span className="text-xs leading-4 text-danger">{errors.password.message}</span> : null}
         </label>
 
         <label className="grid gap-1 text-xs leading-4 text-muted-foreground">
-          <span className="hidden md:inline">Повторите пароль</span>
+          <span className="hidden md:inline">Повторите пароль *</span>
           <input
-            className={inputClassName}
-            minLength={6}
-            onChange={(event) => setConfirmPassword(event.target.value)}
-            placeholder="Повторите пароль"
-            required
+            aria-invalid={Boolean(errors.confirmPassword)}
+            className={cn(inputClassName, errors.confirmPassword && errorInputClassName)}
+            placeholder="Повторите пароль *"
             type="password"
-            value={confirmPassword}
+            {...register('confirmPassword', {
+              onChange: () => clearFieldError('confirmPassword'),
+            })}
           />
+          {errors.confirmPassword?.message ? <span className="text-xs leading-4 text-danger">{errors.confirmPassword.message}</span> : null}
         </label>
 
         {errorMessage ? <p className="text-sm leading-5 text-danger">{errorMessage}</p> : null}
