@@ -452,8 +452,23 @@ export const api = createApi({
       providesTags: (_result, _error, id) => [{ type: 'Rating', id }],
     }),
 
-    getPickupPoints: builder.query<PickupPoint[], void>({
-      query: () => '/pickupPoints',
+    getPickupPoints: builder.query<PickupPoint[], { city?: string } | void>({
+      async queryFn(params, _queryApi, _extraOptions, fetchWithBQ) {
+        const result = await fetchWithBQ('/pickupPoints');
+
+        if (result.error) {
+          return { error: result.error };
+        }
+
+        const points = result.data as PickupPoint[];
+        const city = params?.city;
+
+        return {
+          data: city
+            ? points.filter((point) => (point.city ?? point.address).startsWith(city))
+            : points,
+        };
+      },
       providesTags: ['PickupPoint'],
     }),
   }),

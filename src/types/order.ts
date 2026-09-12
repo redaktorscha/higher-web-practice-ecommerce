@@ -35,7 +35,7 @@ export type OrderStatus =
   | 'delivered'
   | 'cancelled';
 
-export type PaymentMethod = 'card_online' | 'card_on_delivery' | 'cash';
+export type PaymentMethod = 'card_online' | 'cash';
 
 export type DeliveryMethod = 'courier' | 'pickup_point';
 
@@ -52,6 +52,7 @@ export type PickupPoint = {
   id: string;
   name: string;
   address: string;
+  city?: string;
 };
 
 export type OrderCustomerInfo = {
