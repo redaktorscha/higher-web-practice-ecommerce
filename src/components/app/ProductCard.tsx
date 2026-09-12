@@ -1,6 +1,9 @@
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Button, Icon } from '@/components/ui';
+import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
+import { selectCartItemQuantity } from '@/store/cartSlice';
 
 type ProductCardProps = {
   id: string;
@@ -34,6 +37,8 @@ function ProductCard({
   className,
 }: ProductCardProps) {
   const isHorizontal = layout === 'horizontal';
+  const quantity = useSelector(selectCartItemQuantity(id));
+  const { addProductToCart, isAddingToCart } = useAddProductToCart();
 
   return (
     <article
@@ -66,8 +71,13 @@ function ProductCard({
               {inStock ? 'В наличии' : 'Нет в наличии'}
             </span>
           </div>
-          <Button variant="iconPrimary" aria-label="Добавить в корзину" disabled={!inStock}>
-            <Icon name="shoppingBag" />
+          <Button
+            variant="iconPrimary"
+            aria-label="Добавить в корзину"
+            disabled={!inStock || isAddingToCart}
+            onClick={() => void addProductToCart(id)}
+          >
+            {quantity > 0 ? <span>{quantity}</span> : <Icon name="shoppingBag" />}
           </Button>
         </div>
       </div>

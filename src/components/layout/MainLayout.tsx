@@ -1,15 +1,17 @@
 import { Outlet, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Header, MobileNavigation } from '@/components/app';
 import { cn } from '@/lib/utils';
-import { useGetProfileQuery } from '@/store/api';
+import { useGetCartQuery, useGetProfileQuery } from '@/store/api';
 import { selectCurrentUser, selectIsAuthenticated, selectToken } from '@/store/authSlice';
-import { useSelector } from 'react-redux';
+import { selectCartTotalItems } from '@/store/cartSlice';
 
 export function MainLayout() {
   const location = useLocation();
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const token = useSelector(selectToken);
   const user = useSelector(selectCurrentUser);
+  const cartTotalItems = useSelector(selectCartTotalItems);
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
   const isCatalogFiltersPage = location.pathname === '/catalog/filters';
   const profileName = user ? `${user.firstName} ${user.lastName}` : undefined;
@@ -18,9 +20,13 @@ export function MainLayout() {
     skip: !token,
   });
 
+  useGetCartQuery(undefined, {
+    skip: !isAuthenticated,
+  });
+
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <Header isAuthenticated={isAuthenticated} profileName={profileName} />
+      <Header isAuthenticated={isAuthenticated} profileName={profileName} cartTotalItems={cartTotalItems} />
       <main
         className={cn(
           'mx-auto w-full max-w-[1440px]',

@@ -1,6 +1,10 @@
 import { ChevronLeft, ChevronRight, ShoppingBag, Star } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { useAddProductToCart } from '@/hooks/useAddProductToCart';
+import { selectCartItemQuantity } from '@/store/cartSlice';
 
 const product = {
+  id: '3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01',
   name: 'Председатель',
   price: '5 590 ₽',
   rating: '5.0',
@@ -26,6 +30,9 @@ const characteristics = [
 ];
 
 export function ProductPage() {
+  const quantity = useSelector(selectCartItemQuantity(product.id));
+  const { addProductToCart, isAddingToCart } = useAddProductToCart();
+
   return (
     <section className="pb-[92px] md:mx-auto md:w-[984px] md:pb-0 md:pt-0">
       <nav className="mb-5 hidden text-base leading-6 text-muted-foreground md:block">
@@ -49,8 +56,14 @@ export function ProductPage() {
           </div>
 
           <div className="hidden items-end justify-between md:flex">
-            <button className="grid h-10 w-[180px] place-items-center rounded-md bg-primary text-white" type="button" aria-label="Добавить в корзину">
-              <ShoppingBag className="size-6" />
+            <button
+              className="grid h-10 w-[180px] place-items-center rounded-md bg-primary text-white disabled:bg-muted disabled:text-muted-foreground"
+              disabled={isAddingToCart}
+              onClick={() => void addProductToCart(product.id)}
+              type="button"
+              aria-label="Добавить в корзину"
+            >
+              {quantity > 0 ? <span>{quantity}</span> : <ShoppingBag className="size-6" />}
             </button>
             <span className="text-base leading-6 text-muted-foreground">Есть в наличии</span>
           </div>
@@ -77,8 +90,14 @@ export function ProductPage() {
       <ProductRating />
 
       <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">
-        <button className="grid h-9 w-full place-items-center rounded-md bg-primary text-white" type="button" aria-label="Добавить в корзину">
-          <ShoppingBag className="size-4" />
+        <button
+          className="grid h-9 w-full place-items-center rounded-md bg-primary text-white disabled:bg-muted disabled:text-muted-foreground"
+          disabled={isAddingToCart}
+          onClick={() => void addProductToCart(product.id)}
+          type="button"
+          aria-label="Добавить в корзину"
+        >
+          {quantity > 0 ? <span>{quantity}</span> : <ShoppingBag className="size-4" />}
         </button>
       </div>
     </section>

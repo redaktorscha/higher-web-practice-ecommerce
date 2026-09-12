@@ -627,7 +627,45 @@
       "boostsCharisma": false
     }
   ],
-  "cart": [],
+  "cart": [
+    {
+      "id": "33115f73-3351-428f-9af9-1eef5dfc34d3",
+      "userId": "8f6b1a1e-7d1d-4b2c-9c6c-1c5f3c9c1a11",
+      "productId": "3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01",
+      "product": {
+        "id": "3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01",
+        "name": "Председатель",
+        "description": "Густые прямые усы с характерным направлением вниз. Подходят для уверенных решений и серьёзных заявлений.",
+        "price": 5590,
+        "images": [
+          "/mustashes/chairman/0.png",
+          "/mustashes/chairman/1.png",
+          "/mustashes/chairman/2.png",
+          "/mustashes/chairman/3.png"
+        ],
+        "characteristics": {
+          "категория": "Классические",
+          "подкатегория": "Деловые",
+          "стиль": "Военный",
+          "форма": "Короткий прямоугольник",
+          "густота": "Средняя",
+          "закрученность": "Низкая",
+          "харизма": "5"
+        },
+        "inStock": true,
+        "rating": 4.5,
+        "ratingCount": 2,
+        "createdAt": "2026-03-01T09:00:00Z",
+        "category": "Классические",
+        "style": "Военный",
+        "density": "Средняя",
+        "requiresWax": false,
+        "boostsCharisma": true
+      },
+      "quantity": 1,
+      "price": 5590
+    }
+  ],
   "orders": [
     {
       "id": "9a0b1c2d-3e4f-4a50-8b6c-7d8e9f001122",

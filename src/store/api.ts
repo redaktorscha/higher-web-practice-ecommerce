@@ -51,6 +51,7 @@ type CreateOrderRequest = CreateOrderPayload & {
 
 type CartRecord = CartItem & {
   id: string;
+  userId: string;
 };
 
 export const TOKEN_STORAGE_KEY = 'token';
@@ -361,7 +362,14 @@ export const api = createApi({
 
     getCart: builder.query<Cart, void>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
-        const result = await fetchWithBQ('/cart');
+        const token = getStoredToken();
+        const userId = token ? getUserIdFromToken(token) : null;
+
+        if (!userId) {
+          return { error: makeClientError(401, 'Unauthorized') };
+        }
+
+        const result = await fetchWithBQ(`/cart?userId=${encodeURIComponent(userId)}`);
 
         return result.data
           ? { data: normalizeCart(result.data as CartRecord[]) }
@@ -372,8 +380,15 @@ export const api = createApi({
 
     addToCart: builder.mutation<CartItem, AddToCartPayload>({
       async queryFn(payload, _queryApi, _extraOptions, fetchWithBQ) {
+        const token = getStoredToken();
+        const userId = token ? getUserIdFromToken(token) : null;
+
+        if (!userId) {
+          return { error: makeClientError(401, 'Unauthorized') };
+        }
+
         const [cartResult, productResult] = await Promise.all([
-          fetchWithBQ('/cart'),
+          fetchWithBQ(`/cart?userId=${encodeURIComponent(userId)}`),
           fetchWithBQ(`/products/${encodeURIComponent(payload.productId)}`),
         ]);
 
@@ -402,7 +417,8 @@ export const api = createApi({
               url: '/cart',
               method: 'POST',
               body: {
-                id: payload.productId,
+                id: createEntityId(),
+                userId,
                 productId: payload.productId,
                 product,
                 quantity,

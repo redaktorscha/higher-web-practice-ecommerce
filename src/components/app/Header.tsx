@@ -7,10 +7,11 @@ import { SearchField } from './SearchField';
 type HeaderProps = {
   isAuthenticated?: boolean;
   profileName?: string;
+  cartTotalItems?: number;
   className?: string;
 };
 
-function Header({ isAuthenticated = true, profileName = 'Имя профиля', className }: HeaderProps) {
+function Header({ isAuthenticated = true, profileName = 'Имя профиля', cartTotalItems = 0, className }: HeaderProps) {
   return (
     <header className={cn('sticky top-0 z-40 hidden h-16 border-b border-border bg-card md:block', className)}>
       <div className="mx-auto grid h-full max-w-[1440px] grid-cols-[280px_minmax(320px,568px)_292px] items-center gap-5 px-[130px]">
@@ -27,7 +28,7 @@ function Header({ isAuthenticated = true, profileName = 'Имя профиля',
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
               <HeaderAction icon="user" label={profileName} to="/profile" />
-              <HeaderAction icon="shoppingBag" label="Корзина" to="/profile/cart" />
+              <HeaderAction count={cartTotalItems} icon="shoppingBag" label="Корзина" to="/profile/cart" />
             </div>
           ) : (
             <div className="flex items-center gap-3">
@@ -46,15 +47,23 @@ function Header({ isAuthenticated = true, profileName = 'Имя профиля',
 }
 
 type HeaderActionProps = {
+  count?: number;
   icon: 'user' | 'shoppingBag';
   label: string;
   to: string;
 };
 
-function HeaderAction({ icon, label, to }: HeaderActionProps) {
+function HeaderAction({ count = 0, icon, label, to }: HeaderActionProps) {
   return (
     <Link to={to} className="flex min-w-[55px] flex-col items-center gap-0.5 rounded-md p-1 text-xs leading-4 text-foreground outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring">
-      <Icon name={icon} />
+      <span className="relative">
+        <Icon name={icon} />
+        {count > 0 ? (
+          <span className="absolute -top-1 -right-2 grid min-h-4 min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] leading-4 font-bold text-white">
+            {count}
+          </span>
+        ) : null}
+      </span>
       <span className="max-w-[86px] truncate">{label}</span>
     </Link>
   );

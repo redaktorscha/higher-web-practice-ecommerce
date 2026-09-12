@@ -2,10 +2,13 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Button, Icon } from '@/components/ui';
+import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
 import { useGetProductsQuery } from '@/store/api';
 import type { FilterState } from '@/store/api';
+import { selectCartItemQuantity } from '@/store/cartSlice';
 import type { Product } from '@/types';
 
 const LIMIT = 12;
@@ -402,6 +405,9 @@ function ProductPanel({ isLoading, isFetching, products }: { isLoading: boolean;
 }
 
 function CatalogProductCard({ product, imageClassName, compact = false }: { product: Product; imageClassName: string; compact?: boolean }) {
+  const quantity = useSelector(selectCartItemQuantity(product.id));
+  const { addProductToCart, isAddingToCart } = useAddProductToCart();
+
   return (
     <article className={cn('grid min-w-0 content-start', compact ? 'gap-1' : 'gap-2')}>
       <Link to={`/products/${product.id}`} className={cn('block overflow-hidden bg-card', imageClassName)}>
@@ -413,8 +419,14 @@ function CatalogProductCard({ product, imageClassName, compact = false }: { prod
         </Link>
         <span className="text-xl leading-5 font-bold text-success">{currency.format(product.price)}</span>
       </div>
-      <Button className="h-10 w-full" variant="iconPrimary" aria-label={`Добавить в корзину: ${product.name}`} disabled={!product.inStock}>
-        <Icon name="shoppingBag" />
+      <Button
+        className="h-10 w-full"
+        variant="iconPrimary"
+        aria-label={`Добавить в корзину: ${product.name}`}
+        disabled={!product.inStock || isAddingToCart}
+        onClick={() => void addProductToCart(product.id)}
+      >
+        {quantity > 0 ? <span>{quantity}</span> : <Icon name="shoppingBag" />}
       </Button>
     </article>
   );
