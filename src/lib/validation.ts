@@ -59,6 +59,14 @@ export const profileSchema = z.object({
     .email('Введите корректный email'),
 });
 
+export const passwordRecoverySchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Введите email')
+    .email('Введите корректный email'),
+});
+
 export const checkoutSchema = z
   .object({
     paymentMethod: z.enum(['card_online', 'cash']),
@@ -119,6 +127,7 @@ export const paymentCardSchema = z.object({
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type ProfileFormValues = z.infer<typeof profileSchema>;
+export type PasswordRecoveryFormValues = z.infer<typeof passwordRecoverySchema>;
 export type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 export type PaymentCardFormValues = z.infer<typeof paymentCardSchema>;
 export type FieldErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string>>;
