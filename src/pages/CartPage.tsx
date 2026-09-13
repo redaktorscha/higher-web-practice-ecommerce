@@ -1,5 +1,6 @@
 import { Trash } from 'lucide-react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import shoppingImage from '@/assets/shopping.png';
 import { selectCart } from '@/store/cartSlice';
 
@@ -42,7 +43,9 @@ export function CartPage() {
               <div className="grid grid-cols-[60px_1fr_auto] gap-x-4 md:h-28 md:grid-cols-[72px_1fr_104px_86px_24px] md:items-center md:gap-8 md:rounded-xl md:bg-card md:p-4 md:shadow-card">
                 <img alt="" className="h-[60px] w-[60px] rounded-lg bg-card object-contain md:h-10 md:w-[72px] md:rounded-none md:bg-transparent" src={item.product.images[0]} />
                 <div className="grid content-start gap-8 md:block">
-                  <p className="text-sm leading-5 text-primary-hover md:text-base md:leading-6">{item.product.name}</p>
+                  <Link className="text-sm leading-5 text-primary-hover md:text-base md:leading-6" to={`/products/${item.productId}`}>
+                    {item.product.name}
+                  </Link>
                   <div className="md:hidden">
                     <Quantity quantity={item.quantity} />
                   </div>

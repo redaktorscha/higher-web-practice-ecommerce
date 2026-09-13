@@ -1,6 +1,7 @@
 import * as Collapsible from '@radix-ui/react-collapsible';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { useGetOrdersQuery } from '@/store/api';
 import { selectCurrentUser } from '@/store/authSlice';
 import type { Order, OrderItem } from '@/types';
@@ -136,7 +137,9 @@ function OrderProduct({ product, showDivider }: { product: OrderItem; showDivide
       <div className="grid grid-cols-[72px_1fr_auto] items-center gap-4 py-4">
         <img alt="" className="h-10 w-[72px] object-contain" src={product.image} />
         <div>
-          <p className="text-base leading-6 text-primary-hover">{product.name}</p>
+          <Link className="text-base leading-6 text-primary-hover" to={`/products/${product.productId}`}>
+            {product.name}
+          </Link>
         </div>
         <p className="text-base leading-6 md:font-normal">{currency.format(product.price * product.quantity)}</p>
       </div>
