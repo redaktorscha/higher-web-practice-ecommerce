@@ -1,6 +1,7 @@
 import { Camera } from 'lucide-react';
 import { useState } from 'react';
 import { useForm, type SubmitHandler } from 'react-hook-form';
+import toast from 'react-hot-toast';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import avatarImage from '@/assets/avatar.png';
@@ -93,6 +94,7 @@ function ProfileEditForm({ user }: { user: User | null }) {
     try {
       await updateProfile(validationResult.data).unwrap();
       setSuccessMessage('Профиль сохранён');
+      toast.success('Профиль сохранён');
     } catch (error) {
       setFormMessage(getProfileErrorMessage(error));
     }

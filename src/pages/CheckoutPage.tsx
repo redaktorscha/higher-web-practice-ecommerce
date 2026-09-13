@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import Cards from 'react-credit-cards-2';
 import 'react-credit-cards-2/dist/es/styles-compiled.css';
+import toast from 'react-hot-toast';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import orderImage from '@/assets/order.png';
@@ -56,6 +57,7 @@ function loadSavedCards(userId: string) {
 
     return rawCards ? (JSON.parse(rawCards) as SavedPaymentCard[]) : [];
   } catch {
+    toast.error('Не удалось загрузить сохранённые карты');
     return [];
   }
 }
@@ -368,6 +370,7 @@ export function CheckoutPage() {
             dispatch(addSavedCard(card));
             clearError('selectedCardId');
             setIsCardModalOpen(false);
+            toast.success('Карта добавлена');
           }}
         />
       ) : null}
