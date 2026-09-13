@@ -9,9 +9,10 @@ type HeaderProps = {
   profileName?: string;
   cartTotalItems?: number;
   className?: string;
+  onSearch?: (value: string) => void;
 };
 
-function Header({ isAuthenticated = true, profileName = 'Имя профиля', cartTotalItems = 0, className }: HeaderProps) {
+function Header({ isAuthenticated = true, profileName = 'Имя профиля', cartTotalItems = 0, className, onSearch }: HeaderProps) {
   return (
     <header className={cn('sticky top-0 z-40 hidden h-16 border-b border-border bg-card md:block', className)}>
       <div className="mx-auto grid h-full max-w-[1440px] grid-cols-[280px_minmax(320px,568px)_292px] items-center gap-5 px-[130px]">
@@ -22,7 +23,7 @@ function Header({ isAuthenticated = true, profileName = 'Имя профиля',
           </Button>
         </div>
 
-        <SearchField />
+        <SearchField onSearch={onSearch} />
 
         <div className="flex justify-end">
           {isAuthenticated ? (

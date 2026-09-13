@@ -1,10 +1,11 @@
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useOutletContext } from 'react-router-dom';
 import type { ReactNode, RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ProductControls } from '@/components/app/ProductControls';
 import { productSortOptions } from '@/components/app/productControlsConfig';
 import type { ProductSortValue, ProductViewMode } from '@/components/app/productControlsConfig';
+import type { MainLayoutOutletContext } from '@/components/layout/MainLayout';
 import { Button, Icon } from '@/components/ui';
 import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
@@ -14,9 +15,10 @@ import type { FilterState } from '@/store/api';
 import type { Product } from '@/types';
 
 const HOME_LIMIT = 12;
-const initialHomeFilters: FilterState = {
+const createInitialHomeFilters = (search = ''): FilterState => ({
   page: 1,
   limit: HOME_LIMIT,
+  search,
   category: null,
   styles: [],
   density: null,
@@ -26,7 +28,7 @@ const initialHomeFilters: FilterState = {
   maxPrice: '',
   sortBy: null,
   order: null,
-};
+});
 
 const currency = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -36,10 +38,12 @@ const currency = new Intl.NumberFormat('ru-RU', {
 
 export function HomePage() {
   const location = useLocation();
+  const { registerSearchHandler, searchQuery } = useOutletContext<MainLayoutOutletContext>();
   const isCatalog = location.pathname.startsWith('/catalog');
   const isMobileFilters = location.pathname === '/catalog/filters';
   const [page, setPage] = useState(1);
   const [extraProducts, setExtraProducts] = useState<Product[]>([]);
+  const [productSearchQuery, setProductSearchQuery] = useState(searchQuery);
   const [selectedSort, setSelectedSort] = useState<ProductSortValue>('popular');
   const [viewMode, setViewMode] = useState<ProductViewMode>('grid');
   const desktopSentinelRef = useRef<HTMLDivElement | null>(null);
@@ -48,11 +52,11 @@ export function HomePage() {
     const sortOption = productSortOptions.find((option) => option.value === selectedSort) ?? productSortOptions[0];
 
     return {
-      ...initialHomeFilters,
+      ...createInitialHomeFilters(productSearchQuery),
       sortBy: sortOption.sortBy,
       order: sortOption.order,
     };
-  }, [selectedSort]);
+  }, [productSearchQuery, selectedSort]);
   const {
     data: firstPageData,
     isError: isFirstPageError,
@@ -114,6 +118,15 @@ export function HomePage() {
 
     return () => observer.disconnect();
   }, [hasNextPage, isFetching, loadNextPage]);
+
+  const applySearch = useCallback((search: string) => {
+    setProductSearchQuery(search);
+    setPage(1);
+    setExtraProducts([]);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, []);
+
+  useEffect(() => registerSearchHandler(applySearch), [applySearch, registerSearchHandler]);
 
   const retryFirstPage = () => {
     setPage(1);

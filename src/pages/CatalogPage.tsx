@@ -1,11 +1,12 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useOutletContext } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { ProductControls } from '@/components/app/ProductControls';
 import { productSortOptions } from '@/components/app/productControlsConfig';
 import type { ProductSortValue, ProductViewMode } from '@/components/app/productControlsConfig';
+import type { MainLayoutOutletContext } from '@/components/layout/MainLayout';
 import { Button, Icon } from '@/components/ui';
 import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
@@ -19,9 +20,10 @@ const FILTER_DEBOUNCE_MS = 350;
 const categories = ['Классические', 'Исторические', 'Театральные', 'Экспериментальные', 'Экзотические', 'Современные'];
 const styles = ['Классический', 'Винтаж', 'Театральный', 'Экспериментальный', 'Военный', 'Минимализм', 'Экзотический'];
 const densities = ['Низкая', 'Средняя', 'Высокая'];
-const initialFilters: FilterState = {
+const createInitialFilters = (search = ''): FilterState => ({
   page: 1,
   limit: LIMIT,
+  search,
   category: null,
   styles: [],
   density: null,
@@ -31,7 +33,7 @@ const initialFilters: FilterState = {
   maxPrice: '',
   sortBy: null,
   order: null,
-};
+});
 
 const currency = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -58,8 +60,9 @@ function getPaginationItems(currentPage: number, totalPages: number): PageItem[]
 }
 
 export function CatalogPage() {
-  const [filters, setFilters] = useState<FilterState>(initialFilters);
-  const [queryFilters, setQueryFilters] = useState<FilterState>(initialFilters);
+  const { registerSearchHandler, searchQuery } = useOutletContext<MainLayoutOutletContext>();
+  const [filters, setFilters] = useState<FilterState>(() => createInitialFilters(searchQuery));
+  const [queryFilters, setQueryFilters] = useState<FilterState>(() => createInitialFilters(searchQuery));
   const [targetPage, setTargetPage] = useState('1');
   const [viewMode, setViewMode] = useState<ProductViewMode>('grid');
   const filterDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -93,6 +96,26 @@ export function CatalogPage() {
       }
     };
   }, []);
+
+  const applySearch = useCallback((search: string) => {
+    if (filterDebounceRef.current) {
+      clearTimeout(filterDebounceRef.current);
+      filterDebounceRef.current = null;
+    }
+
+    const nextFilters = {
+      ...filters,
+      search,
+      page: 1,
+    };
+
+    setFilters(nextFilters);
+    setQueryFilters(nextFilters);
+    setTargetPage('1');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [filters]);
+
+  useEffect(() => registerSearchHandler(applySearch), [applySearch, registerSearchHandler]);
 
   const changePage = (nextPage: number) => {
     if (isFetching || nextPage === page || nextPage < 1 || nextPage > totalPages) {
@@ -154,8 +177,10 @@ export function CatalogPage() {
   };
 
   const clearFilters = () => {
-    setFilters(initialFilters);
-    scheduleQueryFiltersUpdate(initialFilters);
+    const nextFilters = createInitialFilters(searchQuery);
+
+    setFilters(nextFilters);
+    scheduleQueryFiltersUpdate(nextFilters);
     setTargetPage('1');
   };
 

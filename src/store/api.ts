@@ -29,6 +29,7 @@ type LoginResponse = {
 export interface FilterState {
   page: number;
   limit: number;
+  search: string;
   category: string | null;
   styles: string[];
   density: string | null;
@@ -138,6 +139,11 @@ function buildProductsQuery(params: GetProductsParams) {
     _page: String(params.page),
     _limit: String(params.limit),
   });
+  const searchQuery = params.search.trim();
+
+  if (searchQuery) {
+    searchParams.set('q', searchQuery);
+  }
 
   if (params.category) {
     searchParams.set('category', params.category);
