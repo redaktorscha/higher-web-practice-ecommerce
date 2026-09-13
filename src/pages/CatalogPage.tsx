@@ -1,7 +1,7 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useOutletContext } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useOutletContext, useSearchParams } from 'react-router-dom';
 import { ProductCartControl } from '@/components/app/ProductCartControl';
 import { ProductControls } from '@/components/app/ProductControls';
 import { productSortOptions } from '@/components/app/productControlsConfig';
@@ -33,6 +33,62 @@ const createInitialFilters = (search = ''): FilterState => ({
   order: null,
 });
 
+function createFiltersFromSearchParams(searchParams: URLSearchParams, search = ''): FilterState {
+  return {
+    ...createInitialFilters(search),
+    category: searchParams.get('category'),
+    styles: searchParams.getAll('style'),
+    density: searchParams.get('density'),
+    requiresWax: searchParams.get('requiresWax') === 'true' ? true : null,
+    boostsCharisma: searchParams.get('boostsCharisma') === 'true' ? true : null,
+    minPrice: searchParams.get('minPrice') ?? '',
+    maxPrice: searchParams.get('maxPrice') ?? '',
+    sortBy: searchParams.get('sortBy'),
+    order: searchParams.get('order') === 'asc' || searchParams.get('order') === 'desc'
+      ? searchParams.get('order') as 'asc' | 'desc'
+      : null,
+  };
+}
+
+function getFiltersSearchParams(filters: FilterState) {
+  const searchParams = new URLSearchParams();
+
+  if (filters.category) {
+    searchParams.set('category', filters.category);
+  }
+
+  filters.styles.forEach((style) => {
+    searchParams.append('style', style);
+  });
+
+  if (filters.density) {
+    searchParams.set('density', filters.density);
+  }
+
+  if (filters.requiresWax) {
+    searchParams.set('requiresWax', 'true');
+  }
+
+  if (filters.boostsCharisma) {
+    searchParams.set('boostsCharisma', 'true');
+  }
+
+  if (filters.minPrice !== '') {
+    searchParams.set('minPrice', String(filters.minPrice));
+  }
+
+  if (filters.maxPrice !== '') {
+    searchParams.set('maxPrice', String(filters.maxPrice));
+  }
+
+  if (filters.sortBy && filters.order) {
+    searchParams.set('sortBy', filters.sortBy);
+    searchParams.set('order', filters.order);
+  }
+
+  return searchParams;
+}
+
 const currency = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
   currency: 'RUB',
@@ -59,8 +115,11 @@ function getPaginationItems(currentPage: number, totalPages: number): PageItem[]
 
 export function CatalogPage() {
   const { registerSearchHandler, searchQuery } = useOutletContext<MainLayoutOutletContext>();
-  const [filters, setFilters] = useState<FilterState>(() => createInitialFilters(searchQuery));
-  const [queryFilters, setQueryFilters] = useState<FilterState>(() => createInitialFilters(searchQuery));
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [filters, setFilters] = useState<FilterState>(() => createFiltersFromSearchParams(searchParams, searchQuery));
+  const [queryFilters, setQueryFilters] = useState<FilterState>(() => createFiltersFromSearchParams(searchParams, searchQuery));
   const [targetPage, setTargetPage] = useState('1');
   const [viewMode, setViewMode] = useState<ProductViewMode>('grid');
   const filterDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -70,6 +129,8 @@ export function CatalogPage() {
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / LIMIT);
   const page = queryFilters.page;
+  const isMobileFiltersPage = location.pathname === '/catalog/filters';
+  const selectedCategory = filters.category;
   const selectedSort = productSortOptions.find((option) => option.sortBy === filters.sortBy && option.order === filters.order)?.value ?? 'popular';
   const paginationItems = useMemo(
     () => getPaginationItems(page, totalPages),
@@ -133,7 +194,10 @@ export function CatalogPage() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const updateFilters = (nextFilters: Partial<FilterState>) => {
+  const updateFilters = (
+    nextFilters: Partial<FilterState>,
+    options: { immediate?: boolean; syncSearchParams?: boolean } = {},
+  ) => {
     const updatedFilters = {
       ...filters,
       ...nextFilters,
@@ -142,7 +206,21 @@ export function CatalogPage() {
 
     setFilters(updatedFilters);
     setTargetPage('1');
-    scheduleQueryFiltersUpdate(updatedFilters);
+
+    if (options.immediate) {
+      if (filterDebounceRef.current) {
+        clearTimeout(filterDebounceRef.current);
+        filterDebounceRef.current = null;
+      }
+
+      setQueryFilters(updatedFilters);
+    } else {
+      scheduleQueryFiltersUpdate(updatedFilters);
+    }
+
+    if (options.syncSearchParams) {
+      setSearchParams(getFiltersSearchParams(updatedFilters), { replace: true });
+    }
   };
 
   const toggleCategory = (category: string) => {
@@ -179,7 +257,58 @@ export function CatalogPage() {
 
     setFilters(nextFilters);
     scheduleQueryFiltersUpdate(nextFilters);
+    setSearchParams(getFiltersSearchParams(nextFilters), { replace: true });
     setTargetPage('1');
+  };
+
+  const clearMobileFilters = () => {
+    const nextFilters = {
+      ...createInitialFilters(searchQuery),
+      category: filters.category,
+    };
+
+    setFilters(nextFilters);
+    setQueryFilters(nextFilters);
+    setSearchParams(getFiltersSearchParams(nextFilters), { replace: true });
+    setTargetPage('1');
+  };
+
+  const openMobileCategory = (category: string) => {
+    const nextFilters = {
+      ...createInitialFilters(searchQuery),
+      category,
+    };
+    const nextSearchParams = getFiltersSearchParams(nextFilters);
+
+    setFilters(nextFilters);
+    setQueryFilters(nextFilters);
+    setTargetPage('1');
+    navigate(`/catalog?${nextSearchParams.toString()}`);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const openMobileFilters = () => {
+    const nextSearchParams = getFiltersSearchParams(filters);
+    const nextSearch = nextSearchParams.toString();
+
+    navigate(`/catalog/filters${nextSearch ? `?${nextSearch}` : ''}`);
+  };
+
+  const closeMobileFilters = () => {
+    if (filterDebounceRef.current) {
+      clearTimeout(filterDebounceRef.current);
+      filterDebounceRef.current = null;
+    }
+
+    setQueryFilters(filters);
+    const nextSearchParams = getFiltersSearchParams(filters);
+    const nextSearch = nextSearchParams.toString();
+
+    navigate(`/catalog${nextSearch ? `?${nextSearch}` : ''}`);
+  };
+
+  const updateMobileFilters = (nextFilters: Partial<FilterState>) => {
+    updateFilters(nextFilters, { syncSearchParams: true });
   };
 
   const submitTargetPage = (event: FormEvent<HTMLFormElement>) => {
@@ -245,46 +374,54 @@ export function CatalogPage() {
         </div>
       </div>
 
-      <section className="grid gap-3 md:hidden">
-        <form className="flex h-9 items-center gap-2 rounded-lg border border-primary bg-card px-2.5">
-          <Icon name="search" size={16} className="text-muted-foreground" />
-          <input className="min-w-0 flex-1 bg-transparent text-base leading-6 outline-none placeholder:text-muted-foreground" placeholder="Искать" />
-        </form>
+      {isMobileFiltersPage ? (
+        <MobileFiltersPage
+          filters={filters}
+          onBack={closeMobileFilters}
+          onClear={clearMobileFilters}
+          onDensityChange={(density) => updateMobileFilters({ density })}
+          onMaxPriceChange={(maxPrice) => updateMobileFilters({ maxPrice })}
+          onMinPriceChange={(minPrice) => updateMobileFilters({ minPrice })}
+          onSearch={applySearch}
+          onShowProducts={closeMobileFilters}
+          onStyleToggle={(style) => {
+            updateFilters({
+              styles: filters.styles.includes(style)
+                ? filters.styles.filter((item) => item !== style)
+                : [...filters.styles, style],
+            }, { syncSearchParams: true });
+          }}
+          onToggleBoolean={(name) => updateMobileFilters({ [name]: filters[name] === true ? null : true })}
+        />
+      ) : selectedCategory ? (
+        <MobileProductList
+          category={selectedCategory}
+          isError={isError}
+          isFetching={isFetching}
+          isLoading={isLoading}
+          onBack={() => {
+            const nextFilters = createInitialFilters(searchQuery);
 
-        {isError ? (
-          <ErrorPanel onRetry={() => refetch()} />
-        ) : (
-          <>
-            {isLoading || products.length > 0 ? (
-              <div className={cn('grid grid-cols-2 gap-x-1 gap-y-2', isFetching && !isLoading && 'opacity-60')}>
-                {isLoading
-                  ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
-                  : products.map((product) => (
-                      <CatalogProductCard key={product.id} product={product} compact imageClassName="h-[172px]" viewMode="grid" />
-                    ))}
-              </div>
-            ) : (
-              <div className="grid min-h-[240px] place-items-center rounded-lg bg-card p-5 text-center text-muted-foreground shadow-card">
-                По выбранным фильтрам ничего не найдено
-              </div>
-            )}
-
-            {totalPages > 1 ? (
-              <CatalogPagination
-                className="pt-2"
-                isFetching={isFetching}
-                items={paginationItems}
-                onPageChange={changePage}
-                onTargetPageChange={setTargetPage}
-                onTargetPageSubmit={submitTargetPage}
-                page={page}
-                targetPage={targetPage}
-                totalPages={totalPages}
-              />
-            ) : null}
-          </>
-        )}
-      </section>
+            setFilters(nextFilters);
+            setQueryFilters(nextFilters);
+            setSearchParams(getFiltersSearchParams(nextFilters), { replace: true });
+            navigate('/catalog');
+          }}
+          onFilterOpen={openMobileFilters}
+          onPageChange={changePage}
+          onRetry={() => refetch()}
+          onSearch={applySearch}
+          onTargetPageChange={setTargetPage}
+          onTargetPageSubmit={submitTargetPage}
+          page={page}
+          paginationItems={paginationItems}
+          products={products}
+          targetPage={targetPage}
+          totalPages={totalPages}
+        />
+      ) : (
+        <MobileCategoryPage onCategorySelect={openMobileCategory} onSearch={applySearch} />
+      )}
     </>
   );
 }
@@ -379,6 +516,247 @@ function DesktopFilters({
         </Button>
       </section>
     </aside>
+  );
+}
+
+function MobileSearchForm({ onSearch }: { onSearch: (search: string) => void }) {
+  return (
+    <form
+      className="flex h-9 items-center gap-2 rounded-lg border border-primary bg-card px-2.5"
+      onSubmit={(event) => {
+        event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        onSearch(String(formData.get('search') ?? ''));
+      }}
+    >
+      <Icon name="search" size={16} className="text-muted-foreground" />
+      <input
+        className="min-w-0 flex-1 bg-transparent text-base leading-6 outline-none placeholder:text-muted-foreground"
+        name="search"
+        placeholder="Искать"
+      />
+    </form>
+  );
+}
+
+function MobileCategoryPage({
+  onCategorySelect,
+  onSearch,
+}: {
+  onCategorySelect: (category: string) => void;
+  onSearch: (search: string) => void;
+}) {
+  return (
+    <section className="grid gap-4 md:hidden">
+      <MobileSearchForm onSearch={onSearch} />
+      <div className="flex h-6 items-center gap-2 text-sm leading-5">
+        <Link to="/" aria-label="Назад" className="text-xl leading-none">
+          ←
+        </Link>
+        <span className="font-bold">Усы</span>
+      </div>
+      <div className="grid gap-1">
+        {categories.map((category) => (
+          <button
+            className="flex h-10 items-center justify-between text-left text-sm leading-5"
+            key={category}
+            onClick={() => onCategorySelect(category)}
+            type="button"
+          >
+            {category}
+            <ChevronRight className="size-5 text-muted-foreground" />
+          </button>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function MobileProductList({
+  category,
+  isError,
+  isFetching,
+  isLoading,
+  onBack,
+  onFilterOpen,
+  onPageChange,
+  onRetry,
+  onSearch,
+  onTargetPageChange,
+  onTargetPageSubmit,
+  page,
+  paginationItems,
+  products,
+  targetPage,
+  totalPages,
+}: {
+  category: string;
+  isError: boolean;
+  isFetching: boolean;
+  isLoading: boolean;
+  onBack: () => void;
+  onFilterOpen: () => void;
+  onPageChange: (page: number) => void;
+  onRetry: () => void;
+  onSearch: (search: string) => void;
+  onTargetPageChange: (page: string) => void;
+  onTargetPageSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  page: number;
+  paginationItems: PageItem[];
+  products: Product[];
+  targetPage: string;
+  totalPages: number;
+}) {
+  return (
+    <section className="grid gap-3 md:hidden">
+      <MobileSearchForm onSearch={onSearch} />
+      <div className="grid w-[calc(100vw-40px)] max-w-full grid-cols-[minmax(0,1fr)_32px] items-start gap-3">
+        <div className="grid min-w-0 gap-1">
+          <button className="min-w-0 truncate text-left text-sm leading-5 text-muted-foreground" onClick={onBack} type="button">
+            Усы / {category}
+          </button>
+          <h1 className="text-xl leading-7 font-bold">{category}</h1>
+        </div>
+        <button
+          aria-label="Открыть фильтры"
+          className="mr-3 grid size-8 place-items-center rounded-md text-foreground hover:text-primary"
+          onClick={onFilterOpen}
+          type="button"
+        >
+          <Icon name="sliders" size={24} />
+        </button>
+      </div>
+
+      {isError ? (
+        <ErrorPanel onRetry={onRetry} />
+      ) : (
+        <>
+          {isLoading || products.length > 0 ? (
+            <div className={cn('grid grid-cols-2 gap-x-1 gap-y-2', isFetching && !isLoading && 'opacity-60')}>
+              {isLoading
+                ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
+                : products.map((product) => (
+                    <CatalogProductCard key={product.id} product={product} compact imageClassName="h-[172px]" viewMode="grid" />
+                  ))}
+            </div>
+          ) : (
+            <div className="grid min-h-[240px] place-items-center rounded-lg bg-card p-5 text-center text-muted-foreground shadow-card">
+              По выбранным фильтрам ничего не найдено
+            </div>
+          )}
+
+          {totalPages > 1 ? (
+            <CatalogPagination
+              className="pt-2"
+              isFetching={isFetching}
+              items={paginationItems}
+              onPageChange={onPageChange}
+              onTargetPageChange={onTargetPageChange}
+              onTargetPageSubmit={onTargetPageSubmit}
+              page={page}
+              targetPage={targetPage}
+              totalPages={totalPages}
+            />
+          ) : null}
+        </>
+      )}
+    </section>
+  );
+}
+
+function MobileFiltersPage({
+  filters,
+  onBack,
+  onClear,
+  onDensityChange,
+  onMaxPriceChange,
+  onMinPriceChange,
+  onSearch,
+  onShowProducts,
+  onStyleToggle,
+  onToggleBoolean,
+}: {
+  filters: FilterState;
+  onBack: () => void;
+  onClear: () => void;
+  onDensityChange: (density: string | null) => void;
+  onMaxPriceChange: (price: string) => void;
+  onMinPriceChange: (price: string) => void;
+  onSearch: (search: string) => void;
+  onShowProducts: () => void;
+  onStyleToggle: (style: string) => void;
+  onToggleBoolean: (name: 'requiresWax' | 'boostsCharisma') => void;
+}) {
+  return (
+    <section className="grid gap-4 pb-20 md:hidden">
+      <MobileSearchForm onSearch={onSearch} />
+      <div className="flex h-8 items-center gap-2">
+        <button aria-label="Назад" className="text-[28px] leading-none" onClick={onBack} type="button">
+          ←
+        </button>
+        <h1 className="text-2xl leading-8 font-bold">Фильтры</h1>
+      </div>
+
+      <div className="grid gap-5 rounded-xl bg-card p-4 shadow-card">
+        <DesktopCheckboxGroup
+          checked={filters.styles}
+          items={styles}
+          onToggle={onStyleToggle}
+          title="Стиль"
+        />
+        <DesktopRadioGroup
+          checked={filters.density}
+          items={densities}
+          onChange={onDensityChange}
+          title="Густота"
+        />
+
+        <section className="grid gap-3">
+          <h2 className="text-sm leading-5 font-bold">Фильтр</h2>
+          <SwitchRow
+            checked={filters.requiresWax === true}
+            label="требует укладки воском"
+            onToggle={() => onToggleBoolean('requiresWax')}
+          />
+          <SwitchRow
+            checked={filters.boostsCharisma === true}
+            label="повышает харизму"
+            onToggle={() => onToggleBoolean('boostsCharisma')}
+          />
+        </section>
+
+        <section className="grid gap-3">
+          <h2 className="text-sm leading-5 font-bold">Цена</h2>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              aria-label="Минимальная цена"
+              className="h-10 rounded border border-muted-foreground bg-background px-3"
+              inputMode="numeric"
+              onChange={(event) => onMinPriceChange(event.target.value)}
+              placeholder="10"
+              value={filters.minPrice}
+            />
+            <input
+              aria-label="Максимальная цена"
+              className="h-10 rounded border border-muted-foreground bg-background px-3"
+              inputMode="numeric"
+              onChange={(event) => onMaxPriceChange(event.target.value)}
+              placeholder="1000"
+              value={filters.maxPrice}
+            />
+          </div>
+        </section>
+      </div>
+
+      <div className="grid gap-3">
+        <Button className="h-10 w-full" onClick={onShowProducts} type="button">
+          Показать товары
+        </Button>
+        <Button onClick={onClear} type="button" variant="secondary" className="h-10 w-full">
+          Очистить фильтры
+        </Button>
+      </div>
+    </section>
   );
 }
 

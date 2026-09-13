@@ -32,7 +32,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'catalog/filters',
-        element: <HomePage />,
+        element: <CatalogPage />,
       },
       {
         element: <ProtectedRoute isAuthenticated={false} />,
