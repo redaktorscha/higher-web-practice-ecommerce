@@ -10,5 +10,4 @@ export { ProfileEditPage } from './ProfileEditPage';
 export { ProfileLayout } from './ProfileLayout';
 export { ProfilePage } from './ProfilePage';
 export { RegisterPage } from './RegisterPage';
-export { StubPage } from './StubPage';
 export { SuccessPage } from './SuccessPage';
