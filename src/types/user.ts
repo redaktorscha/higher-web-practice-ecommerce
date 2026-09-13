@@ -28,5 +28,7 @@ export type UpdateProfilePayload = {
   firstName?: string;
   lastName?: string;
   email?: string;
+  language?: User['language'];
+  notifyByEmail?: boolean;
   password?: string;
 };

@@ -1,14 +1,32 @@
-import { ChevronDown } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import avatarImage from '@/assets/avatar.png';
 import meditationImage from '@/assets/meditation.png';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui';
 import { selectCurrentUser } from '@/store/authSlice';
+import { useUpdateProfileMutation } from '@/store/api';
+import type { User } from '@/types';
+
+const languageLabels = {
+  ru: 'Русский',
+  en: 'English',
+} satisfies Record<NonNullable<User['language']>, string>;
 
 export function ProfilePage() {
   const user = useSelector(selectCurrentUser);
+  const [updateProfile, { isLoading: isUpdatingProfile }] = useUpdateProfileMutation();
   const fullName = user ? `${user.firstName} ${user.lastName}` : 'Имя Фамилия';
   const email = user?.email ?? 'Email@yanex.ru';
+  const language = user?.language ?? 'ru';
+  const notifyByEmail = user?.notifyByEmail ?? false;
+
+  const changeLanguage = (value: string) => {
+    void updateProfile({ language: value as User['language'] });
+  };
+
+  const changeNotifyByEmail = () => {
+    void updateProfile({ notifyByEmail: !notifyByEmail });
+  };
 
   return (
     <section className="min-h-[676px] md:relative">
@@ -40,14 +58,25 @@ export function ProfilePage() {
       <div className="mt-8 grid gap-4 md:mt-4">
         <label className="grid gap-1 text-sm leading-5 text-[#9ca3af] md:w-[180px]">
           Язык:
-          <button className="flex h-10 items-center justify-between rounded-sm border border-[#9ca3af] bg-card px-3 text-sm leading-5 text-foreground" type="button">
-            Русский
-            <ChevronDown className="size-5 text-muted-foreground" />
-          </button>
+          <Select disabled={isUpdatingProfile} onValueChange={changeLanguage} value={language}>
+            <SelectTrigger className="h-10 rounded-sm border-[#9ca3af] bg-card px-3 py-2 text-sm leading-5 text-foreground">
+              <SelectValue>{languageLabels[language] ?? 'Русский'}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ru">Русский</SelectItem>
+            </SelectContent>
+          </Select>
         </label>
 
         <label className="flex items-center gap-2 text-sm leading-5">
-          <span className="size-4 rounded-full border border-[#9ca3af]" />
+          <input
+            aria-label="Уведомлять об изменении статуса заказов по email"
+            checked={notifyByEmail}
+            className="size-4 shrink-0 appearance-none rounded-full border border-[#9ca3af] bg-card checked:border-[5px] checked:border-primary disabled:opacity-60"
+            disabled={isUpdatingProfile}
+            onChange={changeNotifyByEmail}
+            type="checkbox"
+          />
           Уведомлять об изменении статуса заказов по email
         </label>
 
