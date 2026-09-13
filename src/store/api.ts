@@ -447,8 +447,8 @@ export const api = createApi({
           : [{ type: 'Rating' as const, id: 'LIST' }],
     }),
 
-    getRatingById: builder.query<ProductRating, string>({
-      query: (id) => `/ratings/${encodeURIComponent(id)}`,
+    getRatingById: builder.query<ProductRating[], string>({
+      query: (id) => `/ratings?productId=${encodeURIComponent(id)}`,
       providesTags: (_result, _error, id) => [{ type: 'Rating', id }],
     }),
 

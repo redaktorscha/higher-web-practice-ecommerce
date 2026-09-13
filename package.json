@@ -22,6 +22,7 @@
     "@tailwindcss/vite": "^4.3.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "embla-carousel-react": "^8.6.0",
     "json-server": "^0.17.4",
     "lucide-react": "^1.21.0",
     "react": "^19.2.4",
