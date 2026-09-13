@@ -1,5 +1,5 @@
 import { Camera } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, type ChangeEvent } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -43,6 +43,7 @@ function ProfileEditForm({ user }: { user: User | null }) {
   const [updateProfile, { isLoading }] = useUpdateProfileMutation();
   const [formMessage, setFormMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const defaultValues: ProfileFormValues = {
     firstName: user?.firstName ?? "",
     lastName: user?.lastName ?? "",
@@ -59,9 +60,35 @@ function ProfileEditForm({ user }: { user: User | null }) {
     defaultValues,
   });
 
+  useEffect(() => {
+    return () => {
+      if (avatarPreview) {
+        URL.revokeObjectURL(avatarPreview);
+      }
+    };
+  }, [avatarPreview]);
+
   const clearFieldState = (field: keyof ProfileFormValues) => {
     clearErrors(field);
     setSuccessMessage("");
+  };
+
+  const handleAvatarChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+
+    if (!file) {
+      return;
+    }
+
+    setAvatarPreview((previousUrl) => {
+      if (previousUrl) {
+        URL.revokeObjectURL(previousUrl);
+      }
+
+      return URL.createObjectURL(file);
+    });
+
+    // todo не реализована отправка на бэк
   };
 
   const handleCancel = () => {
@@ -114,15 +141,18 @@ function ProfileEditForm({ user }: { user: User | null }) {
             <img
               alt=""
               className="size-20 rounded-full object-cover"
-              src={avatarImage}
+              src={avatarPreview ?? avatarImage}
             />
-            <button
-              className="absolute right-[-20px] bottom-0 grid size-10 place-items-center rounded-full bg-primary text-white"
-              type="button"
-              aria-label="Загрузить фото"
-            >
-              <Camera className="size-6" />
-            </button>
+            <label className="absolute right-[-20px] bottom-0 grid size-10 cursor-pointer place-items-center rounded-full bg-primary text-white">
+              <Camera aria-hidden className="size-6" />
+              <input
+                accept="image/*"
+                aria-label="Загрузить фото"
+                className="sr-only"
+                onChange={handleAvatarChange}
+                type="file"
+              />
+            </label>
           </div>
         </div>
 
