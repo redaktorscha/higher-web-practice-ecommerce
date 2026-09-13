@@ -1,9 +1,10 @@
-import { useEffect, useCallback } from "react";
+import { useEffect, useCallback, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, ShoppingBag, Star } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useAddProductToCart } from "@/hooks/useAddProductToCart";
+import { cn } from "@/lib/utils";
 import {
   useGetOrdersQuery,
   useGetProductByIdQuery,
@@ -291,6 +292,9 @@ function ProductRating({
   canRate: boolean;
   ratings: ProductRating[];
 }) {
+  const [userRating, setUserRating] = useState<number>(0);
+  const [hoverRating, setHoverRating] = useState<number>(0);
+
   return (
     <section className="mt-8 rounded-xl bg-card p-6 shadow-card md:mt-5">
       <div className="grid gap-4 md:gap-4">
@@ -299,12 +303,25 @@ function ProductRating({
             <div className="grid gap-4 md:gap-3">
               <p className="hidden text-base leading-6 md:block">Оцените усы</p>
               <div className="flex justify-between md:w-[194px] md:justify-start md:gap-2">
-                {Array.from({ length: 5 }).map((_, index) => (
-                  <Star
-                    className="size-10 text-primary-hover md:size-8"
-                    key={index}
-                  />
-                ))}
+                {[1, 2, 3, 4, 5].map((star, index) => {
+                  const isActive = star <= (hoverRating || userRating);
+                  return (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => setUserRating(star)}
+                      onMouseEnter={() => setHoverRating(star)}
+                      onMouseLeave={() => setHoverRating(0)}
+                    >
+                      <Star
+                        className={cn(
+                          "size-10 text-primary-hover md:size-8",
+                          isActive && "fill-primary",
+                        )}
+                      />
+                    </button>
+                  );
+                })}
               </div>
               <button
                 className="h-10 rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:hidden"
