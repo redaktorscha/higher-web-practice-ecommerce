@@ -2,7 +2,6 @@ import { Trash } from 'lucide-react';
 import { memo, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
-import shoppingImage from '@/assets/shopping.png';
 import {
   selectCartItem,
   selectCartItems,
@@ -97,7 +96,6 @@ export function CartPage() {
             Оформить заказ
           </button>
         </div>
-        <img alt="" className="mt-12 h-[396px] w-[288px] object-contain" src={shoppingImage} />
       </aside>
 
       <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">

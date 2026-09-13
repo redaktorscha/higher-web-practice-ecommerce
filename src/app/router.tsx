@@ -61,10 +61,12 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <ProfilePage />,
+                handle: { illustration: 'meditation' },
               },
               {
                 path: 'edit',
                 element: <ProfileEditPage />,
+                handle: { illustration: 'meditation' },
               },
               {
                 path: 'orders',
@@ -73,6 +75,7 @@ const router = createBrowserRouter([
               {
                 path: 'cart',
                 element: <CartPage />,
+                handle: { illustration: 'shopping' },
               },
             ],
           },
