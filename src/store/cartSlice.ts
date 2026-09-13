@@ -31,6 +31,11 @@ function upsertCartItem(state: CartState, item: CartItem) {
   recalculateCart(state);
 }
 
+function removeCartItem(state: CartState, productId: string) {
+  state.items = state.items.filter((item) => item.productId !== productId);
+  recalculateCart(state);
+}
+
 const cartSlice = createSlice({
   name: 'cart',
   initialState,
@@ -47,6 +52,14 @@ const cartSlice = createSlice({
       upsertCartItem(state, action.payload);
     });
 
+    builder.addMatcher(api.endpoints.updateCartItemQuantity.matchFulfilled, (state, action: PayloadAction<CartItem>) => {
+      upsertCartItem(state, action.payload);
+    });
+
+    builder.addMatcher(api.endpoints.removeFromCart.matchFulfilled, (state, action: PayloadAction<{ productId: string }>) => {
+      removeCartItem(state, action.payload.productId);
+    });
+
     builder.addMatcher(api.endpoints.getProfile.matchRejected, () => initialState);
   },
 });
@@ -57,5 +70,7 @@ export const selectCart = (state: RootState) => state.cart;
 export const selectCartItems = (state: RootState) => state.cart.items;
 export const selectCartTotalItems = (state: RootState) => state.cart.totalItems;
 export const selectCartTotalPrice = (state: RootState) => state.cart.totalPrice;
+export const selectCartItem = (productId: string) => (state: RootState) =>
+  state.cart.items.find((item) => item.productId === productId) ?? null;
 export const selectCartItemQuantity = (productId: string) => (state: RootState) =>
   state.cart.items.find((item) => item.productId === productId)?.quantity ?? 0;

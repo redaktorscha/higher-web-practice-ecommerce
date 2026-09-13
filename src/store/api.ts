@@ -55,6 +55,15 @@ type CartRecord = CartItem & {
   userId: string;
 };
 
+type UpdateCartItemQuantityPayload = {
+  productId: string;
+  quantity: number;
+};
+
+type RemoveFromCartPayload = {
+  productId: string;
+};
+
 export const TOKEN_STORAGE_KEY = 'token';
 
 const generateFakeToken = (userId: string) =>
@@ -439,6 +448,77 @@ export const api = createApi({
       invalidatesTags: ['Cart'],
     }),
 
+    updateCartItemQuantity: builder.mutation<CartItem, UpdateCartItemQuantityPayload>({
+      async queryFn(payload, _queryApi, _extraOptions, fetchWithBQ) {
+        const token = getStoredToken();
+        const userId = token ? getUserIdFromToken(token) : null;
+
+        if (!userId) {
+          return { error: makeClientError(401, 'Unauthorized') };
+        }
+
+        const cartResult = await fetchWithBQ(
+          `/cart?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(payload.productId)}`,
+        );
+
+        if (cartResult.error) {
+          return { error: cartResult.error };
+        }
+
+        const record = (cartResult.data as CartRecord[])[0];
+
+        if (!record) {
+          return { error: makeClientError(404, 'Товар не найден в корзине') };
+        }
+
+        const result = await fetchWithBQ({
+          url: `/cart/${encodeURIComponent(record.id)}`,
+          method: 'PATCH',
+          body: { quantity: payload.quantity },
+        });
+
+        return result.data
+          ? { data: result.data as CartItem }
+          : { error: result.error ?? makeClientError(500, 'Не удалось обновить корзину') };
+      },
+      invalidatesTags: ['Cart'],
+    }),
+
+    removeFromCart: builder.mutation<RemoveFromCartPayload, RemoveFromCartPayload>({
+      async queryFn(payload, _queryApi, _extraOptions, fetchWithBQ) {
+        const token = getStoredToken();
+        const userId = token ? getUserIdFromToken(token) : null;
+
+        if (!userId) {
+          return { error: makeClientError(401, 'Unauthorized') };
+        }
+
+        const cartResult = await fetchWithBQ(
+          `/cart?userId=${encodeURIComponent(userId)}&productId=${encodeURIComponent(payload.productId)}`,
+        );
+
+        if (cartResult.error) {
+          return { error: cartResult.error };
+        }
+
+        const record = (cartResult.data as CartRecord[])[0];
+
+        if (!record) {
+          return { error: makeClientError(404, 'Товар не найден в корзине') };
+        }
+
+        const result = await fetchWithBQ({
+          url: `/cart/${encodeURIComponent(record.id)}`,
+          method: 'DELETE',
+        });
+
+        return result.error
+          ? { error: result.error }
+          : { data: payload };
+      },
+      invalidatesTags: ['Cart'],
+    }),
+
     getRatings: builder.query<ProductRating[], void>({
       query: () => '/ratings',
       providesTags: (result) =>
@@ -494,5 +574,7 @@ export const {
   useGetRatingsQuery,
   useLoginMutation,
   useRegisterMutation,
+  useRemoveFromCartMutation,
+  useUpdateCartItemQuantityMutation,
   useUpdateProfileMutation,
 } = api;
