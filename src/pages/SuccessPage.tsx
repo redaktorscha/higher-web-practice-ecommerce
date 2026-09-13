@@ -1,13 +1,44 @@
+import { useRef } from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { useReactToPrint } from 'react-to-print';
+import { selectLastSuccessfulOrder } from '@/store/orderSlice';
 
-const products = [
-  { name: 'Инженер', price: '2 650 ₽', desktopPrice: '10 000 ₽', image: '/mustashes/enginere/0.png' },
-  { name: 'Председатель', price: '5 590 ₽', desktopPrice: '10 000 ₽', image: '/mustashes/chairman/0.png' },
-];
+const currency = new Intl.NumberFormat('ru-RU', {
+  style: 'currency',
+  currency: 'RUB',
+  maximumFractionDigits: 0,
+});
 
 export function SuccessPage() {
+  const order = useSelector(selectLastSuccessfulOrder);
+  const printRef = useRef<HTMLElement>(null);
+  const handlePrint = useReactToPrint({ contentRef: printRef });
+
+  if (!order) {
+    return (
+      <section className="pb-28 md:mx-auto md:w-[780px] md:pt-2">
+        <h1 className="mb-4 text-2xl leading-8 md:text-[30px] md:leading-9">Заказ не найден</h1>
+        <Link className="text-sm leading-5 text-primary-hover md:text-base md:leading-6" to="/profile/orders">
+          Все заказы
+        </Link>
+      </section>
+    );
+  }
+
+  const deliveryTitle = order.deliveryMethod === 'pickup_point' ? 'Пункт выдачи' : 'Адрес доставки';
+  const deliveryAddress = order.deliveryMethod === 'pickup_point'
+    ? order.pickupPoint?.address ?? 'Адрес пункта выдачи'
+    : [order.deliveryAddress?.city, order.deliveryAddress?.street]
+        .filter(Boolean)
+        .join(', ');
+  const paymentTitle = order.payment.method === 'card_online' ? 'Оплачено картой' : 'Способ оплаты';
+  const paymentValue = order.payment.method === 'card_online' && order.payment.cardLast4
+    ? `*${order.payment.cardLast4}`
+    : 'Наличными при получении';
+
   return (
-    <section className="pb-28 md:mx-auto md:w-[780px] md:pt-2">
+    <section ref={printRef} className="pb-28 md:mx-auto md:w-[780px] md:pt-2">
       <h1 className="mb-2 hidden text-[30px] leading-9 md:block">Спасибо за покупку!</h1>
       <h1 className="mb-4 text-2xl leading-8 md:hidden">Спасибо за заказ!</h1>
       <p className="mb-5 hidden text-xl leading-5 font-bold md:block">Мы уже готовим выбранные усы к отправке!</p>
@@ -16,24 +47,28 @@ export function SuccessPage() {
         <section>
           <h2 className="mb-4 text-sm leading-5 font-bold md:text-base md:leading-6">Получатель</h2>
           <div className="grid gap-3 md:flex md:gap-6">
-            <p className="text-sm leading-5 md:text-base md:leading-6">Ярополк Иванов</p>
-            <p className="text-xs leading-4 text-muted-foreground md:text-sm md:leading-5">ivanov@yandex.ru</p>
-            <p className="text-xs leading-4 text-muted-foreground md:text-sm md:leading-5">+7 444 893-33-44</p>
+            <p className="text-sm leading-5 md:text-base md:leading-6">{order.customer.firstName} {order.customer.lastName}</p>
+            <p className="text-xs leading-4 text-muted-foreground md:text-sm md:leading-5">{order.customer.email}</p>
+            <p className="text-xs leading-4 text-muted-foreground md:text-sm md:leading-5">{order.customer.phone}</p>
           </div>
-          <p className="mt-4 text-xs leading-4 md:max-w-[470px] md:text-sm md:leading-5">
-            Если в комплекте есть инструкция «как выглядеть уверенно», буду благодарен.
-          </p>
+          {order.comment ? (
+            <p className="mt-4 text-xs leading-4 md:max-w-[470px] md:text-sm md:leading-5">
+              {order.comment}
+            </p>
+          ) : null}
         </section>
 
         <Divider />
 
         <section className="grid gap-4 md:grid-cols-2">
           <div>
-            <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">Пункт выдачи</p>
-            <p className="text-sm leading-5 md:text-base md:leading-6">Адрес пункта выдачи</p>
+            <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">{deliveryTitle}</p>
+            <p className="text-sm leading-5 md:text-base md:leading-6">{deliveryAddress}</p>
           </div>
           <div>
-            <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">Забирать после</p>
+            <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">
+              {order.deliveryMethod === 'pickup_point' ? 'Забирать после' : 'Доставят'}
+            </p>
             <p className="text-sm leading-5 md:text-base md:leading-6">30 февраля 2025 г.</p>
           </div>
         </section>
@@ -41,17 +76,17 @@ export function SuccessPage() {
         <Divider />
 
         <section className="grid gap-6 md:grid-cols-2 md:gap-16">
-          {products.map((product) => (
-            <div className="grid grid-cols-[60px_1fr_auto] items-center gap-4 md:grid-cols-[72px_1fr]" key={product.name}>
+          {order.items.map((product) => (
+            <div className="grid grid-cols-[60px_1fr_auto] items-center gap-4 md:grid-cols-[72px_1fr]" key={product.productId}>
               <img alt="" className="h-[60px] w-[60px] object-contain md:h-10 md:w-[72px]" src={product.image} />
               <div>
                 <p className="text-sm leading-5 text-primary-hover md:text-base md:leading-6">{product.name}</p>
-                <p className="text-xs leading-4 text-[#9ca3af] md:hidden">Параметр 1</p>
+                <p className="text-xs leading-4 text-[#9ca3af] md:hidden">{product.quantity} шт.</p>
                 <p className="hidden text-xl leading-5 font-bold md:block">
-                  {product.desktopPrice} <span className="text-base leading-6 font-normal text-muted-foreground">1 шт.</span>
+                  {currency.format(product.price * product.quantity)} <span className="text-base leading-6 font-normal text-muted-foreground">{product.quantity} шт.</span>
                 </p>
               </div>
-              <p className="text-sm leading-5 font-bold md:hidden">{product.price}</p>
+              <p className="text-sm leading-5 font-bold md:hidden">{currency.format(product.price * product.quantity)}</p>
             </div>
           ))}
         </section>
@@ -60,18 +95,22 @@ export function SuccessPage() {
 
         <section className="grid grid-cols-2 gap-4">
           <div>
-            <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">Оплачено картой</p>
-            <p className="text-xl leading-5 font-bold">*43 54</p>
+            <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">{paymentTitle}</p>
+            <p className="text-xl leading-5 font-bold">{paymentValue}</p>
           </div>
           <div className="text-right md:text-left">
             <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">Общая сумма</p>
-            <p className="text-xl leading-5 font-bold md:text-[30px] md:leading-9">8 280 ₽</p>
+            <p className="text-xl leading-5 font-bold md:text-[30px] md:leading-9">{currency.format(order.totalPrice)}</p>
           </div>
         </section>
       </article>
 
       <div className="mt-6 grid gap-6 md:flex md:items-center md:justify-between">
-        <button className="h-9 rounded-md border border-primary bg-card px-4 text-sm leading-5 font-bold text-primary md:w-[135px] md:bg-primary md:text-base md:leading-6 md:text-white" type="button">
+        <button
+          className="h-9 rounded-md border border-primary bg-card px-4 text-sm leading-5 font-bold text-primary md:w-[135px] md:bg-primary md:text-base md:leading-6 md:text-white"
+          onClick={() => handlePrint()}
+          type="button"
+        >
           Распечатать заказ
         </button>
         <Link className="text-center text-sm leading-5 text-primary-hover md:text-base md:leading-6" to="/profile/orders">

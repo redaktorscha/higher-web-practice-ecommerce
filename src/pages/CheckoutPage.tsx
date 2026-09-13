@@ -20,6 +20,7 @@ import {
   setCity,
   setComment,
   setDeliveryMethod,
+  setLastSuccessfulOrder,
   setPaymentMethod,
   setPhone,
   setPickupPoint,
@@ -160,7 +161,7 @@ export function CheckoutPage() {
       : undefined;
 
     try {
-      await createOrder({
+      const createdOrder = await createOrder({
         phone: orderDraft.phone,
         comment: orderDraft.comment || undefined,
         paymentMethod: orderDraft.paymentMethod,
@@ -184,6 +185,14 @@ export function CheckoutPage() {
         },
       }).unwrap();
 
+      dispatch(setLastSuccessfulOrder({
+        ...createdOrder,
+        payment: {
+          method: orderDraft.paymentMethod,
+          cardLast4: orderDraft.paymentMethod === 'card_online' ? selectedCard?.last4 : undefined,
+        },
+        pickupPoint: orderDraft.deliveryMethod === 'pickup_point' ? orderDraft.pickupPoint ?? undefined : undefined,
+      }));
       dispatch(resetOrderDraft());
       navigate('/success');
     } catch {

@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { RootState } from './index';
-import type { DeliveryMethod, PaymentMethod, PickupPoint } from '@/types';
+import type { DeliveryMethod, Order, PaymentMethod, PickupPoint } from '@/types';
 
 export type CheckoutCity = 'Москва' | 'Санкт-Петербург';
 
@@ -9,6 +9,16 @@ export type SavedPaymentCard = {
   last4: string;
   holderName: string;
   expiry: string;
+};
+
+export type SuccessfulOrderPayment = {
+  method: PaymentMethod;
+  cardLast4?: string;
+};
+
+export type SuccessfulOrder = Order & {
+  payment: SuccessfulOrderPayment;
+  pickupPoint?: PickupPoint;
 };
 
 type OrderState = {
@@ -21,6 +31,7 @@ type OrderState = {
   pickupPoint: PickupPoint | null;
   phone: string;
   comment: string;
+  lastSuccessfulOrder: SuccessfulOrder | null;
 };
 
 const initialState: OrderState = {
@@ -33,6 +44,7 @@ const initialState: OrderState = {
   pickupPoint: null,
   phone: '',
   comment: '',
+  lastSuccessfulOrder: null,
 };
 
 const orderSlice = createSlice({
@@ -79,11 +91,17 @@ const orderSlice = createSlice({
     setComment: (state, action: PayloadAction<string>) => {
       state.comment = action.payload;
     },
+    setLastSuccessfulOrder: (state, action: PayloadAction<SuccessfulOrder>) => {
+      state.lastSuccessfulOrder = action.payload;
+    },
     resetOrderDraft: (state) => {
       const savedCards = state.savedCards;
+      const lastSuccessfulOrder = state.lastSuccessfulOrder;
+
       return {
         ...initialState,
         savedCards,
+        lastSuccessfulOrder,
         paymentMethod: savedCards.length > 0 ? 'card_online' : 'cash',
         selectedCardId: savedCards[0]?.id ?? null,
       };
@@ -99,6 +117,7 @@ export const {
   setCity,
   setComment,
   setDeliveryMethod,
+  setLastSuccessfulOrder,
   setPaymentMethod,
   setPhone,
   setPickupPoint,
@@ -106,3 +125,4 @@ export const {
 } = orderSlice.actions;
 export const orderReducer = orderSlice.reducer;
 export const selectOrderDraft = (state: RootState) => state.order;
+export const selectLastSuccessfulOrder = (state: RootState) => state.order.lastSuccessfulOrder;
