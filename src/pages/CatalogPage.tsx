@@ -3,6 +3,9 @@ import type { FormEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { ProductControls } from '@/components/app/ProductControls';
+import { productSortOptions } from '@/components/app/productControlsConfig';
+import type { ProductSortValue, ProductViewMode } from '@/components/app/productControlsConfig';
 import { Button, Icon } from '@/components/ui';
 import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
@@ -29,18 +32,6 @@ const initialFilters: FilterState = {
   sortBy: null,
   order: null,
 };
-const sortOptions = [
-  { value: 'popular', label: 'Сортировка', sortBy: null, order: null },
-  { value: 'price_asc', label: 'Сначала дешевле', sortBy: 'price', order: 'asc' },
-  { value: 'price_desc', label: 'Сначала дороже', sortBy: 'price', order: 'desc' },
-  { value: 'newest', label: 'Новинки', sortBy: 'createdAt', order: 'desc' },
-  { value: 'rating', label: 'По рейтингу', sortBy: 'rating', order: 'desc' },
-] satisfies Array<{
-  value: string;
-  label: string;
-  sortBy: string | null;
-  order: 'asc' | 'desc' | null;
-}>;
 
 const currency = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -70,6 +61,7 @@ export function CatalogPage() {
   const [filters, setFilters] = useState<FilterState>(initialFilters);
   const [queryFilters, setQueryFilters] = useState<FilterState>(initialFilters);
   const [targetPage, setTargetPage] = useState('1');
+  const [viewMode, setViewMode] = useState<ProductViewMode>('grid');
   const filterDebounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { data, isLoading, isFetching, isError, refetch } = useGetProductsQuery(queryFilters);
 
@@ -77,7 +69,7 @@ export function CatalogPage() {
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / LIMIT);
   const page = queryFilters.page;
-  const selectedSort = sortOptions.find((option) => option.sortBy === filters.sortBy && option.order === filters.order)?.value ?? 'popular';
+  const selectedSort = productSortOptions.find((option) => option.sortBy === filters.sortBy && option.order === filters.order)?.value ?? 'popular';
   const paginationItems = useMemo(
     () => getPaginationItems(page, totalPages),
     [page, totalPages],
@@ -152,8 +144,8 @@ export function CatalogPage() {
     });
   };
 
-  const changeSort = (value: string) => {
-    const sortOption = sortOptions.find((option) => option.value === value) ?? sortOptions[0];
+  const changeSort = (value: ProductSortValue) => {
+    const sortOption = productSortOptions.find((option) => option.value === value) ?? productSortOptions[0];
 
     updateFilters({
       sortBy: sortOption.sortBy,
@@ -185,7 +177,12 @@ export function CatalogPage() {
       <div className="hidden gap-5 md:grid">
         <div className="flex items-center justify-between">
           <h1 className="text-[32px] leading-10 font-bold">УСЫ</h1>
-          <CatalogControls onSortChange={changeSort} selectedSort={selectedSort} />
+          <ProductControls
+            onSortChange={changeSort}
+            onViewChange={setViewMode}
+            selectedSort={selectedSort}
+            selectedView={viewMode}
+          />
         </div>
 
         <div className="grid grid-cols-[280px_minmax(0,1fr)] gap-5">
@@ -205,7 +202,7 @@ export function CatalogPage() {
               <ErrorPanel onRetry={() => refetch()} />
             ) : (
               <>
-                <ProductPanel isLoading={isLoading} isFetching={isFetching} products={products} />
+                <ProductPanel isLoading={isLoading} isFetching={isFetching} products={products} viewMode={viewMode} />
 
                 {totalPages > 1 ? (
                   <CatalogPagination
@@ -240,7 +237,7 @@ export function CatalogPage() {
                 {isLoading
                   ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
                   : products.map((product) => (
-                      <CatalogProductCard key={product.id} product={product} compact imageClassName="h-[172px]" />
+                      <CatalogProductCard key={product.id} product={product} compact imageClassName="h-[172px]" viewMode="grid" />
                     ))}
               </div>
             ) : (
@@ -266,28 +263,6 @@ export function CatalogPage() {
         )}
       </section>
     </>
-  );
-}
-
-function CatalogControls({ onSortChange, selectedSort }: { onSortChange: (value: string) => void; selectedSort: string }) {
-  return (
-    <div className="flex gap-2">
-      <select
-        className="h-8 min-w-[140px] rounded border border-muted-foreground bg-background px-3 text-base leading-6"
-        onChange={(event) => onSortChange(event.target.value)}
-        value={selectedSort}
-      >
-        {sortOptions.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <button className="flex h-8 min-w-[140px] items-center justify-between rounded border border-muted-foreground bg-background px-3 text-base leading-6" type="button">
-        Отображение
-        <span className="text-2xl leading-none text-muted-foreground">⌄</span>
-      </button>
-    </div>
   );
 }
 
@@ -384,15 +359,25 @@ function DesktopFilters({
   );
 }
 
-function ProductPanel({ isLoading, isFetching, products }: { isLoading: boolean; isFetching: boolean; products: Product[] }) {
+function ProductPanel({
+  isLoading,
+  isFetching,
+  products,
+  viewMode,
+}: {
+  isLoading: boolean;
+  isFetching: boolean;
+  products: Product[];
+  viewMode: ProductViewMode;
+}) {
   return (
     <div className={cn('rounded-lg bg-card p-6 shadow-card', isFetching && !isLoading && 'opacity-60')}>
       {isLoading || products.length > 0 ? (
-        <div className="grid gap-x-4 gap-y-10 md:grid-cols-4">
+        <div className={cn('grid', viewMode === 'grid' ? 'gap-x-4 gap-y-10 md:grid-cols-4' : 'gap-0')}>
           {isLoading
             ? Array.from({ length: LIMIT }, (_, index) => <CatalogProductSkeleton key={index} />)
             : products.map((product) => (
-                <CatalogProductCard key={product.id} product={product} imageClassName="h-[160px]" />
+                <CatalogProductCard key={product.id} product={product} imageClassName="h-[160px]" viewMode={viewMode} />
               ))}
         </div>
       ) : (
@@ -404,9 +389,47 @@ function ProductPanel({ isLoading, isFetching, products }: { isLoading: boolean;
   );
 }
 
-function CatalogProductCard({ product, imageClassName, compact = false }: { product: Product; imageClassName: string; compact?: boolean }) {
+function CatalogProductCard({
+  product,
+  imageClassName,
+  compact = false,
+  viewMode,
+}: {
+  product: Product;
+  imageClassName: string;
+  compact?: boolean;
+  viewMode: ProductViewMode;
+}) {
   const quantity = useSelector(selectCartItemQuantity(product.id));
   const { addProductToCart, isAddingToCart } = useAddProductToCart();
+
+  if (viewMode === 'list') {
+    return (
+      <article className="grid min-w-0 gap-4 border-b border-border py-5 last:border-b-0 md:grid-cols-[96px_minmax(0,1fr)_160px] md:items-center">
+        <Link to={`/products/${product.id}`} className="block h-16 overflow-hidden bg-card">
+          <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain" />
+        </Link>
+        <div className="grid min-w-0 gap-2">
+          <Link to={`/products/${product.id}`} className="text-base leading-6 text-primary">
+            {product.name}
+          </Link>
+          <p className="line-clamp-2 text-sm leading-5 text-muted-foreground">{product.description}</p>
+        </div>
+        <div className="grid gap-3 md:justify-items-end">
+          <span className="text-xl leading-5 font-bold">{currency.format(product.price)}</span>
+          <Button
+            className="h-10 w-full md:w-36"
+            variant="iconPrimary"
+            aria-label={`Добавить в корзину: ${product.name}`}
+            disabled={!product.inStock || isAddingToCart}
+            onClick={() => void addProductToCart(product.id)}
+          >
+            {quantity > 0 ? <span>{quantity}</span> : <Icon name="shoppingBag" />}
+          </Button>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className={cn('grid min-w-0 content-start', compact ? 'gap-1' : 'gap-2')}>

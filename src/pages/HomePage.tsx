@@ -2,6 +2,9 @@ import { Link, useLocation } from 'react-router-dom';
 import type { ReactNode, RefObject } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { ProductControls } from '@/components/app/ProductControls';
+import { productSortOptions } from '@/components/app/productControlsConfig';
+import type { ProductSortValue, ProductViewMode } from '@/components/app/productControlsConfig';
 import { Button, Icon } from '@/components/ui';
 import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
@@ -37,15 +40,26 @@ export function HomePage() {
   const isMobileFilters = location.pathname === '/catalog/filters';
   const [page, setPage] = useState(1);
   const [extraProducts, setExtraProducts] = useState<Product[]>([]);
+  const [selectedSort, setSelectedSort] = useState<ProductSortValue>('popular');
+  const [viewMode, setViewMode] = useState<ProductViewMode>('grid');
   const desktopSentinelRef = useRef<HTMLDivElement | null>(null);
   const mobileSentinelRef = useRef<HTMLDivElement | null>(null);
+  const firstPageFilters = useMemo(() => {
+    const sortOption = productSortOptions.find((option) => option.value === selectedSort) ?? productSortOptions[0];
+
+    return {
+      ...initialHomeFilters,
+      sortBy: sortOption.sortBy,
+      order: sortOption.order,
+    };
+  }, [selectedSort]);
   const {
     data: firstPageData,
     isError: isFirstPageError,
     isFetching: isFirstPageFetching,
     isLoading,
     refetch,
-  } = useGetProductsQuery(initialHomeFilters);
+  } = useGetProductsQuery(firstPageFilters);
   const [loadProducts, { isError: isNextPageError, isFetching: isNextPageFetching }] = useLazyGetProductsQuery();
   const totalPages = firstPageData ? Math.ceil(firstPageData.totalCount / HOME_LIMIT) : 0;
   const products = useMemo(
@@ -64,7 +78,7 @@ export function HomePage() {
     }
 
     const data = await loadProducts({
-      ...initialHomeFilters,
+      ...firstPageFilters,
       page: nextPage,
     }).unwrap();
 
@@ -78,7 +92,7 @@ export function HomePage() {
 
       return [...currentProducts, ...nextItems];
     });
-  }, [firstPageData?.items, isFetching, loadProducts, page, totalPages]);
+  }, [firstPageData?.items, firstPageFilters, isFetching, loadProducts, page, totalPages]);
 
   useEffect(() => {
     const sentinels = [desktopSentinelRef.current, mobileSentinelRef.current].filter((sentinel): sentinel is HTMLDivElement => Boolean(sentinel));
@@ -107,10 +121,23 @@ export function HomePage() {
     void refetch();
   };
 
+  const changeSort = (value: ProductSortValue) => {
+    setSelectedSort(value);
+    setPage(1);
+    setExtraProducts([]);
+  };
+
   if (isMobileFilters) {
     return (
       <>
-        <CatalogDesktop className="hidden md:grid" products={products.slice(0, 2)} />
+        <CatalogDesktop
+          className="hidden md:grid"
+          onSortChange={changeSort}
+          onViewChange={setViewMode}
+          products={products.slice(0, 2)}
+          selectedSort={selectedSort}
+          selectedView={viewMode}
+        />
         <MobileFilters />
       </>
     );
@@ -119,7 +146,14 @@ export function HomePage() {
   if (isCatalog) {
     return (
       <>
-        <CatalogDesktop className="hidden md:grid" products={products.slice(0, 2)} />
+        <CatalogDesktop
+          className="hidden md:grid"
+          onSortChange={changeSort}
+          onViewChange={setViewMode}
+          products={products.slice(0, 2)}
+          selectedSort={selectedSort}
+          selectedView={viewMode}
+        />
         <MobileCategoryList />
       </>
     );
@@ -135,7 +169,11 @@ export function HomePage() {
         isLoading={isLoading}
         onRetry={retryFirstPage}
         products={products}
+        selectedSort={selectedSort}
+        selectedView={viewMode}
         sentinelRef={desktopSentinelRef}
+        onSortChange={changeSort}
+        onViewChange={setViewMode}
       />
       <MobileHome
         hasNextPage={hasNextPage}
@@ -158,7 +196,11 @@ function HomeDesktop({
   isLoading,
   onRetry,
   products,
+  selectedSort,
+  selectedView,
   sentinelRef,
+  onSortChange,
+  onViewChange,
 }: {
   className?: string;
   hasNextPage: boolean;
@@ -166,14 +208,23 @@ function HomeDesktop({
   isFetching: boolean;
   isLoading: boolean;
   onRetry: () => void;
+  onSortChange: (value: ProductSortValue) => void;
+  onViewChange: (value: ProductViewMode) => void;
   products: Product[];
+  selectedSort: ProductSortValue;
+  selectedView: ProductViewMode;
   sentinelRef: RefObject<HTMLDivElement | null>;
 }) {
   return (
     <section className={cn('grid gap-4', className)}>
       <div className="flex items-center justify-between">
         <h1 className="text-[32px] leading-10 font-bold">УСЫ</h1>
-        <CatalogControls />
+        <ProductControls
+          onSortChange={onSortChange}
+          onViewChange={onViewChange}
+          selectedSort={selectedSort}
+          selectedView={selectedView}
+        />
       </div>
       <ProductPanel
         columns="md:grid-cols-4"
@@ -184,6 +235,7 @@ function HomeDesktop({
         onRetry={onRetry}
         products={products}
         sentinelRef={sentinelRef}
+        viewMode={selectedView}
       />
     </section>
   );
@@ -218,12 +270,27 @@ function MobileHome({
         onRetry={onRetry}
         products={products}
         sentinelRef={sentinelRef}
+        viewMode="grid"
       />
     </section>
   );
 }
 
-function CatalogDesktop({ className, products }: { className?: string; products: Product[] }) {
+function CatalogDesktop({
+  className,
+  onSortChange,
+  onViewChange,
+  products,
+  selectedSort,
+  selectedView,
+}: {
+  className?: string;
+  onSortChange: (value: ProductSortValue) => void;
+  onViewChange: (value: ProductViewMode) => void;
+  products: Product[];
+  selectedSort: ProductSortValue;
+  selectedView: ProductViewMode;
+}) {
   return (
     <div className={cn('grid gap-5', className)}>
       <div className="text-base leading-6 text-muted-foreground">УСЫ / Классические / Деловые</div>
@@ -235,7 +302,12 @@ function CatalogDesktop({ className, products }: { className?: string; products:
               <h1 className="text-[32px] leading-10 font-bold">Деловые</h1>
               <SelectedFilters />
             </div>
-            <CatalogControls />
+            <ProductControls
+              onSortChange={onSortChange}
+              onViewChange={onViewChange}
+              selectedSort={selectedSort}
+              selectedView={selectedView}
+            />
           </div>
           <ProductPanel
             columns="md:grid-cols-4"
@@ -246,6 +318,7 @@ function CatalogDesktop({ className, products }: { className?: string; products:
             onRetry={() => undefined}
             products={products}
             sentinelRef={{ current: null }}
+            viewMode={selectedView}
           />
         </section>
       </div>
@@ -359,19 +432,6 @@ function MobileSearch() {
   );
 }
 
-function CatalogControls() {
-  return (
-    <div className="flex gap-2">
-      {['Сортировка', 'Отображение'].map((label) => (
-        <button key={label} className="flex h-8 min-w-[140px] items-center justify-between rounded border border-muted-foreground bg-background px-3 text-base leading-6">
-          {label}
-          <span className="text-2xl leading-none text-muted-foreground">⌄</span>
-        </button>
-      ))}
-    </div>
-  );
-}
-
 function SelectedFilters() {
   return (
     <div className="flex flex-wrap gap-2">
@@ -394,6 +454,7 @@ function ProductPanel({
   onRetry,
   products: items,
   sentinelRef,
+  viewMode,
 }: {
   columns: string;
   hasNextPage: boolean;
@@ -403,6 +464,7 @@ function ProductPanel({
   onRetry: () => void;
   products: Product[];
   sentinelRef: RefObject<HTMLDivElement | null>;
+  viewMode: ProductViewMode;
 }) {
   if (isError) {
     return (
@@ -417,9 +479,15 @@ function ProductPanel({
 
   return (
     <div className="rounded-lg bg-card p-6 shadow-card">
-      <div className={cn('grid gap-x-4 gap-y-10', columns)}>
+      <div className={cn('grid', viewMode === 'grid' ? cn('gap-x-4 gap-y-10', columns) : 'gap-0')}>
         {items.map((product) => (
-          <CatalogProductCard key={product.id} product={product} imageClassName={columns === 'grid-cols-2' ? 'h-[172px]' : 'h-[160px]'} compact={columns === 'grid-cols-2'} />
+          <CatalogProductCard
+            key={product.id}
+            product={product}
+            imageClassName={columns === 'grid-cols-2' ? 'h-[172px]' : 'h-[160px]'}
+            compact={columns === 'grid-cols-2'}
+            viewMode={viewMode}
+          />
         ))}
       </div>
       {isLoading || (isFetching && hasNextPage) ? (
@@ -430,9 +498,47 @@ function ProductPanel({
   );
 }
 
-function CatalogProductCard({ product, imageClassName, compact = false }: { product: Product; imageClassName: string; compact?: boolean }) {
+function CatalogProductCard({
+  product,
+  imageClassName,
+  compact = false,
+  viewMode,
+}: {
+  product: Product;
+  imageClassName: string;
+  compact?: boolean;
+  viewMode: ProductViewMode;
+}) {
   const quantity = useSelector(selectCartItemQuantity(product.id));
   const { addProductToCart, isAddingToCart } = useAddProductToCart();
+
+  if (viewMode === 'list') {
+    return (
+      <article className="grid min-w-0 gap-4 border-b border-border py-5 last:border-b-0 md:grid-cols-[96px_minmax(0,1fr)_160px] md:items-center">
+        <Link to={`/products/${product.id}`} className="block h-16 overflow-hidden bg-card">
+          <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain" />
+        </Link>
+        <div className="grid min-w-0 gap-2">
+          <Link to={`/products/${product.id}`} className="text-base leading-6 text-primary">
+            {product.name}
+          </Link>
+          <p className="line-clamp-2 text-sm leading-5 text-muted-foreground">{product.description}</p>
+        </div>
+        <div className="grid gap-3 md:justify-items-end">
+          <span className="text-xl leading-5 font-bold">{currency.format(product.price)}</span>
+          <Button
+            className="h-10 w-full md:w-36"
+            variant="iconPrimary"
+            aria-label={`Добавить в корзину: ${product.name}`}
+            disabled={!product.inStock || isAddingToCart}
+            onClick={() => void addProductToCart(product.id)}
+          >
+            {quantity > 0 ? <span>{quantity}</span> : <Icon name="shoppingBag" />}
+          </Button>
+        </div>
+      </article>
+    );
+  }
 
   return (
     <article className={cn('grid min-w-0 content-start', compact ? 'gap-1' : 'gap-2')}>
