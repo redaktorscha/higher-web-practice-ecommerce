@@ -1,68 +1,116 @@
 import { Link, useLocation } from 'react-router-dom';
-import type { ReactNode } from 'react';
+import type { ReactNode, RefObject } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Icon } from '@/components/ui';
 import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
+import { useGetProductsQuery, useLazyGetProductsQuery } from '@/store/api';
 import { selectCartItemQuantity } from '@/store/cartSlice';
+import type { FilterState } from '@/store/api';
+import type { Product } from '@/types';
 
-type CatalogProduct = {
-  id: string;
-  title: string;
-  price: string;
-  image: string;
+const HOME_LIMIT = 12;
+const initialHomeFilters: FilterState = {
+  page: 1,
+  limit: HOME_LIMIT,
+  category: null,
+  styles: [],
+  density: null,
+  requiresWax: null,
+  boostsCharisma: null,
+  minPrice: '',
+  maxPrice: '',
+  sortBy: null,
+  order: null,
 };
 
-const products: CatalogProduct[] = [
-  {
-    id: '3e6e9a7a-0a5f-4e2d-9b0a-2e8d6e4c1a01',
-    title: 'Председатель',
-    price: '5 590 ₽',
-    image: '/mustashes/chairman/0.png',
-  },
-  {
-    id: '6a1c2d3e-4f50-4a61-8b72-9c83ad94be02',
-    title: 'Джентльмен',
-    price: '1 790 ₽',
-    image: '/mustashes/gentelmen/0.png',
-  },
-  {
-    id: '7b2d3e4f-5061-4b72-9c83-ad94be05cf03',
-    title: 'Детектив',
-    price: '1 590 ₽',
-    image: '/mustashes/detective/0.png',
-  },
-  {
-    id: '8c3e4f50-6172-4c83-ad94-be05cf16d804',
-    title: 'Инженер',
-    price: '2 650 ₽',
-    image: '/mustashes/enginere/0.png',
-  },
-  {
-    id: '61728394-a5b6-4fb0-8c53-4fd8ef102132',
-    title: 'Пустынные',
-    price: '1 690 ₽',
-    image: '/mustashes/sand/0.png',
-  },
-  {
-    id: 'a05f6172-8394-4e05-8f16-d827e938fa06',
-    title: 'Щёточка',
-    price: '590 ₽',
-    image: '/mustashes/brush/0.png',
-  },
-];
-
-const desktopCatalogProducts = [products[0], products[1]];
+const currency = new Intl.NumberFormat('ru-RU', {
+  style: 'currency',
+  currency: 'RUB',
+  maximumFractionDigits: 0,
+});
 
 export function HomePage() {
   const location = useLocation();
   const isCatalog = location.pathname.startsWith('/catalog');
   const isMobileFilters = location.pathname === '/catalog/filters';
+  const [page, setPage] = useState(1);
+  const [extraProducts, setExtraProducts] = useState<Product[]>([]);
+  const desktopSentinelRef = useRef<HTMLDivElement | null>(null);
+  const mobileSentinelRef = useRef<HTMLDivElement | null>(null);
+  const {
+    data: firstPageData,
+    isError: isFirstPageError,
+    isFetching: isFirstPageFetching,
+    isLoading,
+    refetch,
+  } = useGetProductsQuery(initialHomeFilters);
+  const [loadProducts, { isError: isNextPageError, isFetching: isNextPageFetching }] = useLazyGetProductsQuery();
+  const totalPages = firstPageData ? Math.ceil(firstPageData.totalCount / HOME_LIMIT) : 0;
+  const products = useMemo(
+    () => [...(firstPageData?.items ?? []), ...extraProducts],
+    [extraProducts, firstPageData?.items],
+  );
+  const isError = isFirstPageError || isNextPageError;
+  const isFetching = isFirstPageFetching || isNextPageFetching;
+  const hasNextPage = totalPages === 0 ? false : page < totalPages;
+
+  const loadNextPage = useCallback(async () => {
+    const nextPage = page + 1;
+
+    if (isFetching || nextPage > totalPages) {
+      return;
+    }
+
+    const data = await loadProducts({
+      ...initialHomeFilters,
+      page: nextPage,
+    }).unwrap();
+
+    setPage(nextPage);
+    setExtraProducts((currentProducts) => {
+      const existingIds = new Set([
+        ...(firstPageData?.items ?? []).map((product) => product.id),
+        ...currentProducts.map((product) => product.id),
+      ]);
+      const nextItems = data.items.filter((product) => !existingIds.has(product.id));
+
+      return [...currentProducts, ...nextItems];
+    });
+  }, [firstPageData?.items, isFetching, loadProducts, page, totalPages]);
+
+  useEffect(() => {
+    const sentinels = [desktopSentinelRef.current, mobileSentinelRef.current].filter((sentinel): sentinel is HTMLDivElement => Boolean(sentinel));
+
+    if (sentinels.length === 0 || !hasNextPage || isFetching) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          void loadNextPage();
+        }
+      },
+      { rootMargin: '240px' },
+    );
+
+    sentinels.forEach((sentinel) => observer.observe(sentinel));
+
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetching, loadNextPage]);
+
+  const retryFirstPage = () => {
+    setPage(1);
+    setExtraProducts([]);
+    void refetch();
+  };
 
   if (isMobileFilters) {
     return (
       <>
-        <CatalogDesktop className="hidden md:grid" />
+        <CatalogDesktop className="hidden md:grid" products={products.slice(0, 2)} />
         <MobileFilters />
       </>
     );
@@ -71,7 +119,7 @@ export function HomePage() {
   if (isCatalog) {
     return (
       <>
-        <CatalogDesktop className="hidden md:grid" />
+        <CatalogDesktop className="hidden md:grid" products={products.slice(0, 2)} />
         <MobileCategoryList />
       </>
     );
@@ -79,38 +127,103 @@ export function HomePage() {
 
   return (
     <>
-      <HomeDesktop className="hidden md:grid" />
-      <MobileHome />
+      <HomeDesktop
+        className="hidden md:grid"
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetching={isFetching}
+        isLoading={isLoading}
+        onRetry={retryFirstPage}
+        products={products}
+        sentinelRef={desktopSentinelRef}
+      />
+      <MobileHome
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetching={isFetching}
+        isLoading={isLoading}
+        onRetry={retryFirstPage}
+        products={products}
+        sentinelRef={mobileSentinelRef}
+      />
     </>
   );
 }
 
-function HomeDesktop({ className }: { className?: string }) {
+function HomeDesktop({
+  className,
+  hasNextPage,
+  isError,
+  isFetching,
+  isLoading,
+  onRetry,
+  products,
+  sentinelRef,
+}: {
+  className?: string;
+  hasNextPage: boolean;
+  isError: boolean;
+  isFetching: boolean;
+  isLoading: boolean;
+  onRetry: () => void;
+  products: Product[];
+  sentinelRef: RefObject<HTMLDivElement | null>;
+}) {
   return (
     <section className={cn('grid gap-4', className)}>
       <div className="flex items-center justify-between">
         <h1 className="text-[32px] leading-10 font-bold">УСЫ</h1>
         <CatalogControls />
       </div>
-      <ProductPanel products={products.slice(0, 4)} columns="md:grid-cols-4" />
+      <ProductPanel
+        columns="md:grid-cols-4"
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetching={isFetching}
+        isLoading={isLoading}
+        onRetry={onRetry}
+        products={products}
+        sentinelRef={sentinelRef}
+      />
     </section>
   );
 }
 
-function MobileHome() {
+function MobileHome({
+  hasNextPage,
+  isError,
+  isFetching,
+  isLoading,
+  onRetry,
+  products,
+  sentinelRef,
+}: {
+  hasNextPage: boolean;
+  isError: boolean;
+  isFetching: boolean;
+  isLoading: boolean;
+  onRetry: () => void;
+  products: Product[];
+  sentinelRef: RefObject<HTMLDivElement | null>;
+}) {
   return (
     <section className="grid gap-3 md:hidden">
       <MobileSearch />
-      <div className="grid grid-cols-2 gap-x-1 gap-y-2">
-        {[products[4], products[5], products[0], products[1], products[2], products[3]].map((product) => (
-          <CatalogProductCard key={product.id} product={product} imageClassName="h-[172px]" compact />
-        ))}
-      </div>
+      <ProductPanel
+        columns="grid-cols-2"
+        hasNextPage={hasNextPage}
+        isError={isError}
+        isFetching={isFetching}
+        isLoading={isLoading}
+        onRetry={onRetry}
+        products={products}
+        sentinelRef={sentinelRef}
+      />
     </section>
   );
 }
 
-function CatalogDesktop({ className }: { className?: string }) {
+function CatalogDesktop({ className, products }: { className?: string; products: Product[] }) {
   return (
     <div className={cn('grid gap-5', className)}>
       <div className="text-base leading-6 text-muted-foreground">УСЫ / Классические / Деловые</div>
@@ -124,7 +237,16 @@ function CatalogDesktop({ className }: { className?: string }) {
             </div>
             <CatalogControls />
           </div>
-          <ProductPanel products={desktopCatalogProducts} columns="md:grid-cols-4" />
+          <ProductPanel
+            columns="md:grid-cols-4"
+            hasNextPage={false}
+            isError={false}
+            isFetching={false}
+            isLoading={products.length === 0}
+            onRetry={() => undefined}
+            products={products}
+            sentinelRef={{ current: null }}
+          />
         </section>
       </div>
     </div>
@@ -263,38 +385,71 @@ function SelectedFilters() {
   );
 }
 
-function ProductPanel({ products: items, columns }: { products: CatalogProduct[]; columns: string }) {
+function ProductPanel({
+  columns,
+  hasNextPage,
+  isError,
+  isFetching,
+  isLoading,
+  onRetry,
+  products: items,
+  sentinelRef,
+}: {
+  columns: string;
+  hasNextPage: boolean;
+  isError: boolean;
+  isFetching: boolean;
+  isLoading: boolean;
+  onRetry: () => void;
+  products: Product[];
+  sentinelRef: RefObject<HTMLDivElement | null>;
+}) {
+  if (isError) {
+    return (
+      <div className="rounded-lg bg-card p-6 text-center text-sm leading-5 text-muted-foreground shadow-card">
+        Не удалось загрузить товары.
+        <button className="ml-2 text-primary-hover" onClick={onRetry} type="button">
+          Повторить
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="rounded-lg bg-card p-6 shadow-card">
       <div className={cn('grid gap-x-4 gap-y-10', columns)}>
         {items.map((product) => (
-          <CatalogProductCard key={product.id} product={product} imageClassName="h-[160px]" />
+          <CatalogProductCard key={product.id} product={product} imageClassName={columns === 'grid-cols-2' ? 'h-[172px]' : 'h-[160px]'} compact={columns === 'grid-cols-2'} />
         ))}
       </div>
+      {isLoading || (isFetching && hasNextPage) ? (
+        <p className="mt-6 text-center text-sm leading-5 text-muted-foreground">Загружаем товары...</p>
+      ) : null}
+      <div ref={sentinelRef} className="h-1" />
     </div>
   );
 }
 
-function CatalogProductCard({ product, imageClassName, compact = false }: { product: CatalogProduct; imageClassName: string; compact?: boolean }) {
+function CatalogProductCard({ product, imageClassName, compact = false }: { product: Product; imageClassName: string; compact?: boolean }) {
   const quantity = useSelector(selectCartItemQuantity(product.id));
   const { addProductToCart, isAddingToCart } = useAddProductToCart();
 
   return (
     <article className={cn('grid min-w-0 content-start', compact ? 'gap-1' : 'gap-2')}>
       <Link to={`/products/${product.id}`} className={cn('block overflow-hidden bg-card', imageClassName)}>
-        <img src={product.image} alt={product.title} className="h-full w-full object-contain" />
+        <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain" />
       </Link>
       <div className="grid gap-1">
         <Link to={`/products/${product.id}`} className="truncate text-sm leading-5 md:text-base md:leading-6">
-          {product.title}
+          {product.name}
         </Link>
-        <span className="text-xl leading-5 font-bold text-success">{product.price}</span>
+        <span className="text-xl leading-5 font-bold text-success">{currency.format(product.price)}</span>
       </div>
       <Button
         className="h-10 w-full"
         variant="iconPrimary"
-        aria-label={`Добавить в корзину: ${product.title}`}
-        disabled={isAddingToCart}
+        aria-label={`Добавить в корзину: ${product.name}`}
+        disabled={!product.inStock || isAddingToCart}
         onClick={() => void addProductToCart(product.id)}
       >
         {quantity > 0 ? <span>{quantity}</span> : <Icon name="shoppingBag" />}

@@ -482,6 +482,7 @@ export const {
   useGetPickupPointsQuery,
   useGetProductByIdQuery,
   useGetProductsQuery,
+  useLazyGetProductsQuery,
   useGetProfileQuery,
   useGetRatingByIdQuery,
   useGetRatingsQuery,
