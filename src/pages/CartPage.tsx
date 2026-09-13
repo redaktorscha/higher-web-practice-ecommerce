@@ -1,7 +1,7 @@
 import { Trash } from 'lucide-react';
 import { memo, useState } from 'react';
 import { shallowEqual, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import shoppingImage from '@/assets/shopping.png';
 import {
   selectCartItem,
@@ -46,10 +46,20 @@ function getItemsLabel(count: number) {
 }
 
 export function CartPage() {
+  const navigate = useNavigate();
   const productIds = useSelector((state: RootState) => selectCartItems(state).map((item) => item.productId), shallowEqual);
   const totalItems = useSelector(selectCartTotalItems);
   const totalPrice = useSelector(selectCartTotalPrice);
   const itemsLabel = getItemsLabel(totalItems);
+  const isCartEmpty = totalItems === 0;
+
+  const goToCheckout = () => {
+    if (isCartEmpty) {
+      return;
+    }
+
+    navigate('/checkout');
+  };
 
   return (
     <section className="md:grid md:grid-cols-[580px_280px] md:gap-5">
@@ -78,7 +88,12 @@ export function CartPage() {
             <span className="text-xs leading-4 text-muted-foreground">сумма заказа</span>
             <span className="text-[30px] leading-9 font-bold text-success">{currency.format(totalPrice)}</span>
           </div>
-          <button className="h-10 w-full rounded-md bg-primary px-4 text-base leading-6 font-bold text-white" type="button">
+          <button
+            className="h-10 w-full rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
+            disabled={isCartEmpty}
+            onClick={goToCheckout}
+            type="button"
+          >
             Оформить заказ
           </button>
         </div>
@@ -90,7 +105,12 @@ export function CartPage() {
           <span className="text-xl leading-5 font-bold text-success">{currency.format(totalPrice)}</span>
           <span className="text-sm leading-5 text-muted-foreground">{itemsLabel}</span>
         </div>
-        <button className="h-9 w-full rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white" type="button">
+        <button
+          className="h-9 w-full rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
+          disabled={isCartEmpty}
+          onClick={goToCheckout}
+          type="button"
+        >
           Оформить заказ
         </button>
       </div>
