@@ -1,3 +1,5 @@
+import { useEffect, useCallback } from "react";
+import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, ShoppingBag, Star } from "lucide-react";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -185,9 +187,36 @@ export function ProductPage() {
 }
 
 function ProductGallery({ product }: { product: Product }) {
+  const [emblaMainRef, emblaMainApi] = useEmblaCarousel({ loop: true });
+  const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel({
+    containScroll: "keepSnaps",
+    dragFree: true,
+  });
+
+  const onThumbClick = useCallback(
+    (index: number) => {
+      if (!emblaMainApi || !emblaThumbsApi) return;
+      emblaMainApi.scrollTo(index);
+    },
+    [emblaMainApi, emblaThumbsApi],
+  );
+
+  const onSelect = useCallback(() => {
+    if (!emblaMainApi || !emblaThumbsApi) return;
+    const index = emblaMainApi.selectedScrollSnap();
+    emblaThumbsApi.scrollTo(index);
+  }, [emblaMainApi, emblaThumbsApi]);
+
+  useEffect(() => {
+    if (!emblaMainApi) return;
+    emblaMainApi.on("select", onSelect);
+    emblaMainApi.on("reInit", onSelect);
+  }, [emblaMainApi, onSelect]);
+
   return (
-    <div className="relative">
+    <div className="relative group">
       <button
+        onClick={() => emblaMainApi?.scrollPrev()}
         className="absolute top-[205px] left-[-8px] z-10 text-primary-hover md:hidden"
         type="button"
         aria-label="Предыдущее фото"
@@ -195,6 +224,7 @@ function ProductGallery({ product }: { product: Product }) {
         <ChevronLeft className="size-10" />
       </button>
       <button
+        onClick={() => emblaMainApi?.scrollNext()}
         className="absolute top-[205px] right-[-8px] z-10 text-primary-hover md:hidden"
         type="button"
         aria-label="Следующее фото"
@@ -202,25 +232,53 @@ function ProductGallery({ product }: { product: Product }) {
         <ChevronRight className="size-10" />
       </button>
 
-      <div className="mx-auto h-[453px] w-[335px] overflow-hidden rounded-md bg-card md:h-[460px] md:w-[456px]">
-        <img
-          alt=""
-          className="h-full w-full object-contain"
-          src={product.images[0]}
-        />
+      <div
+        className="mx-auto h-[453px] w-[335px] overflow-hidden rounded-md bg-card md:h-[460px] md:w-[456px]"
+        ref={emblaMainRef}
+      >
+        <div className="flex">
+          {product.images.map((img, index) => (
+            <div
+              className="flex-[0_0_100%] min-w-0 aspect-square flex items-center justify-center bg-white"
+              key={index}
+            >
+              <img
+                src={img}
+                alt={product.name}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
-      <div className="mt-3 hidden h-[106px] grid-cols-[14px_repeat(4,97px)_14px] items-center gap-2 md:grid">
-        <ChevronLeft className="size-4 text-muted-foreground" />
-        {product.images.slice(0, 4).map((image) => (
-          <img
-            alt=""
-            className="h-24 w-[97px] object-contain"
-            key={image}
-            src={image}
-          />
-        ))}
-        <ChevronRight className="size-4 text-muted-foreground" />
+      <div className="mt-3 hidden h-[106px] items-center gap-2 md:flex">
+        <button
+          onClick={() => emblaMainApi?.scrollPrev()}
+          type="button"
+          aria-label="Предыдущее фото"
+        >
+          <ChevronLeft className="size-4 text-muted-foreground" />
+        </button>
+        <div className="flex" ref={emblaThumbsRef}>
+          {product.images.map((image, index) => (
+            <button key={index} onClick={() => onThumbClick(index)}>
+              <img
+                alt=""
+                className="h-24 w-[97px] object-contain"
+                key={image}
+                src={image}
+              />
+            </button>
+          ))}
+        </div>
+        <button
+          onClick={() => emblaMainApi?.scrollNext()}
+          type="button"
+          aria-label="Следующее фото"
+        >
+          <ChevronRight className="size-4 text-muted-foreground" />
+        </button>
       </div>
     </div>
   );
