@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Header, MobileNavigation } from '@/components/app';
@@ -48,6 +48,10 @@ export function MainLayout() {
     setSearchQuery(nextSearchQuery);
     searchHandlerRef.current?.(nextSearchQuery);
   }, []);
+  const outletContext = useMemo(
+    () => ({ registerSearchHandler, searchQuery } satisfies MainLayoutOutletContext),
+    [registerSearchHandler, searchQuery],
+  );
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -63,7 +67,7 @@ export function MainLayout() {
           isAuthPage ? 'p-0' : isCatalogFiltersPage ? 'px-5 pt-5 pb-5 md:px-[130px] md:py-8' : 'px-5 pt-5 pb-24 md:px-[130px] md:py-8',
         )}
       >
-        <Outlet context={{ registerSearchHandler, searchQuery } satisfies MainLayoutOutletContext} />
+        <Outlet context={outletContext} />
       </main>
       {isAuthPage || isCatalogFiltersPage ? null : <MobileNavigation isAuthenticated={isAuthenticated} />}
     </div>

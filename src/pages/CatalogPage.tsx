@@ -2,17 +2,15 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { FormEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useOutletContext } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { ProductCartControl } from '@/components/app/ProductCartControl';
 import { ProductControls } from '@/components/app/ProductControls';
 import { productSortOptions } from '@/components/app/productControlsConfig';
 import type { ProductSortValue, ProductViewMode } from '@/components/app/productControlsConfig';
 import type { MainLayoutOutletContext } from '@/components/layout/MainLayout';
 import { Button, Icon } from '@/components/ui';
-import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
 import { useGetProductsQuery } from '@/store/api';
 import type { FilterState } from '@/store/api';
-import { selectCartItemQuantity } from '@/store/cartSlice';
 import type { Product } from '@/types';
 
 const LIMIT = 12;
@@ -425,9 +423,6 @@ function CatalogProductCard({
   compact?: boolean;
   viewMode: ProductViewMode;
 }) {
-  const quantity = useSelector(selectCartItemQuantity(product.id));
-  const { addProductToCart, isAddingToCart } = useAddProductToCart();
-
   if (viewMode === 'list') {
     return (
       <article className="grid min-w-0 gap-4 border-b border-border py-5 last:border-b-0 md:grid-cols-[96px_minmax(0,1fr)_160px] md:items-center">
@@ -442,15 +437,12 @@ function CatalogProductCard({
         </div>
         <div className="grid gap-3 md:justify-items-end">
           <span className="text-xl leading-5 font-bold">{currency.format(product.price)}</span>
-          <Button
+          <ProductCartControl
             className="h-10 w-full md:w-36"
-            variant="iconPrimary"
-            aria-label={`Добавить в корзину: ${product.name}`}
-            disabled={!product.inStock || isAddingToCart}
-            onClick={() => void addProductToCart(product.id)}
-          >
-            {quantity > 0 ? <span>{quantity}</span> : <Icon name="shoppingBag" />}
-          </Button>
+            inStock={product.inStock}
+            productId={product.id}
+            productName={product.name}
+          />
         </div>
       </article>
     );
@@ -467,15 +459,12 @@ function CatalogProductCard({
         </Link>
         <span className="text-xl leading-5 font-bold text-success">{currency.format(product.price)}</span>
       </div>
-      <Button
+      <ProductCartControl
         className="h-10 w-full"
-        variant="iconPrimary"
-        aria-label={`Добавить в корзину: ${product.name}`}
-        disabled={!product.inStock || isAddingToCart}
-        onClick={() => void addProductToCart(product.id)}
-      >
-        {quantity > 0 ? <span>{quantity}</span> : <Icon name="shoppingBag" />}
-      </Button>
+        inStock={product.inStock}
+        productId={product.id}
+        productName={product.name}
+      />
     </article>
   );
 }
