@@ -173,7 +173,7 @@ export function RegisterPage() {
         {errorMessage ? <p className="text-sm leading-5 text-danger">{errorMessage}</p> : null}
 
         <button
-          className="mt-1 h-9 rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white shadow-modal disabled:bg-muted disabled:text-muted-foreground md:mt-2 md:h-10 md:text-base md:leading-6"
+          className="mt-1 h-9 cursor-pointer rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white shadow-modal disabled:bg-muted disabled:text-muted-foreground md:mt-2 md:h-10 md:text-base md:leading-6"
           disabled={isLoading}
           type="submit"
         >

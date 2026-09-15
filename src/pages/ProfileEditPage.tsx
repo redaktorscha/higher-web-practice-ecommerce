@@ -232,14 +232,14 @@ function ProfileEditForm({ user }: { user: User | null }) {
 
           <div className="mt-4 grid gap-4 md:mt-3 md:flex md:gap-2">
             <button
-              className="h-9 rounded-md border border-primary bg-card px-4 text-sm leading-5 font-bold text-primary md:h-10 md:text-base md:leading-6"
+              className="h-9 cursor-pointer rounded-md border border-primary bg-card px-4 text-sm leading-5 font-bold text-primary md:h-10 md:text-base md:leading-6"
               onClick={handleCancel}
               type="button"
             >
               Отменить
             </button>
             <button
-              className="h-9 rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white disabled:bg-muted disabled:text-muted-foreground md:h-10 md:w-40 md:text-base md:leading-6"
+              className="h-9 cursor-pointer rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white disabled:bg-muted disabled:text-muted-foreground md:h-10 md:w-40 md:text-base md:leading-6"
               disabled={isLoading}
               type="submit"
             >

@@ -56,7 +56,7 @@ type HeaderActionProps = {
 
 function HeaderAction({ count = 0, icon, label, to }: HeaderActionProps) {
   return (
-    <Link to={to} className="flex min-w-[55px] flex-col items-center gap-0.5 rounded-md p-1 text-xs leading-4 text-foreground outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring">
+    <Link to={to} className="flex min-w-[55px] cursor-pointer flex-col items-center gap-0.5 rounded-md p-1 text-xs leading-4 text-foreground outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring">
       <span className="relative">
         <Icon name={icon} />
         {count > 0 ? (

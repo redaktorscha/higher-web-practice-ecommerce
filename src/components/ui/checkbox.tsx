@@ -7,7 +7,7 @@ function Checkbox({ className, ...props }: ComponentProps<typeof CheckboxPrimiti
   return (
     <CheckboxPrimitive.Root
       className={cn(
-        'peer size-5 shrink-0 rounded-sm border border-input bg-card outline-none transition-colors hover:border-primary focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:bg-muted data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:hover:bg-primary-hover data-[state=checked]:disabled:bg-muted data-[state=checked]:disabled:text-muted-foreground aria-invalid:border-danger',
+        'peer size-5 shrink-0 cursor-pointer rounded-sm border border-input bg-card outline-none transition-colors hover:border-primary focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:bg-muted data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=checked]:hover:bg-primary-hover data-[state=checked]:disabled:bg-muted data-[state=checked]:disabled:text-muted-foreground aria-invalid:border-danger',
         className,
       )}
       {...props}

@@ -88,7 +88,7 @@ export function CartPage() {
             <span className="text-[30px] leading-9 font-bold text-success">{currency.format(totalPrice)}</span>
           </div>
           <button
-            className="h-10 w-full rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
+            className="h-10 w-full cursor-pointer rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
             disabled={isCartEmpty}
             onClick={goToCheckout}
             type="button"
@@ -104,7 +104,7 @@ export function CartPage() {
           <span className="text-sm leading-5 text-muted-foreground">{itemsLabel}</span>
         </div>
         <button
-          className="h-9 w-full rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
+          className="h-9 w-full cursor-pointer rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
           disabled={isCartEmpty}
           onClick={goToCheckout}
           type="button"
@@ -135,7 +135,7 @@ const CartItemRow = memo(function CartItemRow({
       <div className="grid grid-cols-[60px_1fr_auto] gap-x-4 md:h-28 md:grid-cols-[72px_1fr_104px_86px_24px] md:items-center md:gap-8 md:rounded-xl md:bg-card md:p-4 md:shadow-card">
         <img alt="" className="h-[60px] w-[60px] rounded-lg bg-card object-contain md:h-10 md:w-[72px] md:rounded-none md:bg-transparent" src={item.product.images[0]} />
         <div className="grid content-start gap-8 md:block">
-          <Link className="text-sm leading-5 text-primary-hover md:text-base md:leading-6" to={`/products/${item.productId}`}>
+          <Link className="cursor-pointer text-sm leading-5 text-primary-hover md:text-base md:leading-6" to={`/products/${item.productId}`}>
             {item.product.name}
           </Link>
           <div className="md:hidden">
@@ -144,7 +144,7 @@ const CartItemRow = memo(function CartItemRow({
         </div>
         <div className="grid justify-items-end gap-8 md:hidden">
           <p className="text-sm leading-5 font-bold">{currency.format(item.price * item.quantity)}</p>
-          <button className="text-primary md:hidden" onClick={() => setIsDeleteDialogOpen(true)} type="button" aria-label="Удалить">
+          <button className="cursor-pointer text-primary md:hidden" onClick={() => setIsDeleteDialogOpen(true)} type="button" aria-label="Удалить">
             <Trash className="size-9" />
           </button>
         </div>
@@ -156,7 +156,7 @@ const CartItemRow = memo(function CartItemRow({
           <CartQuantityCounter onRequestRemove={() => setIsDeleteDialogOpen(true)} productId={item.productId} quantity={item.quantity} />
         </div>
         <p className="hidden text-2xl leading-8 font-bold md:block">{currency.format(item.price * item.quantity)}</p>
-        <button className="hidden text-primary md:block" onClick={() => setIsDeleteDialogOpen(true)} type="button" aria-label="Удалить">
+        <button className="hidden cursor-pointer text-primary md:block" onClick={() => setIsDeleteDialogOpen(true)} type="button" aria-label="Удалить">
           <Trash className="size-6" />
         </button>
       </div>
@@ -198,7 +198,7 @@ const CartQuantityCounter = memo(function CartQuantityCounter({
   return (
     <div className="flex items-center gap-4 md:gap-3">
       <button
-        className="grid size-8 place-items-center rounded-md bg-border text-sm leading-5 disabled:opacity-60"
+        className="grid size-8 cursor-pointer place-items-center rounded-md bg-border text-sm leading-5 disabled:opacity-60"
         disabled={isLoading}
         onClick={decrement}
         type="button"
@@ -208,7 +208,7 @@ const CartQuantityCounter = memo(function CartQuantityCounter({
       </button>
       <span className="text-2xl leading-8 font-bold">{quantity}</span>
       <button
-        className="grid size-8 place-items-center rounded-md bg-border text-sm leading-5 disabled:opacity-60"
+        className="grid size-8 cursor-pointer place-items-center rounded-md bg-border text-sm leading-5 disabled:opacity-60"
         disabled={isLoading}
         onClick={increment}
         type="button"
@@ -252,7 +252,7 @@ function DeleteCartItemDialog({
             Отмена
           </DialogClose>
           <button
-            className="h-10 rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
+            className="h-10 cursor-pointer rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
             disabled={isLoading}
             onClick={() => void confirmDelete()}
             type="button"

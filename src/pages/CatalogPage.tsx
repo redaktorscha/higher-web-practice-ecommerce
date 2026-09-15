@@ -453,7 +453,7 @@ function DesktopFilters({
           <button
             key={item}
             className={cn(
-              'h-7 rounded px-2 text-left text-sm leading-5 transition-colors hover:bg-muted hover:text-primary',
+              'h-7 cursor-pointer rounded px-2 text-left text-sm leading-5 transition-colors hover:bg-muted hover:text-primary',
               filters.category === item && 'bg-muted font-bold text-primary',
             )}
             onClick={() => onCategoryToggle(item)}
@@ -550,7 +550,7 @@ function MobileCategoryPage({
     <section className="grid gap-4 md:hidden">
       <MobileSearchForm onSearch={onSearch} />
       <div className="flex h-6 items-center gap-2 text-sm leading-5">
-        <Link to="/" aria-label="Назад" className="text-xl leading-none">
+        <Link to="/" aria-label="Назад" className="cursor-pointer text-xl leading-none">
           ←
         </Link>
         <span className="font-bold">Усы</span>
@@ -558,7 +558,7 @@ function MobileCategoryPage({
       <div className="grid gap-1">
         {categories.map((category) => (
           <button
-            className="flex h-10 items-center justify-between text-left text-sm leading-5"
+            className="flex h-10 cursor-pointer items-center justify-between text-left text-sm leading-5"
             key={category}
             onClick={() => onCategorySelect(category)}
             type="button"
@@ -612,14 +612,14 @@ function MobileProductList({
       <MobileSearchForm onSearch={onSearch} />
       <div className="grid w-[calc(100vw-40px)] max-w-full grid-cols-[minmax(0,1fr)_32px] items-start gap-3">
         <div className="grid min-w-0 gap-1">
-          <button className="min-w-0 truncate text-left text-sm leading-5 text-muted-foreground" onClick={onBack} type="button">
+          <button className="min-w-0 cursor-pointer truncate text-left text-sm leading-5 text-muted-foreground" onClick={onBack} type="button">
             Усы / {category}
           </button>
           <h1 className="text-xl leading-7 font-bold">{category}</h1>
         </div>
         <button
           aria-label="Открыть фильтры"
-          className="mr-3 grid size-8 place-items-center rounded-md text-foreground hover:text-primary"
+          className="mr-3 grid size-8 cursor-pointer place-items-center rounded-md text-foreground hover:text-primary"
           onClick={onFilterOpen}
           type="button"
         >
@@ -691,7 +691,7 @@ function MobileFiltersPage({
     <section className="grid gap-4 pb-20 md:hidden">
       <MobileSearchForm onSearch={onSearch} />
       <div className="flex h-8 items-center gap-2">
-        <button aria-label="Назад" className="text-[28px] leading-none" onClick={onBack} type="button">
+        <button aria-label="Назад" className="cursor-pointer text-[28px] leading-none" onClick={onBack} type="button">
           ←
         </button>
         <h1 className="text-2xl leading-8 font-bold">Фильтры</h1>
@@ -804,11 +804,11 @@ function CatalogProductCard({
   if (viewMode === 'list') {
     return (
       <article className="grid min-w-0 gap-4 border-b border-border py-5 last:border-b-0 md:grid-cols-[96px_minmax(0,1fr)_160px] md:items-center">
-        <Link to={`/products/${product.id}`} className="block h-16 overflow-hidden bg-card">
+        <Link to={`/products/${product.id}`} className="block h-16 cursor-pointer overflow-hidden bg-card">
           <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain" />
         </Link>
         <div className="grid min-w-0 gap-2">
-          <Link to={`/products/${product.id}`} className="text-base leading-6 text-primary">
+          <Link to={`/products/${product.id}`} className="cursor-pointer text-base leading-6 text-primary">
             {product.name}
           </Link>
           <p className="line-clamp-2 text-sm leading-5 text-muted-foreground">{product.description}</p>
@@ -828,11 +828,11 @@ function CatalogProductCard({
 
   return (
     <article className={cn('grid min-w-0 content-start', compact ? 'gap-1' : 'gap-2')}>
-      <Link to={`/products/${product.id}`} className={cn('block overflow-hidden bg-card', imageClassName)}>
+      <Link to={`/products/${product.id}`} className={cn('block cursor-pointer overflow-hidden bg-card', imageClassName)}>
         <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain" />
       </Link>
       <div className="grid gap-1">
-        <Link to={`/products/${product.id}`} className="truncate text-sm leading-5 md:text-base md:leading-6">
+        <Link to={`/products/${product.id}`} className="cursor-pointer truncate text-sm leading-5 md:text-base md:leading-6">
           {product.name}
         </Link>
         <span className="text-xl leading-5 font-bold text-success">{currency.format(product.price)}</span>
@@ -871,7 +871,7 @@ function CatalogPagination({
   return (
     <nav aria-label="Пагинация" className={cn('flex flex-wrap items-center gap-2 text-xs leading-4 text-foreground', className)}>
       <button
-        className="grid h-6 w-7 place-items-center rounded border border-border bg-muted text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-50"
+        className="grid h-6 w-7 cursor-pointer place-items-center rounded border border-border bg-muted text-muted-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-50"
         disabled={isFetching || page === 1}
         onClick={() => onPageChange(page - 1)}
         type="button"
@@ -886,6 +886,7 @@ function CatalogPagination({
             key={item}
             className={cn(
               'grid h-6 min-w-6 place-items-center rounded px-2 transition-colors hover:bg-muted hover:text-primary disabled:pointer-events-none disabled:opacity-50',
+              'cursor-pointer',
               item === page && 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground',
             )}
             disabled={isFetching}
@@ -903,7 +904,7 @@ function CatalogPagination({
       )}
 
       <button
-        className="grid h-6 w-7 place-items-center rounded border border-border bg-card text-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-50"
+        className="grid h-6 w-7 cursor-pointer place-items-center rounded border border-border bg-card text-foreground transition-colors hover:border-primary hover:text-primary disabled:pointer-events-none disabled:opacity-50"
         disabled={isFetching || page === totalPages}
         onClick={() => onPageChange(page + 1)}
         type="button"
@@ -967,10 +968,10 @@ function DesktopCheckboxGroup({
       <h2 className="text-sm leading-5 font-bold">{title}</h2>
       <div className="grid gap-3">
         {items.map((item) => (
-          <label key={item} className="flex items-center gap-2 text-sm leading-5">
+          <label key={item} className="flex cursor-pointer items-center gap-2 text-sm leading-5">
             <input
               checked={checked.includes(item)}
-              className="size-4 shrink-0 appearance-none rounded-sm border border-muted-foreground bg-background checked:border-primary checked:bg-primary"
+              className="size-4 shrink-0 cursor-pointer appearance-none rounded-sm border border-muted-foreground bg-background checked:border-primary checked:bg-primary"
               onChange={() => onToggle(item)}
               type="checkbox"
             />
@@ -998,10 +999,10 @@ function DesktopRadioGroup({
       <h2 className="text-sm leading-5 font-bold">{title}</h2>
       <div className="grid gap-3">
         {items.map((item) => (
-          <label key={item} className="flex items-center gap-2 text-sm leading-5">
+          <label key={item} className="flex cursor-pointer items-center gap-2 text-sm leading-5">
             <input
               checked={checked === item}
-              className="size-4 shrink-0 appearance-none rounded-full border border-muted-foreground bg-background checked:border-[5px] checked:border-primary"
+              className="size-4 shrink-0 cursor-pointer appearance-none rounded-full border border-muted-foreground bg-background checked:border-[5px] checked:border-primary"
               name="density"
               onChange={() => onChange(item)}
               type="radio"
@@ -1017,7 +1018,7 @@ function DesktopRadioGroup({
 function SwitchRow({ checked, label, onToggle }: { checked: boolean; label: ReactNode; onToggle: () => void }) {
   return (
     <button
-      className="flex items-center gap-2 text-left text-xs leading-4"
+      className="flex cursor-pointer items-center gap-2 text-left text-xs leading-4"
       onClick={onToggle}
       type="button"
       aria-pressed={checked}

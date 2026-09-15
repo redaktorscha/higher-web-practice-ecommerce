@@ -19,7 +19,7 @@ function SelectTrigger({ className, children, ...props }: ComponentProps<typeof 
   return (
     <SelectPrimitive.Trigger
       className={cn(
-        'flex h-10 w-full items-center justify-between gap-2 rounded-lg border border-input bg-card px-3 py-2 text-base text-foreground outline-none transition-colors hover:border-primary focus:border-primary focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground [&>span]:line-clamp-1',
+        'flex h-10 w-full cursor-pointer items-center justify-between gap-2 rounded-lg border border-input bg-card px-3 py-2 text-base text-foreground outline-none transition-colors hover:border-primary focus:border-primary focus:ring-2 focus:ring-ring/20 disabled:cursor-not-allowed disabled:bg-muted disabled:text-muted-foreground [&>span]:line-clamp-1',
         className,
       )}
       {...props}
@@ -62,7 +62,7 @@ function SelectItem({ className, children, ...props }: ComponentProps<typeof Sel
   return (
     <SelectPrimitive.Item
       className={cn(
-        'relative flex w-full cursor-default select-none items-center rounded-md py-2 pr-8 pl-3 text-sm outline-none hover:bg-muted focus:bg-muted data-[disabled]:pointer-events-none data-[disabled]:text-muted-foreground',
+        'relative flex w-full cursor-pointer select-none items-center rounded-md py-2 pr-8 pl-3 text-sm outline-none hover:bg-muted focus:bg-muted data-[disabled]:pointer-events-none data-[disabled]:cursor-not-allowed data-[disabled]:text-muted-foreground',
         className,
       )}
       {...props}

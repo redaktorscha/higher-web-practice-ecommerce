@@ -44,7 +44,7 @@ const ProductCartControl = memo(function ProductCartControl({
         <div className={cn('flex h-10 w-full items-center justify-between rounded-md bg-primary text-primary-foreground', className)}>
           <button
             aria-label={`Уменьшить количество: ${productName}`}
-            className="grid h-10 min-w-10 place-items-center rounded-l-md text-base leading-6 font-bold transition-colors hover:bg-primary-hover disabled:bg-muted disabled:text-muted-foreground"
+            className="grid h-10 min-w-10 cursor-pointer place-items-center rounded-l-md text-base leading-6 font-bold transition-colors hover:bg-primary-hover disabled:bg-muted disabled:text-muted-foreground"
             disabled={isPending}
             onClick={decrement}
             type="button"
@@ -54,7 +54,7 @@ const ProductCartControl = memo(function ProductCartControl({
           <span className="min-w-8 text-center text-base leading-6 font-bold">{quantity}</span>
           <button
             aria-label={`Увеличить количество: ${productName}`}
-            className="grid h-10 min-w-10 place-items-center rounded-r-md text-base leading-6 font-bold transition-colors hover:bg-primary-hover disabled:bg-muted disabled:text-muted-foreground"
+            className="grid h-10 min-w-10 cursor-pointer place-items-center rounded-r-md text-base leading-6 font-bold transition-colors hover:bg-primary-hover disabled:bg-muted disabled:text-muted-foreground"
             disabled={isPending}
             onClick={increment}
             type="button"
@@ -117,7 +117,7 @@ function DeleteProductDialog({
             Отмена
           </DialogClose>
           <button
-            className="h-10 rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
+            className="h-10 cursor-pointer rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
             disabled={isLoading}
             onClick={() => void confirmDelete()}
             type="button"

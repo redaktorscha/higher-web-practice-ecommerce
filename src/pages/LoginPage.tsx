@@ -117,7 +117,7 @@ export function LoginPage() {
 
             <div className="flex justify-end">
               <button
-                className="text-xs leading-4 text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-base md:leading-6"
+                className="cursor-pointer text-xs leading-4 text-muted-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring md:text-base md:leading-6"
                 onClick={() => setIsPasswordRecoveryOpen(true)}
                 type="button"
               >
@@ -129,7 +129,7 @@ export function LoginPage() {
           {errorMessage ? <p className="text-sm leading-5 text-danger">{errorMessage}</p> : null}
 
           <button
-            className="h-9 rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white shadow-modal disabled:bg-muted disabled:text-muted-foreground md:mt-2 md:h-10 md:text-base md:leading-6"
+            className="h-9 cursor-pointer rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white shadow-modal disabled:bg-muted disabled:text-muted-foreground md:mt-2 md:h-10 md:text-base md:leading-6"
             disabled={isLoading}
             type="submit"
           >
@@ -211,7 +211,7 @@ function PasswordRecoveryDialog({
           </label>
           <DialogFooter>
             <button
-              className="h-10 rounded-md bg-primary px-4 text-base leading-6 font-bold text-white"
+              className="h-10 cursor-pointer rounded-md bg-primary px-4 text-base leading-6 font-bold text-white"
               type="submit"
             >
               Отправить

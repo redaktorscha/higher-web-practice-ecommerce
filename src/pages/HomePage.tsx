@@ -341,7 +341,7 @@ function MobileCategoryList() {
   return (
     <section className="grid gap-5 md:hidden">
       <MobileSearch />
-      <Link to="/catalog/filters" className="flex h-6 items-center justify-between text-sm leading-5">
+      <Link to="/catalog/filters" className="flex h-6 cursor-pointer items-center justify-between text-sm leading-5">
         <span>Усы</span>
         <span className="text-muted-foreground">›</span>
       </Link>
@@ -353,7 +353,7 @@ function MobileFilters() {
   return (
     <section className="grid gap-4 pb-0 md:hidden">
       <div className="flex h-8 items-center gap-2">
-        <Link to="/catalog" aria-label="Назад" className="text-[28px] leading-none">
+        <Link to="/catalog" aria-label="Назад" className="cursor-pointer text-[28px] leading-none">
           ←
         </Link>
         <h1 className="text-2xl leading-8 font-bold">Фильтры</h1>
@@ -377,7 +377,7 @@ function MobileFilters() {
           className="h-[132px]"
           title="Стиль"
           action={
-            <button className="flex items-center gap-1 text-base leading-6 text-muted-foreground">
+            <button className="flex cursor-pointer items-center gap-1 text-base leading-6 text-muted-foreground">
               Все <span className="text-2xl leading-none">›</span>
             </button>
           }
@@ -405,10 +405,10 @@ function DesktopFilters() {
   return (
     <aside className="grid content-start gap-6 rounded-lg bg-card px-6 py-7 shadow-card">
       <section className="grid gap-1 text-base leading-6">
-        <button className="h-7 text-left text-primary">Все категории</button>
-        <button className="h-7 text-left font-bold">Классические</button>
-        <button className="h-10 rounded bg-muted px-4 text-left">Деловые</button>
-        <button className="h-10 px-4 text-left">Повседневные</button>
+        <button className="h-7 cursor-pointer text-left text-primary">Все категории</button>
+        <button className="h-7 cursor-pointer text-left font-bold">Классические</button>
+        <button className="h-10 cursor-pointer rounded bg-muted px-4 text-left">Деловые</button>
+        <button className="h-10 cursor-pointer px-4 text-left">Повседневные</button>
       </section>
 
       <DesktopCheckboxGroup title="Стиль" items={['Классический', 'Винтаж', 'Театральный', 'Экспериментальный', 'Минимализм', 'Военный']} checked={['Классический', 'Минимализм', 'Военный']} />
@@ -481,7 +481,7 @@ function ProductPanel({
     return (
       <div className="rounded-lg bg-card p-6 text-center text-sm leading-5 text-muted-foreground shadow-card">
         Не удалось загрузить товары.
-        <button className="ml-2 text-primary-hover" onClick={onRetry} type="button">
+        <button className="ml-2 cursor-pointer text-primary-hover" onClick={onRetry} type="button">
           Повторить
         </button>
       </div>
@@ -523,11 +523,11 @@ function CatalogProductCard({
   if (viewMode === 'list') {
     return (
       <article className="grid min-w-0 gap-4 border-b border-border py-5 last:border-b-0 md:grid-cols-[96px_minmax(0,1fr)_160px] md:items-center">
-        <Link to={`/products/${product.id}`} className="block h-16 overflow-hidden bg-card">
+        <Link to={`/products/${product.id}`} className="block h-16 cursor-pointer overflow-hidden bg-card">
           <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain" />
         </Link>
         <div className="grid min-w-0 gap-2">
-          <Link to={`/products/${product.id}`} className="text-base leading-6 text-primary">
+          <Link to={`/products/${product.id}`} className="cursor-pointer text-base leading-6 text-primary">
             {product.name}
           </Link>
           <p className="line-clamp-2 text-sm leading-5 text-muted-foreground">{product.description}</p>
@@ -547,11 +547,11 @@ function CatalogProductCard({
 
   return (
     <article className={cn('grid min-w-0 content-start', compact ? 'gap-1' : 'gap-2')}>
-      <Link to={`/products/${product.id}`} className={cn('block overflow-hidden bg-card', imageClassName)}>
+      <Link to={`/products/${product.id}`} className={cn('block cursor-pointer overflow-hidden bg-card', imageClassName)}>
         <img src={product.images[0]} alt={product.name} className="h-full w-full object-contain" />
       </Link>
       <div className="grid gap-1">
-        <Link to={`/products/${product.id}`} className="truncate text-sm leading-5 md:text-base md:leading-6">
+        <Link to={`/products/${product.id}`} className="cursor-pointer truncate text-sm leading-5 md:text-base md:leading-6">
           {product.name}
         </Link>
         <span className="text-xl leading-5 font-bold text-success">{currency.format(product.price)}</span>
@@ -572,7 +572,7 @@ function DesktopCheckboxGroup({ title, items, checked = [] }: { title: string; i
       <h3 className="text-base leading-6 font-bold">{title}</h3>
       <div className="grid gap-3">
         {items.map((item) => (
-          <label key={item} className="flex items-center gap-2 text-sm leading-5">
+          <label key={item} className="flex cursor-pointer items-center gap-2 text-sm leading-5">
             <span className={cn('grid size-4 place-items-center rounded-sm border border-muted-foreground', checked.includes(item) && 'border-primary bg-primary')}>
               {checked.includes(item) ? <span className="size-2 bg-card" /> : null}
             </span>
@@ -590,7 +590,7 @@ function DesktopRadioGroup({ title, items, checked }: { title: string; items: st
       <h3 className="text-base leading-6 font-bold">{title}</h3>
       <div className="grid gap-3">
         {items.map((item) => (
-          <label key={item} className="flex items-center gap-2 text-sm leading-5">
+          <label key={item} className="flex cursor-pointer items-center gap-2 text-sm leading-5">
             <span className="grid size-4 place-items-center rounded-full border border-muted-foreground">
               {checked === item ? <span className="size-2 rounded-full bg-primary" /> : null}
             </span>
@@ -604,7 +604,7 @@ function DesktopRadioGroup({ title, items, checked }: { title: string; items: st
 
 function SwitchRow({ label }: { label: string }) {
   return (
-    <label className="flex items-center gap-2 text-sm leading-5">
+    <label className="flex cursor-pointer items-center gap-2 text-sm leading-5">
       <span className="h-5 w-10 rounded-full bg-muted-foreground/60 p-0.5">
         <span className="block size-4 rounded-full bg-card" />
       </span>
@@ -638,7 +638,7 @@ function MobileRadioGroup({ title, options, active }: { title: string; options: 
     <FilterCard title={title} className="h-[168px]">
       <div className="grid h-[114px] content-start gap-2">
         {options.map((option) => (
-          <label key={option} className={cn('flex h-7 items-center gap-2 rounded bg-muted px-3 text-base leading-6', option === active && 'border border-primary text-primary')}>
+          <label key={option} className={cn('flex h-7 cursor-pointer items-center gap-2 rounded bg-muted px-3 text-base leading-6', option === active && 'border border-primary text-primary')}>
             <span className="grid size-4 place-items-center rounded-full border border-muted-foreground bg-background">
               {option === active ? <span className="size-2 rounded-full bg-primary" /> : null}
             </span>
@@ -652,7 +652,7 @@ function MobileRadioGroup({ title, options, active }: { title: string; options: 
 
 function MobileSwitchLabel({ children }: { children: ReactNode }) {
   return (
-    <label className="flex h-[52px] items-center justify-between rounded-xl bg-card px-4 shadow-card">
+    <label className="flex h-[52px] cursor-pointer items-center justify-between rounded-xl bg-card px-4 shadow-card">
       <span className="text-sm leading-5">{children}</span>
       <span className="h-5 w-10 rounded-full bg-muted-foreground/70 p-0.5">
         <span className="block size-4 rounded-full bg-card" />

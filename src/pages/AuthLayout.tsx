@@ -38,7 +38,7 @@ export function AuthLayout({
         <div className="flex h-8 items-center gap-2 md:hidden">
           <button
             aria-label="Назад"
-            className="grid size-6 place-items-center text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="grid size-6 cursor-pointer place-items-center text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring"
             type="button"
             onClick={() => navigate(-1)}
           >
@@ -53,7 +53,7 @@ export function AuthLayout({
 
           <div className="absolute bottom-6 left-6 hidden w-[332px] gap-1 md:grid">
             <p className="text-sm leading-5 text-muted-foreground">{footerText}</p>
-            <Link to={footerTo} className="text-sm leading-5 font-bold text-primary-hover outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <Link to={footerTo} className="cursor-pointer text-sm leading-5 font-bold text-primary-hover outline-none focus-visible:ring-2 focus-visible:ring-ring">
               {footerLinkText}
             </Link>
           </div>
@@ -61,7 +61,7 @@ export function AuthLayout({
 
         <div className="absolute bottom-5 left-5 grid w-[335px] gap-[5.95px] md:hidden">
           <p className="text-xs leading-4 text-[#9ca3af]">{footerText}</p>
-          <Link to={footerTo} className="text-sm leading-5 text-primary-hover outline-none focus-visible:ring-2 focus-visible:ring-ring">
+          <Link to={footerTo} className="cursor-pointer text-sm leading-5 text-primary-hover outline-none focus-visible:ring-2 focus-visible:ring-ring">
             {footerLinkText}
           </Link>
         </div>

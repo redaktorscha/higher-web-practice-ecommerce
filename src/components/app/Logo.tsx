@@ -11,7 +11,7 @@ function Logo({ variant = 'full', className }: LogoProps) {
   const Component = variant === 'full' ? LogoFull : LogoMark;
 
   return (
-    <a href="/" className={cn('inline-flex items-center', className)} aria-label="Магазин усов Quant">
+    <a href="/" className={cn('inline-flex cursor-pointer items-center', className)} aria-label="Магазин усов Quant">
       <Component className={variant === 'full' ? 'h-10 w-[131px]' : 'size-10'} />
     </a>
   );

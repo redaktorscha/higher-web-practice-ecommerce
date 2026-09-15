@@ -19,7 +19,7 @@ export function SuccessPage() {
     return (
       <section className="pb-28 md:mx-auto md:w-[780px] md:pt-2">
         <h1 className="mb-4 text-2xl leading-8 md:text-[30px] md:leading-9">Заказ не найден</h1>
-        <Link className="text-sm leading-5 text-primary-hover md:text-base md:leading-6" to="/profile/orders">
+        <Link className="cursor-pointer text-sm leading-5 text-primary-hover md:text-base md:leading-6" to="/profile/orders">
           Все заказы
         </Link>
       </section>
@@ -107,20 +107,20 @@ export function SuccessPage() {
 
       <div className="mt-6 grid gap-6 md:flex md:items-center md:justify-between">
         <button
-          className="h-9 rounded-md border border-primary bg-card px-4 text-sm leading-5 font-bold text-primary md:w-[135px] md:bg-primary md:text-base md:leading-6 md:text-white"
+          className="h-9 cursor-pointer rounded-md border border-primary bg-card px-4 text-sm leading-5 font-bold text-primary md:w-[135px] md:bg-primary md:text-base md:leading-6 md:text-white"
           onClick={() => handlePrint()}
           type="button"
         >
           Распечатать заказ
         </button>
-        <Link className="text-center text-sm leading-5 text-primary-hover md:text-base md:leading-6" to="/profile/orders">
+        <Link className="cursor-pointer text-center text-sm leading-5 text-primary-hover md:text-base md:leading-6" to="/profile/orders">
           <span className="md:hidden">История заказов</span>
           <span className="hidden md:inline">Все заказы</span>
         </Link>
       </div>
 
       <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">
-        <Link className="flex h-9 items-center justify-center rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white" to="/catalog">
+        <Link className="flex h-9 cursor-pointer items-center justify-center rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white" to="/catalog">
           Вернуться к покупкам
         </Link>
       </div>

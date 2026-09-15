@@ -53,7 +53,7 @@ export function ProfilePage() {
           </div>
 
           <Link
-            className="flex h-9 items-center justify-center rounded-md border border-primary px-4 text-sm leading-5 font-bold text-primary md:h-10 md:text-base md:leading-6"
+            className="flex h-9 cursor-pointer items-center justify-center rounded-md border border-primary px-4 text-sm leading-5 font-bold text-primary md:h-10 md:text-base md:leading-6"
             to="/profile/edit"
           >
             Редактировать
@@ -78,11 +78,11 @@ export function ProfilePage() {
           </Select>
         </label>
 
-        <label className="flex items-center gap-2 text-sm leading-5">
+        <label className="flex cursor-pointer items-center gap-2 text-sm leading-5">
           <input
             aria-label="Уведомлять об изменении статуса заказов по email"
             checked={notifyByEmail}
-            className="size-4 shrink-0 appearance-none rounded-full border border-[#9ca3af] bg-card checked:border-[5px] checked:border-primary disabled:opacity-60"
+            className="size-4 shrink-0 cursor-pointer appearance-none rounded-full border border-[#9ca3af] bg-card checked:border-[5px] checked:border-primary disabled:cursor-not-allowed disabled:opacity-60"
             disabled={isUpdatingProfile}
             onChange={changeNotifyByEmail}
             type="checkbox"
@@ -91,7 +91,7 @@ export function ProfilePage() {
         </label>
 
         <Link
-          className="text-sm leading-5 text-primary-hover md:hidden"
+          className="cursor-pointer text-sm leading-5 text-primary-hover md:hidden"
           to="/profile/orders"
         >
           История заказов

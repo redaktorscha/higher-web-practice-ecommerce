@@ -170,7 +170,7 @@ export function ProductPage() {
 
       <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">
         <button
-          className="grid h-9 w-full place-items-center rounded-md bg-primary text-white disabled:bg-muted disabled:text-muted-foreground"
+          className="grid h-9 w-full cursor-pointer place-items-center rounded-md bg-primary text-white disabled:bg-muted disabled:text-muted-foreground"
           disabled={!product.inStock || isAddingToCart}
           onClick={() => void addProductToCart(product.id)}
           type="button"
@@ -218,7 +218,7 @@ function ProductGallery({ product }: { product: Product }) {
     <div className="relative group">
       <button
         onClick={() => emblaMainApi?.scrollPrev()}
-        className="absolute top-[205px] left-[-8px] z-10 text-primary-hover md:hidden"
+        className="absolute top-[205px] left-[-8px] z-10 cursor-pointer text-primary-hover md:hidden"
         type="button"
         aria-label="Предыдущее фото"
       >
@@ -226,7 +226,7 @@ function ProductGallery({ product }: { product: Product }) {
       </button>
       <button
         onClick={() => emblaMainApi?.scrollNext()}
-        className="absolute top-[205px] right-[-8px] z-10 text-primary-hover md:hidden"
+        className="absolute top-[205px] right-[-8px] z-10 cursor-pointer text-primary-hover md:hidden"
         type="button"
         aria-label="Следующее фото"
       >
@@ -256,6 +256,7 @@ function ProductGallery({ product }: { product: Product }) {
       <div className="mt-3 hidden h-[106px] items-center gap-2 md:flex">
         <button
           onClick={() => emblaMainApi?.scrollPrev()}
+          className="cursor-pointer"
           type="button"
           aria-label="Предыдущее фото"
         >
@@ -263,7 +264,7 @@ function ProductGallery({ product }: { product: Product }) {
         </button>
         <div className="flex" ref={emblaThumbsRef}>
           {product.images.map((image, index) => (
-            <button key={index} onClick={() => onThumbClick(index)}>
+            <button className="cursor-pointer" key={index} onClick={() => onThumbClick(index)}>
               <img
                 alt=""
                 className="h-24 w-[97px] object-contain"
@@ -275,6 +276,7 @@ function ProductGallery({ product }: { product: Product }) {
         </div>
         <button
           onClick={() => emblaMainApi?.scrollNext()}
+          className="cursor-pointer"
           type="button"
           aria-label="Следующее фото"
         >
@@ -307,6 +309,7 @@ function ProductRating({
                   const isActive = star <= (hoverRating || userRating);
                   return (
                     <button
+                      className="cursor-pointer"
                       key={index}
                       type="button"
                       onClick={() => setUserRating(star)}
@@ -324,7 +327,7 @@ function ProductRating({
                 })}
               </div>
               <button
-                className="h-10 rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:hidden"
+                className="h-10 cursor-pointer rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:hidden"
                 type="button"
               >
                 Оценить

@@ -43,7 +43,7 @@ function Filters({ className }: FiltersProps) {
         <span className="text-sm font-bold">Категория</span>
         <div className="grid gap-3">
           {categories.map((category) => (
-            <label key={category} className="flex items-center gap-3 text-sm">
+            <label key={category} className="flex cursor-pointer items-center gap-3 text-sm">
               <Checkbox />
               {category}
             </label>
@@ -55,7 +55,7 @@ function Filters({ className }: FiltersProps) {
         <span className="text-sm font-bold">Рейтинг</span>
         <RadioGroup defaultValue="4">
           {['5', '4', '3'].map((rating) => (
-            <label key={rating} className="flex items-center gap-3 text-sm">
+            <label key={rating} className="flex cursor-pointer items-center gap-3 text-sm">
               <RadioGroupItem value={rating} />
               от {rating} звезд
             </label>
@@ -63,7 +63,7 @@ function Filters({ className }: FiltersProps) {
         </RadioGroup>
       </section>
 
-      <label className="flex items-center justify-between gap-3 text-sm font-bold">
+      <label className="flex cursor-pointer items-center justify-between gap-3 text-sm font-bold">
         Только в наличии
         <Switch defaultChecked />
       </label>

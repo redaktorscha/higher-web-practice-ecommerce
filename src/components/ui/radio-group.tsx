@@ -10,7 +10,7 @@ function RadioGroupItem({ className, ...props }: ComponentProps<typeof RadioGrou
   return (
     <RadioGroupPrimitive.Item
       className={cn(
-        'aspect-square size-5 rounded-full border border-input bg-card outline-none transition-colors hover:border-primary focus-visible:ring-2 focus-visible:ring-ring disabled:bg-muted data-[state=checked]:border-primary aria-invalid:border-danger',
+        'aspect-square size-5 cursor-pointer rounded-full border border-input bg-card outline-none transition-colors hover:border-primary focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:bg-muted data-[state=checked]:border-primary aria-invalid:border-danger',
         className,
       )}
       {...props}

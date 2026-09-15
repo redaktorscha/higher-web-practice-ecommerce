@@ -38,7 +38,7 @@ export function ProfileLayout() {
             <NavLink
               className={({ isActive }) =>
                 cn(
-                  'h-10 rounded-md px-4 py-2 text-base leading-6 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring',
+                  'block h-10 cursor-pointer rounded-md px-4 py-2 text-base leading-6 outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring',
                   isActive ? 'bg-muted text-primary-hover' : 'text-foreground',
                 )
               }

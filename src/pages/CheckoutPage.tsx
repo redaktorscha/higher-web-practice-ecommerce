@@ -259,7 +259,7 @@ export function CheckoutPage() {
                 <p className="text-base leading-6">Доставить по адресу:</p>
                 <div className="grid gap-2 md:grid-cols-[171px_1fr]">
                   <button
-                    className={`${fieldClassName} flex items-center justify-between ${errors.city ? errorFieldClassName : ''}`}
+                    className={`${fieldClassName} flex cursor-pointer items-center justify-between ${errors.city ? errorFieldClassName : ''}`}
                     onClick={() => setIsCityModalOpen(true)}
                     type="button"
                   >
@@ -282,7 +282,7 @@ export function CheckoutPage() {
             ) : (
               <div className="grid gap-3">
                 <button
-                  className={`${fieldClassName} flex items-center justify-between ${errors.city ? errorFieldClassName : ''}`}
+                  className={`${fieldClassName} flex cursor-pointer items-center justify-between ${errors.city ? errorFieldClassName : ''}`}
                   onClick={() => setIsCityModalOpen(true)}
                   type="button"
                 >
@@ -292,7 +292,7 @@ export function CheckoutPage() {
                 {errors.city ? <p className="text-xs leading-4 text-danger">{errors.city}</p> : null}
                 <div className="grid gap-3 md:grid-cols-[176px_1fr] md:items-center md:gap-2">
                   <button
-                    className="order-2 h-10 rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:order-none"
+                    className="order-2 h-10 cursor-pointer rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:order-none"
                     onClick={() => setIsPickupModalOpen(true)}
                     type="button"
                   >
@@ -430,6 +430,7 @@ function Choice({
     <button
       className={[
         'flex h-10 items-center rounded-md px-4 text-base leading-6 outline-none',
+        'cursor-pointer',
         centered ? 'justify-center' : 'justify-start',
         active ? 'border border-primary bg-muted text-primary-hover' : 'border border-transparent bg-muted text-foreground md:border-muted-foreground md:bg-card',
         className,
@@ -486,7 +487,7 @@ function OrderSummary({
       </div>
       {formMessage ? <p className="mt-3 text-sm leading-5 text-danger">{formMessage}</p> : null}
       <button
-        className="mt-4 h-9 w-full rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white disabled:bg-muted disabled:text-muted-foreground md:h-10 md:text-base md:leading-6"
+        className="mt-4 h-9 w-full cursor-pointer rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white disabled:bg-muted disabled:text-muted-foreground md:h-10 md:text-base md:leading-6"
         disabled={isLoading}
         onClick={onPayment}
         type="button"
@@ -599,7 +600,7 @@ function PaymentCardModal({ onClose, onSave }: { onClose: () => void; onSave: (c
             {errors.cvc ? <span className="text-xs leading-4 text-danger">{errors.cvc}</span> : null}
           </label>
         </div>
-        <button className="h-10 rounded-md bg-primary px-4 text-base leading-6 font-bold text-white" onClick={saveCard} type="button">
+        <button className="h-10 cursor-pointer rounded-md bg-primary px-4 text-base leading-6 font-bold text-white" onClick={saveCard} type="button">
           Сохранить карту
         </button>
       </div>
@@ -613,7 +614,7 @@ function CityModal({ onClose, onSelect }: { onClose: () => void; onSelect: (city
       <div className="grid gap-2">
         {cities.map((city) => (
           <button
-            className="h-10 rounded-md border border-muted-foreground bg-card px-4 text-left text-base leading-6 hover:border-primary hover:text-primary"
+            className="h-10 cursor-pointer rounded-md border border-muted-foreground bg-card px-4 text-left text-base leading-6 hover:border-primary hover:text-primary"
             key={city}
             onClick={() => onSelect(city)}
             type="button"
@@ -649,7 +650,7 @@ function PickupPointModal({
         <div className="grid gap-2">
           {points.map((point) => (
             <button
-              className="rounded-md border border-muted-foreground bg-card p-3 text-left hover:border-primary hover:text-primary"
+              className="cursor-pointer rounded-md border border-muted-foreground bg-card p-3 text-left hover:border-primary hover:text-primary"
               key={point.id}
               onClick={() => onSelect(point)}
               type="button"
@@ -672,7 +673,7 @@ function Modal({ children, onClose, title }: { children: ReactNode; onClose: () 
       <div className="w-full max-w-[420px] rounded-xl bg-card p-6 shadow-modal">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl leading-5">{title}</h2>
-          <button className="grid size-8 place-items-center text-muted-foreground" onClick={onClose} type="button" aria-label="Закрыть">
+          <button className="grid size-8 cursor-pointer place-items-center text-muted-foreground" onClick={onClose} type="button" aria-label="Закрыть">
             <X className="size-5" />
           </button>
         </div>

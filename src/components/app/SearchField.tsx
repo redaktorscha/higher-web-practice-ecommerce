@@ -38,7 +38,7 @@ function SearchField({ className, placeholder = 'Искать', onSearch, ...pro
       {value ? (
         <button
           aria-label="Очистить поиск"
-          className="grid h-10 w-10 shrink-0 place-items-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="grid h-10 w-10 shrink-0 cursor-pointer place-items-center text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           onClick={clearSearch}
           type="button"
         >

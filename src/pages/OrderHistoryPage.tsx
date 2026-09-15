@@ -71,7 +71,7 @@ export function OrderHistoryPage() {
         ) : isError ? (
           <div className="rounded-xl bg-card p-4 text-sm leading-5 text-muted-foreground shadow-card">
             Не удалось загрузить заказы.
-            <button className="ml-2 text-primary-hover" onClick={() => refetch()} type="button">
+            <button className="ml-2 cursor-pointer text-primary-hover" onClick={() => refetch()} type="button">
               Повторить
             </button>
           </div>
@@ -102,7 +102,7 @@ function OrderCard({ order }: { order: Order }) {
           <div className="my-4 border-t border-border" />
         </Collapsible.Content>
         <Collapsible.Trigger asChild>
-          <button className="w-full text-center text-base leading-6 text-primary-hover" type="button">
+          <button className="w-full cursor-pointer text-center text-base leading-6 text-primary-hover" type="button">
             {isOpen ? 'Свернуть товары ↑' : 'Показать товары в заказе ↓'}
           </button>
         </Collapsible.Trigger>
@@ -137,7 +137,7 @@ function OrderProduct({ product, showDivider }: { product: OrderItem; showDivide
       <div className="grid grid-cols-[72px_1fr_auto] items-center gap-4 py-4">
         <img alt="" className="h-10 w-[72px] object-contain" src={product.image} />
         <div>
-          <Link className="text-base leading-6 text-primary-hover" to={`/products/${product.productId}`}>
+          <Link className="cursor-pointer text-base leading-6 text-primary-hover" to={`/products/${product.productId}`}>
             {product.name}
           </Link>
         </div>

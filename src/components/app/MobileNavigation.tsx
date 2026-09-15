@@ -36,7 +36,7 @@ function MobileNavigation({ isAuthenticated = true, className }: MobileNavigatio
           {navItems.map((item) => (
             <Link
               className={cn(
-                'flex flex-col items-center justify-center gap-1 rounded-md px-1 text-xs leading-4 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring',
+                'flex cursor-pointer flex-col items-center justify-center gap-1 rounded-md px-1 text-xs leading-4 outline-none hover:text-primary focus-visible:ring-2 focus-visible:ring-ring',
                 isItemActive(item.to, item.end) ? 'text-primary-hover' : 'text-foreground',
               )}
               key={item.to}
@@ -49,7 +49,7 @@ function MobileNavigation({ isAuthenticated = true, className }: MobileNavigatio
         </div>
       ) : (
         <div className="grid h-[58px] grid-cols-[42px_1fr] items-center gap-4 px-5 py-2">
-          <NavLink to="/login" className="flex flex-col items-center gap-1 text-xs leading-4">
+          <NavLink to="/login" className="flex cursor-pointer flex-col items-center gap-1 text-xs leading-4">
             <Icon name="user" size={16} />
             Войти
           </NavLink>
