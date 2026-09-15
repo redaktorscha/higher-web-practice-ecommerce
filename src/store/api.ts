@@ -143,7 +143,7 @@ function normalizePriceFilter(value: number | string) {
   return Number.isFinite(numberValue) ? numberValue : null;
 }
 
-function buildProductsQuery(params: GetProductsParams) {
+export function buildProductsQuery(params: GetProductsParams) {
   const searchParams = new URLSearchParams({
     _page: String(params.page),
     _limit: String(params.limit),
