@@ -64,6 +64,12 @@ type RemoveFromCartPayload = {
   productId: string;
 };
 
+type SaveProductRatingPayload = {
+  productId: string;
+  userName: string;
+  rating: number;
+};
+
 export const TOKEN_STORAGE_KEY = 'token';
 
 const generateFakeToken = (userId: string) =>
@@ -569,6 +575,84 @@ export const api = createApi({
       providesTags: (_result, _error, id) => [{ type: 'Rating', id }],
     }),
 
+    saveProductRating: builder.mutation<ProductRating, SaveProductRatingPayload>({
+      async queryFn(payload, _queryApi, _extraOptions, fetchWithBQ) {
+        const token = getStoredToken();
+        const userId = token ? getUserIdFromToken(token) : null;
+
+        if (!userId) {
+          return { error: makeClientError(401, 'Unauthorized') };
+        }
+
+        const existingRatingResult = await fetchWithBQ(
+          `/ratings?productId=${encodeURIComponent(payload.productId)}&userId=${encodeURIComponent(userId)}`,
+        );
+
+        if (existingRatingResult.error) {
+          return { error: existingRatingResult.error };
+        }
+
+        const existingRating = (existingRatingResult.data as ProductRating[])[0];
+        const rating = {
+          productId: payload.productId,
+          userId,
+          userName: payload.userName,
+          rating: payload.rating,
+          createdAt: new Date().toISOString(),
+        };
+        const result = await fetchWithBQ(existingRating
+          ? {
+              url: `/ratings/${encodeURIComponent(existingRating.id)}`,
+              method: 'PATCH',
+              body: rating,
+            }
+          : {
+              url: '/ratings',
+              method: 'POST',
+              body: {
+                id: createEntityId(),
+                ...rating,
+              } satisfies ProductRating,
+            });
+
+        if (result.error || !result.data) {
+          return { error: result.error ?? makeClientError(500, 'Не удалось сохранить оценку') };
+        }
+
+        const ratingsResult = await fetchWithBQ(
+          `/ratings?productId=${encodeURIComponent(payload.productId)}`,
+        );
+
+        if (ratingsResult.error) {
+          return { error: ratingsResult.error };
+        }
+
+        const productRatings = ratingsResult.data as ProductRating[];
+        const ratingCount = productRatings.length;
+        const averageRating = ratingCount > 0
+          ? productRatings.reduce((sum, item) => sum + item.rating, 0) / ratingCount
+          : 0;
+        const productResult = await fetchWithBQ({
+          url: `/products/${encodeURIComponent(payload.productId)}`,
+          method: 'PATCH',
+          body: {
+            rating: averageRating,
+            ratingCount,
+          },
+        });
+
+        return productResult.error
+          ? { error: productResult.error }
+          : { data: result.data as ProductRating };
+      },
+      invalidatesTags: (_result, _error, { productId }) => [
+        { type: 'Rating', id: productId },
+        { type: 'Rating', id: 'LIST' },
+        { type: 'Product', id: productId },
+        { type: 'Product', id: 'LIST' },
+      ],
+    }),
+
     getPickupPoints: builder.query<PickupPoint[], { city?: string } | void>({
       async queryFn(params, _queryApi, _extraOptions, fetchWithBQ) {
         const result = await fetchWithBQ('/pickupPoints');
@@ -607,6 +691,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useRemoveFromCartMutation,
+  useSaveProductRatingMutation,
   useUpdateCartItemQuantityMutation,
   useUpdateProfileMutation,
 } = api;

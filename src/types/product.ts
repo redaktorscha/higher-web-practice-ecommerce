@@ -24,6 +24,7 @@ export type PaginatedProductsResponse = {
 export type ProductSort = 'price_asc' | 'price_desc' | 'newest' | 'rating';
 
 export type ProductRating = {
+  id: string;
   productId: string;
   userId: string;
   userName: string;

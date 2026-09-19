@@ -1,6 +1,7 @@
 import { useEffect, useCallback, useState } from "react";
 import useEmblaCarousel from "embla-carousel-react";
 import { ChevronLeft, ChevronRight, ShoppingBag, Star } from "lucide-react";
+import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { useAddProductToCart } from "@/hooks/useAddProductToCart";
@@ -9,6 +10,7 @@ import {
   useGetOrdersQuery,
   useGetProductByIdQuery,
   useGetRatingByIdQuery,
+  useSaveProductRatingMutation,
 } from "@/store/api";
 import { selectCurrentUser } from "@/store/authSlice";
 import { selectCartItemQuantity } from "@/store/cartSlice";
@@ -166,7 +168,12 @@ export function ProductPage() {
         </div>
       </article>
 
-      <ProductRating canRate={hasPurchasedProduct} ratings={ratings} />
+      <ProductRating
+        canRate={hasPurchasedProduct}
+        productId={product.id}
+        ratings={ratings}
+        user={user}
+      />
 
       <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">
         <button
@@ -289,13 +296,43 @@ function ProductGallery({ product }: { product: Product }) {
 
 function ProductRating({
   canRate,
+  productId,
   ratings,
+  user,
 }: {
   canRate: boolean;
+  productId: string;
   ratings: ProductRating[];
+  user: ReturnType<typeof selectCurrentUser>;
 }) {
   const [userRating, setUserRating] = useState<number>(0);
   const [hoverRating, setHoverRating] = useState<number>(0);
+  const [saveProductRating, { isLoading }] = useSaveProductRatingMutation();
+  const savedRating = ratings.find((rating) => rating.userId === user?.id)?.rating ?? 0;
+
+  useEffect(() => {
+    setUserRating(savedRating);
+  }, [savedRating]);
+
+  const handleRating = async (rating: number) => {
+    if (!user) {
+      return;
+    }
+
+    setUserRating(rating);
+
+    try {
+      await saveProductRating({
+        productId,
+        rating,
+        userName: `${user.firstName} ${user.lastName.charAt(0)}.`,
+      }).unwrap();
+      toast.success("Оценка сохранена");
+    } catch {
+      setUserRating(savedRating);
+      toast.error("Не удалось сохранить оценку");
+    }
+  };
 
   return (
     <section className="mt-8 rounded-xl bg-card p-6 shadow-card md:mt-5">
@@ -309,10 +346,12 @@ function ProductRating({
                   const isActive = star <= (hoverRating || userRating);
                   return (
                     <button
-                      className="cursor-pointer"
+                      aria-label={`Оценить на ${star}`}
+                      className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+                      disabled={isLoading}
                       key={index}
                       type="button"
-                      onClick={() => setUserRating(star)}
+                      onClick={() => void handleRating(star)}
                       onMouseEnter={() => setHoverRating(star)}
                       onMouseLeave={() => setHoverRating(0)}
                     >
@@ -328,9 +367,11 @@ function ProductRating({
               </div>
               <button
                 className="h-10 cursor-pointer rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:hidden"
+                disabled={isLoading || userRating === 0}
+                onClick={() => void handleRating(userRating)}
                 type="button"
               >
-                Оценить
+                {isLoading ? "Сохраняем..." : "Оценить"}
               </button>
             </div>
 
