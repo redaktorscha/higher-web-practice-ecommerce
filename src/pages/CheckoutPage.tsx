@@ -21,7 +21,6 @@ import {
   setCity,
   setComment,
   setDeliveryMethod,
-  setLastSuccessfulOrder,
   setPaymentMethod,
   setPhone,
   setPickupPoint,
@@ -168,9 +167,14 @@ export function CheckoutPage() {
         phone: orderDraft.phone,
         comment: orderDraft.comment || undefined,
         paymentMethod: orderDraft.paymentMethod,
+        payment: {
+          method: orderDraft.paymentMethod,
+          cardLast4: orderDraft.paymentMethod === 'card_online' ? selectedCard?.last4 : undefined,
+        },
         deliveryMethod: orderDraft.deliveryMethod,
         deliveryAddress,
         pickupPointId: orderDraft.deliveryMethod === 'pickup_point' ? orderDraft.pickupPoint?.id : undefined,
+        pickupPoint: orderDraft.deliveryMethod === 'pickup_point' ? orderDraft.pickupPoint ?? undefined : undefined,
         userId: user.id,
         items: cart.items.map((item) => ({
           productId: item.productId,
@@ -188,18 +192,10 @@ export function CheckoutPage() {
         },
       }).unwrap();
 
-      dispatch(setLastSuccessfulOrder({
-        ...createdOrder,
-        payment: {
-          method: orderDraft.paymentMethod,
-          cardLast4: orderDraft.paymentMethod === 'card_online' ? selectedCard?.last4 : undefined,
-        },
-        pickupPoint: orderDraft.deliveryMethod === 'pickup_point' ? orderDraft.pickupPoint ?? undefined : undefined,
-      }));
       await clearServerCart().unwrap();
       dispatch(clearCart());
       dispatch(resetOrderDraft());
-      navigate('/success');
+      navigate(`/success?orderId=${encodeURIComponent(createdOrder.id)}`);
     } catch {
       setFormMessage('Не удалось оформить заказ. Попробуйте ещё раз.');
     }

@@ -7,10 +7,12 @@ export type Order = {
   totalPrice: number;
 
   paymentMethod: PaymentMethod;
+  payment?: OrderPayment;
   deliveryMethod: DeliveryMethod;
 
   deliveryAddress?: Address;
   pickupPointId?: string;
+  pickupPoint?: PickupPoint;
 
   customer: OrderCustomerInfo;
 
@@ -36,6 +38,11 @@ export type OrderStatus =
   | 'cancelled';
 
 export type PaymentMethod = 'card_online' | 'cash';
+
+export type OrderPayment = {
+  method: PaymentMethod;
+  cardLast4?: string;
+};
 
 export type DeliveryMethod = 'courier' | 'pickup_point';
 

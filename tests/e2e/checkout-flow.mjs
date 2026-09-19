@@ -121,6 +121,17 @@ await page.route('**/api/orders', async (route) => {
   await route.fulfill(jsonResponse(createdOrder, 201));
 });
 
+await page.route('**/api/orders/*', async (route) => {
+  const orderId = new URL(route.request().url()).pathname.split('/').at(-1);
+
+  if (!createdOrder || createdOrder.id !== orderId) {
+    await route.fulfill(jsonResponse({ message: 'Order not found' }, 404));
+    return;
+  }
+
+  await route.fulfill(jsonResponse(createdOrder));
+});
+
 try {
   await page.goto(baseUrl);
   await page.getByRole('button', { name: 'Добавить в корзину: Председатель' }).click();
@@ -137,11 +148,16 @@ try {
 
   await page.getByRole('heading', { name: /Спасибо за покупку/ }).waitFor();
 
-  assert.equal(new URL(page.url()).pathname, '/success');
+  const successUrl = new URL(page.url());
+  assert.equal(successUrl.pathname, '/success');
+  assert.equal(successUrl.searchParams.get('orderId'), createdOrder.id);
   assert.equal(createdOrder.userId, user.id);
   assert.equal(createdOrder.items[0].productId, product.id);
   assert.equal(createdOrder.customer.phone, '+7 999 123-45-67');
   assert.deepEqual(cartRecords, []);
+
+  await page.reload();
+  await page.getByRole('heading', { name: /Спасибо за покупку/ }).waitFor();
 } finally {
   await browser.close();
 }

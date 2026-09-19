@@ -18,6 +18,7 @@ export type {
   OrderItem,
   OrderStatus,
   PaymentMethod,
+  OrderPayment,
   DeliveryMethod,
   Address,
   PickupPoint,

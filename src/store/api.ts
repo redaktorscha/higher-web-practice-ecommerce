@@ -48,6 +48,8 @@ type CreateOrderRequest = CreateOrderPayload & {
   items: OrderItem[];
   totalPrice: number;
   customer: OrderCustomerInfo;
+  payment?: Order['payment'];
+  pickupPoint?: PickupPoint;
 };
 
 type CartRecord = CartItem & {
@@ -366,6 +368,11 @@ export const api = createApi({
           : [{ type: 'Order' as const, id: 'LIST' }],
     }),
 
+    getOrderById: builder.query<Order, string>({
+      query: (id) => `/orders/${encodeURIComponent(id)}`,
+      providesTags: (_result, _error, id) => [{ type: 'Order', id }],
+    }),
+
     createOrder: builder.mutation<Order, CreateOrderRequest>({
       query: (payload) => ({
         url: '/orders',
@@ -680,6 +687,7 @@ export const {
   useClearCartMutation,
   useCreateOrderMutation,
   useGetCartQuery,
+  useGetOrderByIdQuery,
   useGetOrdersQuery,
   useGetPickupPointsQuery,
   useGetProductByIdQuery,

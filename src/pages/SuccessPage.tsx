@@ -1,8 +1,7 @@
 import { useRef } from 'react';
-import { useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
-import { selectLastSuccessfulOrder } from '@/store/orderSlice';
+import { useGetOrderByIdQuery } from '@/store/api';
 
 const currency = new Intl.NumberFormat('ru-RU', {
   style: 'currency',
@@ -11,11 +10,23 @@ const currency = new Intl.NumberFormat('ru-RU', {
 });
 
 export function SuccessPage() {
-  const order = useSelector(selectLastSuccessfulOrder);
+  const [searchParams] = useSearchParams();
+  const orderId = searchParams.get('orderId') ?? '';
+  const { data: order, isError, isLoading } = useGetOrderByIdQuery(orderId, {
+    skip: !orderId,
+  });
   const printRef = useRef<HTMLElement>(null);
   const handlePrint = useReactToPrint({ contentRef: printRef });
 
-  if (!order) {
+  if (isLoading) {
+    return (
+      <section className="pb-28 md:mx-auto md:w-[780px] md:pt-2">
+        <p className="text-sm leading-5 text-muted-foreground md:text-base md:leading-6">Загружаем заказ...</p>
+      </section>
+    );
+  }
+
+  if (!orderId || isError || !order) {
     return (
       <section className="pb-28 md:mx-auto md:w-[780px] md:pt-2">
         <h1 className="mb-4 text-2xl leading-8 md:text-[30px] md:leading-9">Заказ не найден</h1>
@@ -32,9 +43,10 @@ export function SuccessPage() {
     : [order.deliveryAddress?.city, order.deliveryAddress?.street]
         .filter(Boolean)
         .join(', ');
-  const paymentTitle = order.payment.method === 'card_online' ? 'Оплачено картой' : 'Способ оплаты';
-  const paymentValue = order.payment.method === 'card_online' && order.payment.cardLast4
-    ? `*${order.payment.cardLast4}`
+  const paymentMethod = order.payment?.method ?? order.paymentMethod;
+  const paymentTitle = paymentMethod === 'card_online' ? 'Оплачено картой' : 'Способ оплаты';
+  const paymentValue = paymentMethod === 'card_online'
+    ? order.payment?.cardLast4 ? `*${order.payment.cardLast4}` : 'Картой'
     : 'Наличными при получении';
 
   return (
