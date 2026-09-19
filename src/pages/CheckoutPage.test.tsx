@@ -36,6 +36,19 @@ const product: Product = {
 
 function mockFetch() {
   let createdOrder: Order | null = null;
+  let cartRecords = [{
+    id: 'cart-record-1',
+    userId: user.id,
+    productId: product.id,
+    product,
+    quantity: 1,
+    price: product.price,
+  }];
+
+  localStorage.setItem('token', btoa(JSON.stringify({
+    id: user.id,
+    exp: Date.now() + 86_400_000,
+  })));
 
   const fetchSpy = jest.spyOn(globalThis, 'fetch').mockImplementation(async (input, init) => {
     const url = typeof input === 'string' ? input : input.url;
@@ -56,12 +69,23 @@ function mockFetch() {
       return new Response(JSON.stringify(body), { status: 201, headers: { 'Content-Type': 'application/json' } });
     }
 
+    if (url.includes(`/api/cart/${cartRecords[0]?.id}`) && method === 'DELETE') {
+      cartRecords = [];
+
+      return new Response(JSON.stringify({}), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+
+    if (url.includes('/api/cart?') && method === 'GET') {
+      return new Response(JSON.stringify(cartRecords), { status: 200, headers: { 'Content-Type': 'application/json' } });
+    }
+
     return new Response(JSON.stringify([]), { status: 200, headers: { 'Content-Type': 'application/json' } });
   });
 
   return {
     fetchSpy,
     getCreatedOrder: () => createdOrder,
+    getCartRecords: () => cartRecords,
   };
 }
 
@@ -95,9 +119,9 @@ describe('CheckoutPage', () => {
 
   it('submits order and navigates to success screen', async () => {
     const clicker = userEvent.setup();
-    const { getCreatedOrder } = mockFetch();
+    const { getCreatedOrder, getCartRecords } = mockFetch();
 
-    renderWithProviders(
+    const { store } = renderWithProviders(
       <Routes>
         <Route path="/checkout" element={<CheckoutPage />} />
         <Route path="/success" element={<h1>Спасибо за покупку</h1>} />
@@ -123,6 +147,8 @@ describe('CheckoutPage', () => {
     await clicker.click(screen.getByRole('button', { name: 'Оплатить' }));
 
     expect(await screen.findByRole('heading', { name: 'Спасибо за покупку' })).toBeInTheDocument();
+    expect(store.getState().cart).toEqual({ items: [], totalItems: 0, totalPrice: 0 });
+    expect(getCartRecords()).toEqual([]);
 
     await waitFor(() => {
       expect(getCreatedOrder()).toMatchObject({

@@ -393,6 +393,37 @@ export const api = createApi({
       providesTags: ['Cart'],
     }),
 
+    clearCart: builder.mutation<void, void>({
+      async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
+        const token = getStoredToken();
+        const userId = token ? getUserIdFromToken(token) : null;
+
+        if (!userId) {
+          return { error: makeClientError(401, 'Unauthorized') };
+        }
+
+        const cartResult = await fetchWithBQ(`/cart?userId=${encodeURIComponent(userId)}`);
+
+        if (cartResult.error) {
+          return { error: cartResult.error };
+        }
+
+        const records = cartResult.data as CartRecord[];
+        const deleteResults = await Promise.all(
+          records.map((record) => fetchWithBQ({
+            url: `/cart/${encodeURIComponent(record.id)}`,
+            method: 'DELETE',
+          })),
+        );
+        const failedDelete = deleteResults.find((result) => result.error);
+
+        return failedDelete?.error
+          ? { error: failedDelete.error }
+          : { data: undefined };
+      },
+      invalidatesTags: ['Cart'],
+    }),
+
     addToCart: builder.mutation<CartItem, AddToCartPayload>({
       async queryFn(payload, _queryApi, _extraOptions, fetchWithBQ) {
         const token = getStoredToken();
@@ -562,6 +593,7 @@ export const api = createApi({
 
 export const {
   useAddToCartMutation,
+  useClearCartMutation,
   useCreateOrderMutation,
   useGetCartQuery,
   useGetOrdersQuery,

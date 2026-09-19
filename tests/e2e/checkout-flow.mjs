@@ -90,6 +90,20 @@ await page.route('**/api/cart', async (route) => {
   await route.fulfill(jsonResponse(record, 201));
 });
 
+await page.route('**/api/cart/*', async (route) => {
+  const request = route.request();
+
+  if (request.method() !== 'DELETE') {
+    await route.fulfill(jsonResponse({}));
+    return;
+  }
+
+  const recordId = new URL(request.url()).pathname.split('/').at(-1);
+  cartRecords = cartRecords.filter((record) => record.id !== recordId);
+
+  await route.fulfill(jsonResponse({}));
+});
+
 await page.route('**/api/pickupPoints', async (route) => {
   await route.fulfill(jsonResponse([]));
 });
@@ -127,6 +141,7 @@ try {
   assert.equal(createdOrder.userId, user.id);
   assert.equal(createdOrder.items[0].productId, product.id);
   assert.equal(createdOrder.customer.phone, '+7 999 123-45-67');
+  assert.deepEqual(cartRecords, []);
 } finally {
   await browser.close();
 }

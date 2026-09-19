@@ -9,9 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import orderImage from '@/assets/order.png';
 import { checkoutSchema, getFieldErrors, paymentCardSchema, type PaymentCardFormValues } from '@/lib/validation';
-import { useCreateOrderMutation, useGetPickupPointsQuery } from '@/store/api';
+import { useClearCartMutation, useCreateOrderMutation, useGetPickupPointsQuery } from '@/store/api';
 import { selectCurrentUser } from '@/store/authSlice';
-import { selectCart } from '@/store/cartSlice';
+import { clearCart, selectCart } from '@/store/cartSlice';
 import {
   addSavedCard,
   resetOrderDraft,
@@ -91,7 +91,8 @@ export function CheckoutPage() {
   const user = useSelector(selectCurrentUser);
   const cart = useSelector(selectCart);
   const orderDraft = useSelector(selectOrderDraft);
-  const [createOrder, { isLoading }] = useCreateOrderMutation();
+  const [createOrder, { isLoading: isOrderCreating }] = useCreateOrderMutation();
+  const [clearServerCart, { isLoading: isCartClearing }] = useClearCartMutation();
   const { data: pickupPoints = [], isFetching: isPickupPointsFetching } = useGetPickupPointsQuery(
     orderDraft.city ? { city: orderDraft.city } : undefined,
     { skip: !orderDraft.city },
@@ -195,6 +196,8 @@ export function CheckoutPage() {
         },
         pickupPoint: orderDraft.deliveryMethod === 'pickup_point' ? orderDraft.pickupPoint ?? undefined : undefined,
       }));
+      await clearServerCart().unwrap();
+      dispatch(clearCart());
       dispatch(resetOrderDraft());
       navigate('/success');
     } catch {
@@ -351,7 +354,7 @@ export function CheckoutPage() {
         <OrderSummary
           deliveryPrice={deliveryPrice}
           formMessage={formMessage}
-          isLoading={isLoading}
+          isLoading={isOrderCreating || isCartClearing}
           itemsCount={cart.totalItems}
           onPayment={handlePayment}
           selectedCard={selectedCard}
