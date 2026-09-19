@@ -9,7 +9,6 @@ type MobileNavigationProps = {
 
 const navItems: Array<{ icon: IconName; label: string; to: string; end?: boolean }> = [
   { icon: 'home', label: 'Главная', to: '/', end: true },
-  { icon: 'menu', label: 'Товары', to: '/catalog' },
   { icon: 'user', label: 'Профиль', to: '/profile' },
   { icon: 'shoppingBag', label: 'Корзина', to: '/profile/cart' },
 ];
@@ -32,7 +31,7 @@ function MobileNavigation({ isAuthenticated = true, className }: MobileNavigatio
   return (
     <nav className={cn('fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden', className)}>
       {isAuthenticated ? (
-        <div className="grid h-[58px] grid-cols-4 px-5 py-2">
+        <div className="grid h-[58px] grid-cols-3 px-5 py-2">
           {navItems.map((item) => (
             <Link
               className={cn(

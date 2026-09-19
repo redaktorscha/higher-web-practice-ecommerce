@@ -129,7 +129,7 @@ export function CatalogPage() {
   const totalCount = data?.totalCount ?? 0;
   const totalPages = Math.ceil(totalCount / LIMIT);
   const page = queryFilters.page;
-  const isMobileFiltersPage = location.pathname === '/catalog/filters';
+  const isMobileFiltersPage = location.pathname === '/filters';
   const selectedCategory = filters.category;
   const selectedSort = productSortOptions.find((option) => option.sortBy === filters.sortBy && option.order === filters.order)?.value ?? 'popular';
   const paginationItems = useMemo(
@@ -283,7 +283,8 @@ export function CatalogPage() {
     setFilters(nextFilters);
     setQueryFilters(nextFilters);
     setTargetPage('1');
-    navigate(`/catalog?${nextSearchParams.toString()}`);
+    const nextSearch = nextSearchParams.toString();
+    navigate(nextSearch ? `/?${nextSearch}` : '/');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -291,7 +292,7 @@ export function CatalogPage() {
     const nextSearchParams = getFiltersSearchParams(filters);
     const nextSearch = nextSearchParams.toString();
 
-    navigate(`/catalog/filters${nextSearch ? `?${nextSearch}` : ''}`);
+    navigate(`/filters${nextSearch ? `?${nextSearch}` : ''}`);
   };
 
   const closeMobileFilters = () => {
@@ -304,7 +305,7 @@ export function CatalogPage() {
     const nextSearchParams = getFiltersSearchParams(filters);
     const nextSearch = nextSearchParams.toString();
 
-    navigate(`/catalog${nextSearch ? `?${nextSearch}` : ''}`);
+    navigate(`/${nextSearch ? `?${nextSearch}` : ''}`);
   };
 
   const updateMobileFilters = (nextFilters: Partial<FilterState>) => {
@@ -405,7 +406,7 @@ export function CatalogPage() {
             setFilters(nextFilters);
             setQueryFilters(nextFilters);
             setSearchParams(getFiltersSearchParams(nextFilters), { replace: true });
-            navigate('/catalog');
+            navigate('/');
           }}
           onFilterOpen={openMobileFilters}
           onPageChange={changePage}

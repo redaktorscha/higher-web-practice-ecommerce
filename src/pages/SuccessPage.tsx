@@ -132,7 +132,7 @@ export function SuccessPage() {
       </div>
 
       <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">
-        <Link className="flex h-9 cursor-pointer items-center justify-center rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white" to="/catalog">
+        <Link className="flex h-9 cursor-pointer items-center justify-center rounded-md bg-primary px-4 text-sm leading-5 font-bold text-white" to="/">
           Вернуться к покупкам
         </Link>
       </div>

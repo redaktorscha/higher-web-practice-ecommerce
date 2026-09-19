@@ -1,7 +1,6 @@
 export { CartPage } from './CartPage';
 export { CatalogPage } from './CatalogPage';
 export { CheckoutPage } from './CheckoutPage';
-export { HomePage } from './HomePage';
 export { LoginPage } from './LoginPage';
 export { NotFoundPage } from './NotFoundPage';
 export { OrderHistoryPage } from './OrderHistoryPage';

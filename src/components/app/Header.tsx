@@ -19,7 +19,7 @@ function Header({ isAuthenticated = true, profileName = 'Имя профиля',
         <div className="flex items-center gap-[51px]">
           <Logo />
           <Button asChild>
-            <Link to="/catalog">Каталог</Link>
+            <Link to="/">Каталог</Link>
           </Button>
         </div>
 

@@ -5,7 +5,6 @@ import {
   CartPage,
   CatalogPage,
   CheckoutPage,
-  HomePage,
   LoginPage,
   NotFoundPage,
   OrderHistoryPage,
@@ -24,14 +23,10 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />,
-      },
-      {
-        path: 'catalog',
         element: <CatalogPage />,
       },
       {
-        path: 'catalog/filters',
+        path: 'filters',
         element: <CatalogPage />,
       },
       {

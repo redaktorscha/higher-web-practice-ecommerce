@@ -21,7 +21,7 @@ export function MainLayout() {
   const user = useSelector(selectCurrentUser);
   const cartTotalItems = useSelector(selectCartTotalItems);
   const isAuthPage = location.pathname === '/login' || location.pathname === '/register';
-  const isCatalogFiltersPage = location.pathname === '/catalog/filters';
+  const isCatalogFiltersPage = location.pathname === '/filters';
   const profileName = user ? `${user.firstName} ${user.lastName}` : undefined;
 
   useGetProfileQuery(undefined, {
