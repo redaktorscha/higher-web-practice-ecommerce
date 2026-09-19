@@ -57,6 +57,7 @@ export const profileSchema = z.object({
     .trim()
     .min(1, 'Введите email')
     .email('Введите корректный email'),
+  password: z.string().min(1, 'Введите пароль'),
 });
 
 export const passwordRecoverySchema = z.object({

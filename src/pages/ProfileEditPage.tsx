@@ -48,6 +48,7 @@ function ProfileEditForm({ user }: { user: User | null }) {
     firstName: user?.firstName ?? "",
     lastName: user?.lastName ?? "",
     email: user?.email ?? "",
+    password: "",
   };
   const {
     clearErrors,
@@ -119,6 +120,10 @@ function ProfileEditForm({ user }: { user: User | null }) {
         setError("email", { message: validationErrors.email });
       }
 
+      if (validationErrors.password) {
+        setError("password", { message: validationErrors.password });
+      }
+
       return;
     }
 
@@ -135,7 +140,7 @@ function ProfileEditForm({ user }: { user: User | null }) {
     <section className="min-h-[800] md:relative">
       <h1 className="mb-4 text-2xl leading-8 md:hidden">Мой профиль</h1>
 
-      <div className="rounded-xl bg-card p-4 shadow-card md:h-[337px] md:w-[580px]">
+      <div className="rounded-xl bg-card p-4 shadow-card md:w-[580px]">
         <div className="mb-4 flex justify-center md:justify-start">
           <div className="relative">
             <img
@@ -219,6 +224,27 @@ function ProfileEditForm({ user }: { user: User | null }) {
             {errors.email?.message ? (
               <span className="text-xs leading-4 text-danger">
                 {errors.email.message}
+              </span>
+            ) : null}
+          </label>
+
+          <label className="grid gap-1 text-sm leading-5 text-[#9ca3af] md:w-[258px]">
+            Пароль: *
+            <input
+              aria-label="Пароль"
+              aria-invalid={Boolean(errors.password)}
+              className={cn(
+                inputClassName,
+                errors.password && errorInputClassName,
+              )}
+              type="password"
+              {...register("password", {
+                onChange: () => clearFieldState("password"),
+              })}
+            />
+            {errors.password?.message ? (
+              <span className="text-xs leading-4 text-danger">
+                {errors.password.message}
               </span>
             ) : null}
           </label>
