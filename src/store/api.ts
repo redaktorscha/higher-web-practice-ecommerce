@@ -406,7 +406,7 @@ export const api = createApi({
       providesTags: ['Cart'],
     }),
 
-    clearCart: builder.mutation<void, void>({
+    clearCart: builder.mutation<null, void>({
       async queryFn(_arg, _queryApi, _extraOptions, fetchWithBQ) {
         const token = getStoredToken();
         const userId = token ? getUserIdFromToken(token) : null;
@@ -432,7 +432,7 @@ export const api = createApi({
 
         return failedDelete?.error
           ? { error: failedDelete.error }
-          : { data: undefined };
+          : { data: null };
       },
       invalidatesTags: ['Cart'],
     }),

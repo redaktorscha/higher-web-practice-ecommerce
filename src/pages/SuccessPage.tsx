@@ -1,13 +1,8 @@
 import { useRef } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useReactToPrint } from 'react-to-print';
+import { rubleCurrency } from '@/lib/format';
 import { useGetOrderByIdQuery } from '@/store/api';
-
-const currency = new Intl.NumberFormat('ru-RU', {
-  style: 'currency',
-  currency: 'RUB',
-  maximumFractionDigits: 0,
-});
 
 export function SuccessPage() {
   const [searchParams] = useSearchParams();
@@ -95,10 +90,10 @@ export function SuccessPage() {
                 <p className="text-sm leading-5 text-primary-hover md:text-base md:leading-6">{product.name}</p>
                 <p className="text-xs leading-4 text-[#9ca3af] md:hidden">{product.quantity} шт.</p>
                 <p className="hidden text-xl leading-5 font-bold md:block">
-                  {currency.format(product.price * product.quantity)} <span className="text-base leading-6 font-normal text-muted-foreground">{product.quantity} шт.</span>
+                  {rubleCurrency.format(product.price * product.quantity)} <span className="text-base leading-6 font-normal text-muted-foreground">{product.quantity} шт.</span>
                 </p>
               </div>
-              <p className="text-sm leading-5 font-bold md:hidden">{currency.format(product.price * product.quantity)}</p>
+              <p className="text-sm leading-5 font-bold md:hidden">{rubleCurrency.format(product.price * product.quantity)}</p>
             </div>
           ))}
         </section>
@@ -112,7 +107,7 @@ export function SuccessPage() {
           </div>
           <div className="text-right md:text-left">
             <p className="text-xs leading-4 text-[#9ca3af] md:text-sm md:leading-5">Общая сумма</p>
-            <p className="text-xl leading-5 font-bold md:text-[30px] md:leading-9">{currency.format(order.totalPrice)}</p>
+            <p className="text-xl leading-5 font-bold md:text-[30px] md:leading-9">{rubleCurrency.format(order.totalPrice)}</p>
           </div>
         </section>
       </article>

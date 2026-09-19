@@ -11,7 +11,7 @@ export type SavedPaymentCard = {
   expiry: string;
 };
 
-type OrderState = {
+export type OrderDraft = {
   paymentMethod: PaymentMethod;
   selectedCardId: string | null;
   savedCards: SavedPaymentCard[];
@@ -23,7 +23,7 @@ type OrderState = {
   comment: string;
 };
 
-const initialState: OrderState = {
+const initialState: OrderDraft = {
   paymentMethod: 'cash',
   selectedCardId: null,
   savedCards: [],

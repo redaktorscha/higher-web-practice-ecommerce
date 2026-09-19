@@ -1,101 +1,53 @@
-import { useEffect, useCallback, useState } from "react";
-import useEmblaCarousel from "embla-carousel-react";
-import { ChevronLeft, ChevronRight, ShoppingBag, Star } from "lucide-react";
-import toast from "react-hot-toast";
-import { useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { useAddProductToCart } from "@/hooks/useAddProductToCart";
-import { cn } from "@/lib/utils";
-import {
-  useGetOrdersQuery,
-  useGetProductByIdQuery,
-  useGetRatingByIdQuery,
-  useSaveProductRatingMutation,
-} from "@/store/api";
-import { selectCurrentUser } from "@/store/authSlice";
-import { selectCartItemQuantity } from "@/store/cartSlice";
-import type { Product, ProductRating } from "@/types";
-import { ProductCartControl } from "@/components/app/ProductCartControl";
-
-const currency = new Intl.NumberFormat("ru-RU", {
-  style: "currency",
-  currency: "RUB",
-  maximumFractionDigits: 0,
-});
-
-const dateFormatter = new Intl.DateTimeFormat("ru-RU", {
-  day: "2-digit",
-  month: "long",
-  year: "numeric",
-});
+import { ShoppingBag, Star } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
+import { ProductCartControl } from '@/components/app/ProductCartControl';
+import { ProductGallery, ProductRating } from '@/components/product';
+import { useAddProductToCart } from '@/hooks/useAddProductToCart';
+import { rubleCurrency } from '@/lib/format';
+import { useGetOrdersQuery, useGetProductByIdQuery, useGetRatingByIdQuery } from '@/store/api';
+import { selectCurrentUser } from '@/store/authSlice';
+import { selectCartItemQuantity } from '@/store/cartSlice';
+import type { Product } from '@/types';
 
 const characteristicLabels: Array<[string, string]> = [
-  ["категория", "Категория"],
-  ["подкатегория", "Подкатегория"],
-  ["стиль", "Стиль"],
-  ["форма", "Форма"],
-  ["густота", "Густота"],
-  ["закрученность", "Закрученность"],
-  ["харизма", "Харизма"],
+  ['категория', 'Категория'],
+  ['подкатегория', 'Подкатегория'],
+  ['стиль', 'Стиль'],
+  ['форма', 'Форма'],
+  ['густота', 'Густота'],
+  ['закрученность', 'Закрученность'],
+  ['харизма', 'Харизма'],
 ];
 
 function getSubcategory(product: Product) {
-  return product.characteristics["подкатегория"] ?? product.category;
+  return product.characteristics['подкатегория'] ?? product.category;
 }
 
 function getRatingCountLabel(count: number) {
   const mod10 = count % 10;
   const mod100 = count % 100;
-
-  if (mod10 === 1 && mod100 !== 11) {
-    return `${count} оценка`;
-  }
-
-  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) {
-    return `${count} оценки`;
-  }
-
+  if (mod10 === 1 && mod100 !== 11) return `${count} оценка`;
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 12 || mod100 > 14)) return `${count} оценки`;
   return `${count} оценок`;
 }
 
 export function ProductPage() {
-  const { id = "" } = useParams();
+  const { id = '' } = useParams();
   const user = useSelector(selectCurrentUser);
   const quantity = useSelector(selectCartItemQuantity(id));
   const { addProductToCart, isAddingToCart } = useAddProductToCart();
-  const {
-    data: product,
-    isError,
-    isLoading,
-  } = useGetProductByIdQuery(id, { skip: !id });
+  const { data: product, isError, isLoading } = useGetProductByIdQuery(id, { skip: !id });
   const { data: ratings = [] } = useGetRatingByIdQuery(id, { skip: !id });
-  const { data: orders = [] } = useGetOrdersQuery(
-    user ? { userId: user.id } : undefined,
-    { skip: !user },
-  );
-
-  const hasPurchasedProduct = orders.some((order) =>
-    order.items.some((item) => item.productId === id),
-  );
+  const { data: orders = [] } = useGetOrdersQuery(user ? { userId: user.id } : undefined, { skip: !user });
+  const hasPurchasedProduct = orders.some((order) => order.items.some((item) => item.productId === id));
 
   if (isLoading) {
-    return (
-      <section className="pb-[92px] md:mx-auto md:w-[984px] md:pb-0 md:pt-0">
-        <div className="rounded-xl bg-card p-6 text-sm leading-5 text-muted-foreground shadow-card">
-          Загружаем товар...
-        </div>
-      </section>
-    );
+    return <ProductPageMessage>Загружаем товар...</ProductPageMessage>;
   }
 
   if (isError || !product) {
-    return (
-      <section className="pb-[92px] md:mx-auto md:w-[984px] md:pb-0 md:pt-0">
-        <div className="rounded-xl bg-card p-6 text-sm leading-5 text-muted-foreground shadow-card">
-          Не удалось загрузить товар
-        </div>
-      </section>
-    );
+    return <ProductPageMessage>Не удалось загрузить товар</ProductPageMessage>;
   }
 
   return (
@@ -106,61 +58,36 @@ export function ProductPage() {
 
       <article className="grid gap-6 rounded-none bg-transparent md:grid-cols-[456px_456px] md:gap-5 md:rounded-xl md:bg-card md:p-6 md:shadow-card">
         <ProductGallery product={product} />
-
         <div className="grid content-start gap-6 md:gap-4">
           <div className="grid grid-cols-[1fr_auto] gap-x-4 gap-y-2">
-            <h1 className="text-[30px] leading-9 md:text-[30px] md:leading-9">
-              {product.name}
-            </h1>
+            <h1 className="text-[30px] leading-9">{product.name}</h1>
             <div className="row-span-2 grid justify-items-end md:row-span-1">
               <div className="flex items-center gap-2">
                 <Star className="size-8 fill-primary-hover text-primary-hover" />
-                <span className="font-heading text-[30px] leading-9 font-bold">
-                  {product.rating.toFixed(1)}
-                </span>
+                <span className="font-heading text-[30px] leading-9 font-bold">{product.rating.toFixed(1)}</span>
               </div>
-              <span className="text-sm leading-5 text-muted-foreground">
-                {getRatingCountLabel(product.ratingCount)}
-              </span>
+              <span className="text-sm leading-5 text-muted-foreground">{getRatingCountLabel(product.ratingCount)}</span>
             </div>
-            <p className="text-[30px] leading-9 font-bold text-success md:text-[30px] md:leading-9">
-              {currency.format(product.price)}
-            </p>
+            <p className="text-[30px] leading-9 font-bold text-success">{rubleCurrency.format(product.price)}</p>
           </div>
 
           <div className="hidden items-end justify-between md:flex">
-            <ProductCartControl
-              className="h-10 w-full md:w-36"
-              inStock={product.inStock}
-              productId={product.id}
-              productName={product.name}
-            />
-            <span className="text-base leading-6 text-muted-foreground">
-              {product.inStock ? "Есть в наличии" : "Нет в наличии"}
-            </span>
+            <ProductCartControl className="h-10 w-full md:w-36" inStock={product.inStock} productId={product.id} productName={product.name} />
+            <span className="text-base leading-6 text-muted-foreground">{product.inStock ? 'Есть в наличии' : 'Нет в наличии'}</span>
           </div>
 
           <section className="grid gap-1">
             <h2 className="text-base leading-6">Описание</h2>
-            <p className="text-sm leading-5 text-muted-foreground">
-              {product.description}
-            </p>
+            <p className="text-sm leading-5 text-muted-foreground">{product.description}</p>
           </section>
 
           <section className="grid gap-2">
             <h2 className="text-base leading-6">О товаре</h2>
             <dl>
               {characteristicLabels.map(([key, label]) => (
-                <div
-                  className="grid grid-cols-[1fr_auto] border-b border-border py-2"
-                  key={key}
-                >
-                  <dt className="text-xs leading-4 text-muted-foreground">
-                    {label}
-                  </dt>
-                  <dd className="text-right text-base leading-6">
-                    {product.characteristics[key] ?? "-"}
-                  </dd>
+                <div className="grid grid-cols-[1fr_auto] border-b border-border py-2" key={key}>
+                  <dt className="text-xs leading-4 text-muted-foreground">{label}</dt>
+                  <dd className="text-right text-base leading-6">{product.characteristics[key] ?? '-'}</dd>
                 </div>
               ))}
             </dl>
@@ -168,287 +95,27 @@ export function ProductPage() {
         </div>
       </article>
 
-      <ProductRating
-        canRate={hasPurchasedProduct}
-        productId={product.id}
-        ratings={ratings}
-        user={user}
-      />
+      <ProductRating canRate={hasPurchasedProduct} key={product.id} productId={product.id} ratings={ratings} user={user} />
 
       <div className="fixed right-0 bottom-[58px] left-0 rounded-t-xl border border-border bg-card px-5 py-4 md:hidden">
         <button
+          aria-label="Добавить в корзину"
           className="grid h-9 w-full cursor-pointer place-items-center rounded-md bg-primary text-white disabled:bg-muted disabled:text-muted-foreground"
           disabled={!product.inStock || isAddingToCart}
           onClick={() => void addProductToCart(product.id)}
           type="button"
-          aria-label="Добавить в корзину"
         >
-          {quantity > 0 ? (
-            <span>{quantity}</span>
-          ) : (
-            <ShoppingBag className="size-4" />
-          )}
+          {quantity > 0 ? <span>{quantity}</span> : <ShoppingBag className="size-4" />}
         </button>
       </div>
     </section>
   );
 }
 
-function ProductGallery({ product }: { product: Product }) {
-  const [emblaMainRef, emblaMainApi] = useEmblaCarousel({ loop: true });
-  const [emblaThumbsRef, emblaThumbsApi] = useEmblaCarousel({
-    containScroll: "keepSnaps",
-    dragFree: true,
-  });
-
-  const onThumbClick = useCallback(
-    (index: number) => {
-      if (!emblaMainApi || !emblaThumbsApi) return;
-      emblaMainApi.scrollTo(index);
-    },
-    [emblaMainApi, emblaThumbsApi],
-  );
-
-  const onSelect = useCallback(() => {
-    if (!emblaMainApi || !emblaThumbsApi) return;
-    const index = emblaMainApi.selectedScrollSnap();
-    emblaThumbsApi.scrollTo(index);
-  }, [emblaMainApi, emblaThumbsApi]);
-
-  useEffect(() => {
-    if (!emblaMainApi) return;
-    emblaMainApi.on("select", onSelect);
-    emblaMainApi.on("reInit", onSelect);
-  }, [emblaMainApi, onSelect]);
-
+function ProductPageMessage({ children }: { children: string }) {
   return (
-    <div className="relative group">
-      <button
-        onClick={() => emblaMainApi?.scrollPrev()}
-        className="absolute top-[205px] left-[-8px] z-10 cursor-pointer text-primary-hover md:hidden"
-        type="button"
-        aria-label="Предыдущее фото"
-      >
-        <ChevronLeft className="size-10" />
-      </button>
-      <button
-        onClick={() => emblaMainApi?.scrollNext()}
-        className="absolute top-[205px] right-[-8px] z-10 cursor-pointer text-primary-hover md:hidden"
-        type="button"
-        aria-label="Следующее фото"
-      >
-        <ChevronRight className="size-10" />
-      </button>
-
-      <div
-        className="mx-auto h-[453px] w-[335px] overflow-hidden rounded-md bg-card md:h-[460px] md:w-[456px]"
-        ref={emblaMainRef}
-      >
-        <div className="flex">
-          {product.images.map((img, index) => (
-            <div
-              className="flex-[0_0_100%] min-w-0 aspect-square flex items-center justify-center bg-white"
-              key={index}
-            >
-              <img
-                src={img}
-                alt={product.name}
-                className="w-full h-full object-contain"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="mt-3 hidden h-[106px] items-center gap-2 md:flex">
-        <button
-          onClick={() => emblaMainApi?.scrollPrev()}
-          className="cursor-pointer"
-          type="button"
-          aria-label="Предыдущее фото"
-        >
-          <ChevronLeft className="size-4 text-muted-foreground" />
-        </button>
-        <div className="flex" ref={emblaThumbsRef}>
-          {product.images.map((image, index) => (
-            <button className="cursor-pointer" key={index} onClick={() => onThumbClick(index)}>
-              <img
-                alt=""
-                className="h-24 w-[97px] object-contain"
-                key={image}
-                src={image}
-              />
-            </button>
-          ))}
-        </div>
-        <button
-          onClick={() => emblaMainApi?.scrollNext()}
-          className="cursor-pointer"
-          type="button"
-          aria-label="Следующее фото"
-        >
-          <ChevronRight className="size-4 text-muted-foreground" />
-        </button>
-      </div>
-    </div>
-  );
-}
-
-function ProductRating({
-  canRate,
-  productId,
-  ratings,
-  user,
-}: {
-  canRate: boolean;
-  productId: string;
-  ratings: ProductRating[];
-  user: ReturnType<typeof selectCurrentUser>;
-}) {
-  const [userRating, setUserRating] = useState<number>(0);
-  const [hoverRating, setHoverRating] = useState<number>(0);
-  const [saveProductRating, { isLoading }] = useSaveProductRatingMutation();
-  const savedRating = ratings.find((rating) => rating.userId === user?.id)?.rating ?? 0;
-
-  useEffect(() => {
-    setUserRating(savedRating);
-  }, [savedRating]);
-
-  const handleRating = async (rating: number) => {
-    if (!user) {
-      return;
-    }
-
-    setUserRating(rating);
-
-    try {
-      await saveProductRating({
-        productId,
-        rating,
-        userName: `${user.firstName} ${user.lastName.charAt(0)}.`,
-      }).unwrap();
-      toast.success("Оценка сохранена");
-    } catch {
-      setUserRating(savedRating);
-      toast.error("Не удалось сохранить оценку");
-    }
-  };
-
-  return (
-    <section className="mt-8 rounded-xl bg-card p-6 shadow-card md:mt-5">
-      <div className="grid gap-4 md:gap-4">
-        {canRate ? (
-          <>
-            <div className="grid gap-4 md:gap-3">
-              <p className="hidden text-base leading-6 md:block">Оцените усы</p>
-              <div className="flex justify-between md:w-[194px] md:justify-start md:gap-2">
-                {[1, 2, 3, 4, 5].map((star, index) => {
-                  const isActive = star <= (hoverRating || userRating);
-                  return (
-                    <button
-                      aria-label={`Оценить на ${star}`}
-                      className="cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
-                      disabled={isLoading}
-                      key={index}
-                      type="button"
-                      onClick={() => void handleRating(star)}
-                      onMouseEnter={() => setHoverRating(star)}
-                      onMouseLeave={() => setHoverRating(0)}
-                    >
-                      <Star
-                        className={cn(
-                          "size-10 text-primary-hover md:size-8",
-                          isActive && "fill-primary",
-                        )}
-                      />
-                    </button>
-                  );
-                })}
-              </div>
-              <button
-                className="h-10 cursor-pointer rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary md:hidden"
-                disabled={isLoading || userRating === 0}
-                onClick={() => void handleRating(userRating)}
-                type="button"
-              >
-                {isLoading ? "Сохраняем..." : "Оценить"}
-              </button>
-            </div>
-
-            <div className="border-t border-[#9ca3af] md:border-border" />
-          </>
-        ) : null}
-
-        <div className="grid gap-0">
-          {ratings.length > 0 ? (
-            ratings.map((rating, index) => (
-              <RatingRow
-                date={dateFormatter.format(new Date(rating.createdAt))}
-                filled={rating.rating}
-                key={`${rating.productId}-${rating.userId}`}
-                last={index === ratings.length - 1}
-                name={rating.userName}
-                score={rating.rating}
-              />
-            ))
-          ) : (
-            <p className="text-sm leading-5 text-muted-foreground">
-              У этого товара пока нет оценок
-            </p>
-          )}
-        </div>
-      </div>
+    <section className="pb-[92px] md:mx-auto md:w-[984px] md:pb-0 md:pt-0">
+      <div className="rounded-xl bg-card p-6 text-sm leading-5 text-muted-foreground shadow-card">{children}</div>
     </section>
-  );
-}
-
-function RatingRow({
-  name,
-  date,
-  filled,
-  last,
-  score,
-}: {
-  name: string;
-  date: string;
-  filled: number;
-  last?: boolean;
-  score: number;
-}) {
-  return (
-    <div
-      className={
-        last ? "py-5" : "border-b border-[#9ca3af] py-5 md:border-border"
-      }
-    >
-      <div className="grid gap-2 md:grid-cols-[1fr_auto] md:items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-sm leading-5 font-bold">
-            {score.toFixed(1)}
-          </span>
-          <div className="flex gap-1">
-            {Array.from({ length: 5 }).map((_, index) => (
-              <Star
-                className={
-                  index < filled
-                    ? "size-6 fill-primary text-primary"
-                    : "size-6 text-primary"
-                }
-                key={index}
-              />
-            ))}
-          </div>
-        </div>
-        <span className="hidden text-sm leading-5 text-muted-foreground md:block">
-          {date}
-        </span>
-        <div className="flex items-center justify-between md:contents">
-          <span className="text-base leading-6">{name}</span>
-          <span className="text-sm leading-5 text-muted-foreground md:hidden">
-            {date}
-          </span>
-        </div>
-      </div>
-    </div>
   );
 }

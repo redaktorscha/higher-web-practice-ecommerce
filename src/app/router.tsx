@@ -3,8 +3,8 @@ import { MainLayout } from '@/components/layout';
 import { ProtectedRoute } from '@/components/routing';
 import {
   CartPage,
-  CatalogPage,
   CheckoutPage,
+  HomePage,
   LoginPage,
   NotFoundPage,
   OrderHistoryPage,
@@ -23,11 +23,11 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <CatalogPage />,
+        element: <HomePage />,
       },
       {
         path: 'filters',
-        element: <CatalogPage />,
+        element: <HomePage />,
       },
       {
         element: <ProtectedRoute isAuthenticated={false} />,

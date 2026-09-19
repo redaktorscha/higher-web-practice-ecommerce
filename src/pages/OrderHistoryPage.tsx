@@ -2,15 +2,10 @@ import * as Collapsible from '@radix-ui/react-collapsible';
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { rubleCurrency } from '@/lib/format';
 import { useGetOrdersQuery } from '@/store/api';
 import { selectCurrentUser } from '@/store/authSlice';
 import type { Order, OrderItem } from '@/types';
-
-const currency = new Intl.NumberFormat('ru-RU', {
-  style: 'currency',
-  currency: 'RUB',
-  maximumFractionDigits: 0,
-});
 
 const dateFormatter = new Intl.DateTimeFormat('ru-RU', {
   day: '2-digit',
@@ -124,7 +119,7 @@ function OrderHeader({ order }: { order: Order }) {
         <p className="col-span-2 text-sm leading-5 text-[#9ca3af] md:hidden">{getPaymentText(order)}</p>
       </div>
       <div className="md:text-right">
-        <p className="text-right text-2xl leading-8 font-bold">{currency.format(order.totalPrice)}</p>
+        <p className="text-right text-2xl leading-8 font-bold">{rubleCurrency.format(order.totalPrice)}</p>
         <p className="hidden text-xs leading-4 text-muted-foreground md:block">{getPaymentText(order)}</p>
       </div>
     </div>
@@ -141,7 +136,7 @@ function OrderProduct({ product, showDivider }: { product: OrderItem; showDivide
             {product.name}
           </Link>
         </div>
-        <p className="text-base leading-6 md:font-normal">{currency.format(product.price * product.quantity)}</p>
+        <p className="text-base leading-6 md:font-normal">{rubleCurrency.format(product.price * product.quantity)}</p>
       </div>
       {showDivider ? <div className="border-t border-border" /> : null}
     </div>
