@@ -129,9 +129,8 @@ export type LoginFormValues = z.infer<typeof loginSchema>;
 export type RegisterFormValues = z.infer<typeof registerSchema>;
 export type ProfileFormValues = z.infer<typeof profileSchema>;
 export type PasswordRecoveryFormValues = z.infer<typeof passwordRecoverySchema>;
-export type CheckoutFormValues = z.infer<typeof checkoutSchema>;
 export type PaymentCardFormValues = z.infer<typeof paymentCardSchema>;
-export type FieldErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string>>;
+type FieldErrors<T extends Record<string, unknown>> = Partial<Record<keyof T, string>>;
 
 export function getFieldErrors<T extends Record<string, unknown>>(error: z.ZodError<T>): FieldErrors<T> {
   return error.issues.reduce<FieldErrors<T>>((errors, issue) => {

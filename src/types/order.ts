@@ -29,7 +29,7 @@ export type OrderItem = {
   quantity: number;
 };
 
-export type OrderStatus =
+type OrderStatus =
   | 'pending'
   | 'paid'
   | 'processing'
@@ -39,14 +39,14 @@ export type OrderStatus =
 
 export type PaymentMethod = 'card_online' | 'cash';
 
-export type OrderPayment = {
+type OrderPayment = {
   method: PaymentMethod;
   cardLast4?: string;
 };
 
 export type DeliveryMethod = 'courier' | 'pickup_point';
 
-export type Address = {
+type Address = {
   country: string;
   city: string;
   street: string;

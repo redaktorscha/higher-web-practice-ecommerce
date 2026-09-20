@@ -21,8 +21,6 @@ export type PaginatedProductsResponse = {
   totalCount: number;
 };
 
-export type ProductSort = 'price_asc' | 'price_desc' | 'newest' | 'rating';
-
 export type ProductRating = {
   id: string;
   productId: string;

@@ -1,6 +1,5 @@
 export type {
   User,
-  UserProfile,
   RegisterPayload,
   LoginPayload,
   UpdateProfilePayload,
@@ -9,18 +8,14 @@ export type {
 export type {
   Product,
   PaginatedProductsResponse,
-  ProductSort,
   ProductRating,
 } from './product';
 
 export type {
   Order,
   OrderItem,
-  OrderStatus,
   PaymentMethod,
-  OrderPayment,
   DeliveryMethod,
-  Address,
   PickupPoint,
   OrderCustomerInfo,
   CreateOrderPayload,

@@ -1,9 +1,10 @@
 import { memo, useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Icon } from '@/components/ui';
+import { RemoveCartItemDialog } from '@/components/cart/RemoveCartItemDialog';
+import { Button, Icon } from '@/components/ui';
 import { useAddProductToCart } from '@/hooks/useAddProductToCart';
 import { cn } from '@/lib/utils';
-import { useRemoveFromCartMutation, useUpdateCartItemQuantityMutation } from '@/store/api';
+import { useUpdateCartItemQuantityMutation } from '@/store/api';
 import { selectCartItemQuantity } from '@/store/cartSlice';
 
 type ProductCartControlProps = {
@@ -62,7 +63,7 @@ const ProductCartControl = memo(function ProductCartControl({
             +
           </button>
         </div>
-        <DeleteProductDialog
+        <RemoveCartItemDialog
           onOpenChange={setIsDeleteDialogOpen}
           open={isDeleteDialogOpen}
           productId={productId}
@@ -84,50 +85,5 @@ const ProductCartControl = memo(function ProductCartControl({
     </Button>
   );
 });
-
-function DeleteProductDialog({
-  onOpenChange,
-  open,
-  productId,
-  productName,
-}: {
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
-  productId: string;
-  productName: string;
-}) {
-  const [removeFromCart, { isLoading }] = useRemoveFromCartMutation();
-
-  const confirmDelete = async () => {
-    await removeFromCart({ productId }).unwrap();
-    onOpenChange(false);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Удалить совсем?</DialogTitle>
-          <DialogDescription>
-            {productName} будет удалён из корзины.
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <DialogClose className="h-10 rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary" disabled={isLoading}>
-            Отмена
-          </DialogClose>
-          <button
-            className="h-10 cursor-pointer rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground"
-            disabled={isLoading}
-            onClick={() => void confirmDelete()}
-            type="button"
-          >
-            {isLoading ? 'Удаляем...' : 'Удалить'}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}
 
 export { ProductCartControl };

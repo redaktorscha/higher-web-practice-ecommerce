@@ -9,8 +9,6 @@ export type User = {
   createdAt: string;
 };
 
-export type UserProfile = User;
-
 export type RegisterPayload = {
   firstName: string;
   lastName: string;

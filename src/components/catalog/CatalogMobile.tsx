@@ -25,7 +25,7 @@ import {
   type CatalogPageItem,
 } from './catalogConfig';
 
-export function MobileCatalogSearch({ onSearch }: { onSearch: (search: string) => void }) {
+function MobileCatalogSearch({ onSearch }: { onSearch: (search: string) => void }) {
   return (
     <form
       className="flex h-9 items-center gap-2 rounded-lg border border-primary bg-card px-2.5"

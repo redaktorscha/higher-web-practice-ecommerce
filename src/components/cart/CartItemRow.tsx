@@ -2,18 +2,10 @@ import { Trash } from 'lucide-react';
 import { memo, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui';
-import { useRemoveFromCartMutation, useUpdateCartItemQuantityMutation } from '@/store/api';
+import { useUpdateCartItemQuantityMutation } from '@/store/api';
 import { selectCartItem } from '@/store/cartSlice';
 import { rubleCurrency } from '@/lib/format';
+import { RemoveCartItemDialog } from './RemoveCartItemDialog';
 
 export const CartItemRow = memo(function CartItemRow({ productId, showMobileDivider }: {
   productId: string;
@@ -51,7 +43,7 @@ export const CartItemRow = memo(function CartItemRow({ productId, showMobileDivi
         <DeleteButton className="hidden cursor-pointer text-primary md:block" onClick={() => setIsDeleteDialogOpen(true)} size="size-6" />
       </div>
       {showMobileDivider ? <div className="mt-8 border-t border-border md:hidden" /> : null}
-      <DeleteCartItemDialog
+      <RemoveCartItemDialog
         onOpenChange={setIsDeleteDialogOpen}
         open={isDeleteDialogOpen}
         productId={item.productId}
@@ -89,34 +81,3 @@ const CartQuantityCounter = memo(function CartQuantityCounter({ onRequestRemove,
     </div>
   );
 });
-
-function DeleteCartItemDialog({ onOpenChange, open, productId, productName }: {
-  onOpenChange: (open: boolean) => void;
-  open: boolean;
-  productId: string;
-  productName: string;
-}) {
-  const [removeFromCart, { isLoading }] = useRemoveFromCartMutation();
-
-  const confirmDelete = async () => {
-    await removeFromCart({ productId }).unwrap();
-    onOpenChange(false);
-  };
-
-  return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Удалить совсем?</DialogTitle>
-          <DialogDescription>{productName} будет удалён из корзины.</DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <DialogClose className="h-10 rounded-md border border-primary bg-card px-4 text-base leading-6 font-bold text-primary" disabled={isLoading}>Отмена</DialogClose>
-          <button className="h-10 cursor-pointer rounded-md bg-primary px-4 text-base leading-6 font-bold text-white disabled:bg-muted disabled:text-muted-foreground" disabled={isLoading} onClick={() => void confirmDelete()} type="button">
-            {isLoading ? 'Удаляем...' : 'Удалить'}
-          </button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  );
-}

@@ -14,7 +14,7 @@ type RenderOptions = {
   route?: string;
 };
 
-export function makeTestStore(preloadedState?: Partial<RootState>) {
+function makeTestStore(preloadedState?: Partial<RootState>) {
   return configureStore({
     reducer: {
       auth: authReducer,

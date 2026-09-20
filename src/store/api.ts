@@ -41,7 +41,7 @@ export interface FilterState {
   order: 'asc' | 'desc' | null;
 }
 
-export type GetProductsParams = FilterState;
+type GetProductsParams = FilterState;
 
 type CreateOrderRequest = CreateOrderPayload & {
   userId: string;
@@ -77,7 +77,7 @@ export const TOKEN_STORAGE_KEY = 'token';
 const generateFakeToken = (userId: string) =>
   btoa(JSON.stringify({ id: userId, exp: Date.now() + 86_400_000 }));
 
-export const getUserIdFromToken = (token: string): string | null => {
+const getUserIdFromToken = (token: string): string | null => {
   try {
     const parsed = JSON.parse(atob(token)) as { id?: unknown; exp?: unknown };
 
@@ -563,20 +563,6 @@ export const api = createApi({
       invalidatesTags: ['Cart'],
     }),
 
-    getRatings: builder.query<ProductRating[], void>({
-      query: () => '/ratings',
-      providesTags: (result) =>
-        result
-          ? [
-              ...result.map(({ productId, userId }) => ({
-                type: 'Rating' as const,
-                id: `${productId}:${userId}`,
-              })),
-              { type: 'Rating' as const, id: 'LIST' },
-            ]
-          : [{ type: 'Rating' as const, id: 'LIST' }],
-    }),
-
     getRatingById: builder.query<ProductRating[], string>({
       query: (id) => `/ratings?productId=${encodeURIComponent(id)}`,
       providesTags: (_result, _error, id) => [{ type: 'Rating', id }],
@@ -654,7 +640,6 @@ export const api = createApi({
       },
       invalidatesTags: (_result, _error, { productId }) => [
         { type: 'Rating', id: productId },
-        { type: 'Rating', id: 'LIST' },
         { type: 'Product', id: productId },
         { type: 'Product', id: 'LIST' },
       ],
@@ -692,10 +677,8 @@ export const {
   useGetPickupPointsQuery,
   useGetProductByIdQuery,
   useGetProductsQuery,
-  useLazyGetProductsQuery,
   useGetProfileQuery,
   useGetRatingByIdQuery,
-  useGetRatingsQuery,
   useLoginMutation,
   useRegisterMutation,
   useRemoveFromCartMutation,

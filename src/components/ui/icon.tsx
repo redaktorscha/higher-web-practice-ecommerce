@@ -1,14 +1,8 @@
 import {
-  Camera,
-  Filter,
   Home,
-  Menu,
-  Plus,
   Search,
   ShoppingBag,
   SlidersHorizontal,
-  Star,
-  Trash,
   User,
   X,
   type LucideIcon,
@@ -17,16 +11,10 @@ import type { ComponentProps } from 'react';
 import { cn } from '@/lib/utils';
 
 const icons = {
-  camera: Camera,
-  filter: Filter,
   home: Home,
-  menu: Menu,
-  plus: Plus,
   search: Search,
   shoppingBag: ShoppingBag,
   sliders: SlidersHorizontal,
-  star: Star,
-  trash: Trash,
   user: User,
   x: X,
 } satisfies Record<string, LucideIcon>;
