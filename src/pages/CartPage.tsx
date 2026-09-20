@@ -17,14 +17,14 @@ export function CartPage() {
   const isCartEmpty = totalItems === 0;
 
   return (
-    <section className="md:grid md:grid-cols-[580px_280px] md:gap-5">
-      <div>
+    <section className="md:flex flex-row justify-between md:gap-5">
+      <div className="flex-2">
         <div className="mb-8 flex items-end gap-4 md:mb-4">
           <h1 className="text-2xl leading-8">Корзина</h1>
           <span className="pb-1 text-sm leading-5 text-muted-foreground md:hidden">{itemsLabel}</span>
         </div>
 
-        <div className="grid gap-8 md:gap-4">
+        <div className="gap-8 md:gap-4">
           {productIds.length > 0 ? productIds.map((productId, index) => (
             <CartItemRow key={productId} productId={productId} showMobileDivider={index < productIds.length - 1} />
           )) : (

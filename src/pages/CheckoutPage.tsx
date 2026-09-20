@@ -182,7 +182,7 @@ export function CheckoutPage() {
         />
       </div>
 
-      <aside className="grid gap-8 self-start md:sticky md:top-24">
+      <aside className="flex flex-col md:sticky md:top-24">
         <OrderSummary
           deliveryPrice={deliveryPrice}
           formMessage={formMessage}
@@ -192,11 +192,13 @@ export function CheckoutPage() {
           subtotal={cart.totalPrice}
           total={totalPrice}
         />
-        <img alt="" className="hidden h-[396px] w-[420px] object-contain md:block" src={orderImage} />
+        <img alt="" className="hidden h-[363px] w-[446px] object-contain md:block" src={orderImage} />
       </aside>
+
 
       {isCardModalOpen && user ? (
         <PaymentCardModal
+
           onClose={() => setIsCardModalOpen(false)}
           onSave={(card) => {
             const nextCards = [...orderDraft.savedCards, card];
