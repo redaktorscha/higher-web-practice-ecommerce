@@ -80,7 +80,7 @@ export function DeliverySection({
             <p className="text-base leading-6">Доставить по адресу:</p>
             <div className="grid gap-2 md:grid-cols-[171px_1fr]">
               <button className={cityButtonClassName} onClick={onCityOpen} type="button">
-                {draft.city || 'Город *'}
+                {draft.city.length > 10 ? (draft.city.slice(0,10) + '...') : draft.city || 'Город *'}
                 <ChevronDown className="size-5 text-muted-foreground md:size-4" />
               </button>
               <input

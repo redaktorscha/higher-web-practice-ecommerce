@@ -51,7 +51,7 @@ export function PaymentCardModal({ onClose, onSave }: {
 
   return (
     <CheckoutModal title="Новая карта" onClose={onClose}>
-      <div className="grid gap-4">
+      <div className="flex flex-col gap-4">
         <Cards cvc={values.cvc} expiry={values.expiry} focused={focused} name={values.name} number={values.number} />
         <CardField
           error={errors.number}
@@ -70,7 +70,7 @@ export function PaymentCardModal({ onClose, onSave }: {
           placeholder="IVAN PETROV"
           value={values.name}
         />
-        <div className="grid grid-cols-2 gap-3">
+        <div className="flex flex-row gap-3">
           <CardField
             error={errors.expiry}
             label="Срок *"
@@ -108,10 +108,10 @@ function CardField({ error, label, maxLength, onChange, onFocus, placeholder, va
   value: string;
 }) {
   return (
-    <label className="grid gap-1 text-sm leading-5">
+    <label className="flex flex-col gap-1 text-sm leading-5 flex-1">
       {label}
       <input
-        className={`${checkoutFieldClassName} ${error ? checkoutErrorFieldClassName : ''}`}
+        className={`w-full ${checkoutFieldClassName} ${error ? checkoutErrorFieldClassName : ''}`}
         maxLength={maxLength}
         onChange={(event) => onChange(event.target.value)}
         onFocus={onFocus}
