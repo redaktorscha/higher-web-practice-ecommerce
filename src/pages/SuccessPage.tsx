@@ -48,7 +48,7 @@ export function SuccessPage() {
     <section ref={printRef} className="pb-28 md:mx-auto md:w-[780px] md:pt-2">
       <h1 className="mb-2 hidden text-[30px] leading-9 md:block">Спасибо за покупку!</h1>
       <h1 className="mb-4 text-2xl leading-8 md:hidden">Спасибо за заказ!</h1>
-      <p className="mb-5 hidden text-xl leading-5 font-bold md:block">Мы уже готовим выбранные усы к отправке!</p>
+      <p className="mt-2 mb-5 hidden text-xl leading-5 font-bold md:block">Мы уже готовим выбранные усы к отправке!</p>
 
       <article className="rounded-xl bg-card p-6 shadow-card md:p-6">
         <section>
@@ -118,7 +118,7 @@ export function SuccessPage() {
           onClick={() => handlePrint()}
           type="button"
         >
-          Распечатать заказ
+          Распечатать
         </button>
         <Link className="cursor-pointer text-center text-sm leading-5 text-primary-hover md:text-base md:leading-6" to="/profile/orders">
           <span className="md:hidden">История заказов</span>

@@ -106,7 +106,7 @@ export function DeliverySection({
                 onClick={onPickupOpen}
                 type="button"
               >
-                Выбрать на карте
+                Выбрать
               </button>
               <div>
                 <p className="text-base leading-6">{draft.pickupPoint?.address ?? 'Адрес пункта выдачи'}</p>
